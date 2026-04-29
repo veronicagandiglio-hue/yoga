@@ -1,0 +1,1491 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ompage · Pannello Yoga</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f8f9fa;--sidebar-bg:#1e1e2e;--sidebar-text:#cdd6f4;
+  --sidebar-active-bg:#313244;--accent:#4f46e5;
+  --text-primary:#111827;--text-secondary:#6b7280;--text-key:#9ca3af;
+  --border:#d1d5db;--border-section:#e5e7eb;
+  --success:#16a34a;--warning:#d97706;--error:#dc2626;
+  --toggle-on:#4f46e5;--toggle-off:#9ca3af;
+  --surface:#ffffff;--sidebar-w:260px;--header-h:56px;
+}
+html,body{height:100%}
+body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;font-size:14px;background:var(--bg);color:var(--text-primary);line-height:1.5}
+
+/* HEADER */
+#app-header{position:fixed;top:0;left:0;right:0;height:var(--header-h);background:#fff;border-bottom:1px solid var(--border-section);display:flex;align-items:center;padding:0 16px;z-index:100;gap:12px}
+.h-logo{font-weight:700;font-size:15px;display:flex;align-items:center;gap:8px;white-space:nowrap}
+.h-logo-accent{color:var(--accent)}
+.h-site-name{flex:1;text-align:center;font-size:13px;color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
+#hamburger{display:none;background:none;border:none;cursor:pointer;padding:4px;color:var(--text-primary)}
+
+/* LAYOUT */
+.layout{display:flex;margin-top:var(--header-h);min-height:calc(100vh - var(--header-h))}
+
+/* SIDEBAR */
+#sidebar{width:var(--sidebar-w);background:var(--sidebar-bg);display:flex;flex-direction:column;position:fixed;top:var(--header-h);bottom:0;left:0;overflow-y:auto;z-index:90;transition:transform .25s ease}
+.sidebar-nav{flex:1;padding:10px 0}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;color:var(--sidebar-text);font-size:13px;transition:background .15s;border-left:3px solid transparent;user-select:none}
+.nav-item:hover{background:rgba(255,255,255,.05)}
+.nav-item.active{background:var(--sidebar-active-bg);color:#fff;border-left-color:var(--accent)}
+.nav-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0}
+.nav-label{flex:1}
+.nav-badge{font-size:10px;font-weight:700;padding:2px 6px;border-radius:10px;background:var(--success);color:#fff}
+.nav-badge.off{background:var(--text-key)}
+.sidebar-footer{padding:14px;border-top:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;gap:8px}
+
+/* MAIN */
+#main-content{margin-left:var(--sidebar-w);flex:1;padding:24px;min-width:0;overflow-y:auto;max-height:calc(100vh - var(--header-h))}
+.section-pane{display:none}
+.section-pane.active{display:block}
+.section-hdr{margin-bottom:22px;padding-bottom:14px;border-bottom:1px solid var(--border-section)}
+.section-title{font-size:20px;font-weight:700;margin-bottom:2px}
+.section-subtitle{font-size:13px;color:var(--text-secondary)}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 16px;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:background .15s,transform .1s;text-decoration:none;white-space:nowrap;font-family:inherit}
+.btn:active{transform:scale(.98)}
+.btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.btn-primary{background:var(--accent);color:#fff;width:100%}
+.btn-primary:not(:disabled):hover{background:#4338ca}
+.btn-secondary{background:rgba(255,255,255,.09);color:var(--sidebar-text);width:100%;border:1px solid rgba(255,255,255,.12)}
+.btn-secondary:not(:disabled):hover{background:rgba(255,255,255,.14)}
+.btn-outline{background:#fff;color:var(--text-primary);border:1px solid var(--border)}
+.btn-outline:not(:disabled):hover{background:var(--bg)}
+.btn-ghost{background:transparent;color:var(--text-secondary);padding:6px 10px}
+.btn-ghost:hover{background:var(--bg)}
+.btn-sm{padding:5px 10px;font-size:12px}
+.btn-danger{background:var(--error);color:#fff}
+.btn-save-main{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;width:100%;font-size:14px;padding:12px 16px;border-radius:8px;font-weight:600}
+.btn-save-main:not(:disabled):hover{background:linear-gradient(135deg,#4338ca,#6d28d9)}
+
+/* FIELDS */
+.fw{margin-bottom:18px}
+.fl{display:block;font-size:13px;font-weight:500;color:var(--text-primary);margin-bottom:3px}
+.fk{display:block;font-size:11px;color:var(--text-key);margin-bottom:5px;font-family:'Menlo','Monaco',monospace}
+.fi,.fta,.fsel{width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-size:14px;font-family:inherit;color:var(--text-primary);background:#fff;transition:border-color .15s,box-shadow .15s;outline:none}
+.fi:focus,.fta:focus,.fsel:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,70,229,.15)}
+.fta{resize:none;min-height:76px;overflow-y:hidden;line-height:1.5}
+.char-count{font-size:11px;color:var(--text-key);text-align:right;margin-top:3px}
+.char-count.over{color:var(--error)}
+
+/* TOGGLE */
+.tw{display:flex;align-items:center;gap:10px}
+.tt{width:40px;height:22px;border-radius:11px;background:var(--toggle-off);position:relative;cursor:pointer;transition:background .2s;flex-shrink:0}
+.tt.on{background:var(--toggle-on)}
+.tthumb{position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.tt.on .tthumb{transform:translateX(18px)}
+.tv{font-size:12px;font-weight:700;color:var(--text-key)}
+.tv.on{color:var(--accent)}
+
+/* IMG PATH */
+.iw{display:flex;gap:6px;align-items:center}
+.ithumb{width:48px;height:48px;object-fit:cover;border-radius:6px;border:1px solid var(--border);flex-shrink:0}
+.ipholder{width:48px;height:48px;border-radius:6px;border:1px dashed var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--text-key);flex-shrink:0;background:var(--bg)}
+.file-pill{display:flex;align-items:center;gap:8px;padding:9px 10px;border:1px solid var(--border);border-radius:6px;background:#fff;color:var(--text-secondary);font-size:12px;min-height:40px}
+.file-pill-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.field-help{font-size:12px;color:var(--text-secondary);margin-top:4px}
+
+/* DATE */
+.dr{font-size:12px;color:var(--text-secondary);margin-top:3px}
+
+/* GROUP BOX */
+.gbox{border:1px solid var(--border-section);border-radius:8px;padding:16px;background:var(--surface);margin-bottom:20px}
+.gbox-title{font-size:12px;font-weight:700;color:var(--text-secondary);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border-section);text-transform:uppercase;letter-spacing:.05em}
+
+/* CARD collassabile */
+.card{border:1px solid var(--border-section);border-radius:8px;background:var(--surface);margin-bottom:10px;overflow:hidden}
+.card-hdr{display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;user-select:none}
+.card-hdr:hover{background:var(--bg)}
+.card-name{flex:1;font-weight:500;font-size:13px}
+.card-chev{color:var(--text-key);transition:transform .2s;font-size:11px;flex-shrink:0}
+.card.open .card-chev{transform:rotate(180deg)}
+.card-body{display:none;padding:16px;border-top:1px solid var(--border-section);background:#fafafa}
+.card.open .card-body{display:block}
+
+/* DIVIDER */
+.divider{height:1px;background:var(--border-section);margin:18px 0}
+.sub-label{font-size:12px;font-weight:700;color:var(--text-secondary);margin:16px 0 10px;text-transform:uppercase;letter-spacing:.05em}
+
+/* FLASH */
+.flash{position:fixed;top:calc(var(--header-h) + 10px);left:50%;transform:translateX(-50%);z-index:500;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:500;display:none;align-items:center;gap:10px;box-shadow:0 4px 20px rgba(0,0,0,.15);max-width:90vw;animation:bIn .2s ease}
+@keyframes bIn{from{opacity:0;transform:translateX(-50%) translateY(-8px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+.flash-success{background:#f0fdf4;border:1px solid #bbf7d0;color:#15803d}
+.flash-error{background:#fef2f2;border:1px solid #fecaca;color:#991b1b}
+.flash-warning{background:#fffbeb;border:1px solid #fde68a;color:#92400e}
+.flash-info{background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af}
+.flash-close{cursor:pointer;opacity:.6;margin-left:4px}
+.flash-close:hover{opacity:1}
+
+/* SUCCESS BANNER */
+#success-banner{display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.6);align-items:center;justify-content:center}
+.success-card{background:#fff;border-radius:16px;padding:40px 32px;text-align:center;max-width:480px;width:90vw;box-shadow:0 24px 80px rgba(0,0,0,.25);animation:mIn .3s ease}
+@keyframes mIn{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+.success-icon{font-size:56px;margin-bottom:16px}
+.success-title{font-size:22px;font-weight:700;color:#15803d;margin-bottom:8px}
+.success-sub{font-size:14px;color:var(--text-secondary);line-height:1.6;margin-bottom:24px}
+
+/* MODAL */
+.moverlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:400;display:flex;align-items:center;justify-content:center}
+.moverlay.hidden{display:none}
+.modal{background:#fff;border-radius:12px;padding:28px;width:500px;max-width:92vw;box-shadow:0 20px 60px rgba(0,0,0,.2);animation:mIn .2s ease}
+.modal-title{font-size:18px;font-weight:700;margin-bottom:4px}
+.modal-sub{font-size:13px;color:var(--text-secondary);margin-bottom:20px}
+.modal-err{display:none;padding:10px 14px;background:#fef2f2;border:1px solid #fecaca;border-radius:6px;color:#991b1b;font-size:13px;margin-bottom:14px}
+
+/* SETUP SCREEN */
+#setup-screen{display:none;position:fixed;inset:0;z-index:700;background:var(--bg);align-items:center;justify-content:center;padding:24px}
+.setup-card{background:#fff;border-radius:16px;padding:36px;width:100%;max-width:480px;box-shadow:0 8px 40px rgba(0,0,0,.1)}
+.setup-err{display:none;padding:10px 14px;background:#fef2f2;border:1px solid #fecaca;border-radius:6px;color:#991b1b;font-size:13px;margin-bottom:14px}
+
+/* LOADING */
+#loading-screen{position:fixed;inset:0;z-index:800;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:14px;color:var(--text-secondary)}
+
+/* STATUS BAR */
+#status-bar{position:fixed;top:var(--header-h);left:var(--sidebar-w);right:0;z-index:80}
+.status-connected{background:#f0fdf4;border-bottom:1px solid #bbf7d0;color:#15803d;padding:7px 20px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:8px}
+.status-dot{width:8px;height:8px;border-radius:50%;background:#16a34a;flex-shrink:0}
+
+/* GH STATUS sidebar */
+.gh-status-row{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:6px;font-size:11px;margin-bottom:4px;font-weight:500;cursor:pointer;background:rgba(79,70,229,.1);color:var(--accent);border:1px solid rgba(79,70,229,.2)}
+.gh-status-row:hover{background:rgba(79,70,229,.18)}
+
+/* FAQ MORE */
+.faq-more{display:flex;align-items:center;gap:8px;cursor:pointer;color:var(--accent);font-size:13px;font-weight:500;padding:8px 0;user-select:none}
+.faq-extra{display:none}
+.faq-extra.open{display:block}
+
+/* EXTRA NOTICE */
+.extra-notice{padding:11px 14px;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;color:#92400e;font-size:13px;margin-bottom:18px}
+
+/* INFO BOX template-specifico */
+.info-box{padding:12px 14px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;color:#1e40af;font-size:12px;margin-bottom:18px;line-height:1.6}
+
+/* SIDEBAR OVERLAY mobile */
+#sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:85}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  #hamburger{display:flex}
+  #sidebar{transform:translateX(-100%)}
+  #sidebar.open{transform:translateX(0)}
+  #main-content{margin-left:0}
+  #status-bar{left:0}
+  #sidebar-overlay.visible{display:block}
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading-screen">
+  <div class="spinner"></div>
+  <div class="loading-text" id="loading-text">Connessione a GitHub...</div>
+</div>
+
+<!-- SETUP SCREEN -->
+<div id="setup-screen">
+  <div class="setup-card">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:28px">
+      <svg width="28" height="28" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="6" fill="#4f46e5"/><path d="M6 11a5 5 0 0 1 10 0" stroke="#fff" stroke-width="2" stroke-linecap="round"/><circle cx="11" cy="14" r="2" fill="#fff"/></svg>
+      <span style="font-weight:700;font-size:17px"><span style="color:var(--accent)">Ompage</span> · Pannello Yoga</span>
+    </div>
+    <div style="font-size:20px;font-weight:700;margin-bottom:6px">Prima configurazione</div>
+    <div style="font-size:13px;color:var(--text-secondary);margin-bottom:22px;line-height:1.6">
+      Inserisci le credenziali GitHub per connettere il pannello al tuo sito.<br>
+      I dati vengono salvati solo nel tuo browser.
+    </div>
+    <div class="setup-err" id="setup-err"></div>
+    <div class="fw">
+      <label class="fl">Personal Access Token GitHub</label>
+      <input type="password" class="fi" id="s-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off">
+      <div style="margin-top:6px;font-size:12px;color:var(--text-secondary)">
+        <a href="https://github.com/settings/tokens/new?scopes=repo&description=Ompage+Pannello" target="_blank" style="color:var(--accent)">→ Crea token su GitHub</a>
+        — seleziona scope <strong>repo</strong>, scadenza 1 anno.
+      </div>
+    </div>
+    <div class="fw">
+      <label class="fl">Username GitHub</label>
+      <input type="text" class="fi" id="s-owner" placeholder="mario-rossi" autocomplete="off">
+    </div>
+    <div class="fw">
+      <label class="fl">Nome del repository</label>
+      <input type="text" class="fi" id="s-repo" placeholder="mio-sito-yoga" autocomplete="off">
+      <div style="margin-top:4px;font-size:12px;color:var(--text-secondary)">Solo il nome, senza username. Es: <code>mio-sito-yoga</code></div>
+    </div>
+    <button class="btn btn-primary" id="setup-btn" onclick="doSetup()" style="margin-top:4px">Connetti e carica il sito →</button>
+  </div>
+</div>
+
+<!-- SUCCESS BANNER -->
+<div id="success-banner">
+  <div class="success-card">
+    <div class="success-icon">✅</div>
+    <div class="success-title">Sito aggiornato con successo!</div>
+    <div class="success-sub">
+      Le tue modifiche sono state salvate su GitHub.<br>
+      Le vedrai online entro <strong>1–2 minuti</strong>.<br><br>
+      GitHub impiega qualche istante per pubblicare le modifiche.
+    </div>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <button class="btn btn-outline" style="width:auto" onclick="document.getElementById('success-banner').style.display='none'">Continua a modificare</button>
+      <a id="success-preview-link" href="#" target="_blank" class="btn btn-primary" style="width:auto">Vai al sito →</a>
+    </div>
+  </div>
+</div>
+
+<!-- FLASH -->
+<div id="flash" class="flash">
+  <span id="flash-text"></span>
+  <span class="flash-close" onclick="hideFlash()">✕</span>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div id="settings-modal" class="moverlay hidden">
+  <div class="modal">
+    <div class="modal-title">⚙️ Impostazioni connessione</div>
+    <div class="modal-sub">Modifica le credenziali GitHub o disconnetti il pannello.</div>
+    <div class="fw">
+      <label class="fl">Token GitHub</label>
+      <input type="password" class="fi" id="m-token" autocomplete="off">
+    </div>
+    <div class="fw">
+      <label class="fl">Username</label>
+      <input type="text" class="fi" id="m-owner">
+    </div>
+    <div class="fw">
+      <label class="fl">Repository</label>
+      <input type="text" class="fi" id="m-repo">
+    </div>
+    <div class="modal-err" id="settings-err"></div>
+    <div style="display:flex;gap:8px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-top:4px">
+      <button class="btn btn-danger btn-sm" onclick="disconnect()">Disconnetti</button>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-outline" onclick="closeSettings()">Annulla</button>
+        <button class="btn btn-primary" style="width:auto" onclick="saveSettings()">Salva</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header id="app-header" style="display:none">
+  <div style="display:flex;align-items:center;gap:10px;flex-shrink:0">
+    <button id="hamburger" onclick="toggleSidebar()">
+      <svg width="20" height="20" viewBox="0 0 20 20"><rect x="2" y="4" width="16" height="2" rx="1" fill="currentColor"/><rect x="2" y="9" width="16" height="2" rx="1" fill="currentColor"/><rect x="2" y="14" width="16" height="2" rx="1" fill="currentColor"/></svg>
+    </button>
+    <div class="h-logo">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect width="22" height="22" rx="6" fill="#4f46e5"/><path d="M6 11a5 5 0 0 1 10 0" stroke="#fff" stroke-width="2" stroke-linecap="round"/><circle cx="11" cy="14" r="2" fill="#fff"/></svg>
+      <span class="h-logo-accent">Ompage</span> · Pannello
+    </div>
+  </div>
+  <div class="h-site-name" id="site-name">—</div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <a id="btn-preview" href="#" target="_blank" class="btn btn-outline btn-sm">👁️ Vedi il sito</a>
+  </div>
+</header>
+
+<div id="sidebar-overlay" onclick="closeSidebar()"></div>
+<div id="status-bar"></div>
+
+<div class="layout" id="main-layout" style="display:none">
+  <nav id="sidebar">
+    <div class="sidebar-nav" id="sidebar-nav"></div>
+    <div class="sidebar-footer">
+      <div class="gh-status-row" id="gh-status-row" onclick="openSettings()">
+        <span>🔗</span>
+        <span id="gh-status-text" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
+        <span style="opacity:.6;font-size:10px">✎</span>
+      </div>
+      <button class="btn btn-save-main" id="btn-save" onclick="saveToGitHub()">
+        💾 Salva e metti online
+      </button>
+    </div>
+  </nav>
+  <main id="main-content">
+    <div id="sections-wrap"></div>
+  </main>
+</div>
+
+<script>
+'use strict';
+
+// ════════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════════
+let CFG = {};
+let ORIG_KEYS = [];
+let GH_SHA = null;
+let IS_DIRTY = false;
+
+const LS = {
+  get token() { return localStorage.getItem('ompage_token') || '' },
+  get owner() { return localStorage.getItem('ompage_owner') || '' },
+  get repo()  { return localStorage.getItem('ompage_repo')  || '' },
+  set token(v){ localStorage.setItem('ompage_token', v) },
+  set owner(v){ localStorage.setItem('ompage_owner', v) },
+  set repo(v) { localStorage.setItem('ompage_repo',  v) },
+  clear(){ ['ompage_token','ompage_owner','ompage_repo'].forEach(k => localStorage.removeItem(k)) },
+  get hasAll(){ return !!(this.token && this.owner && this.repo) }
+};
+
+// ════════════════════════════════════════════════════════════
+// GITHUB API
+// ════════════════════════════════════════════════════════════
+const GH_BASE = 'https://api.github.com';
+
+function ghHeaders(){
+  return {
+    'Authorization': `token ${LS.token}`,
+    'Accept': 'application/vnd.github.v3+json',
+    'Content-Type': 'application/json'
+  };
+}
+
+function fileUrl(){
+  return `${GH_BASE}/repos/${LS.owner}/${LS.repo}/contents/config.json`;
+}
+
+function b64DecodeUTF8(b64){
+  const bin = atob(b64.replace(/\s/g,''));
+  const bytes = Uint8Array.from(bin, c => c.charCodeAt(0));
+  return new TextDecoder('utf-8').decode(bytes);
+}
+
+function b64EncodeUTF8(str){
+  const bytes = new TextEncoder().encode(str);
+  const bin = Array.from(bytes, b => String.fromCharCode(b)).join('');
+  return btoa(bin);
+}
+
+async function ghGet(){
+  const r = await fetch(fileUrl(), { headers: ghHeaders() });
+  if (r.status === 401) throw new Error('TOKEN_INVALID');
+  if (r.status === 404) throw new Error('REPO_NOT_FOUND');
+  if (!r.ok) throw new Error('HTTP_' + r.status);
+  const data = await r.json();
+  GH_SHA = data.sha;
+  return JSON.parse(b64DecodeUTF8(data.content));
+}
+
+async function ghPut(jsonObj){
+  if (!GH_SHA){
+    const r = await fetch(fileUrl(), { headers: ghHeaders() });
+    if (r.ok){ const d = await r.json(); GH_SHA = d.sha; }
+  }
+  const content = b64EncodeUTF8(JSON.stringify(jsonObj, null, 2));
+  const body = {
+    message: 'Aggiornamento config.json — Ompage Pannello Yoga',
+    content,
+    ...(GH_SHA ? { sha: GH_SHA } : {})
+  };
+  const r = await fetch(fileUrl(), {
+    method: 'PUT',
+    headers: ghHeaders(),
+    body: JSON.stringify(body)
+  });
+  if (r.status === 401) throw new Error('TOKEN_INVALID');
+  if (r.status === 404) throw new Error('REPO_NOT_FOUND');
+  if (r.status === 409) throw new Error('CONFLICT');
+  if (!r.ok){ const e = await r.json(); throw new Error(e.message || 'HTTP_' + r.status); }
+  const d = await r.json();
+  GH_SHA = d.content.sha;
+}
+
+// ════════════════════════════════════════════════════════════
+// GITHUB FILE UPLOAD
+// ════════════════════════════════════════════════════════════
+const UPLOAD_RULES = {
+  image: {
+    label: 'immagine',
+    accept: ['image/jpeg','image/png','image/webp'],
+    exts: ['jpg','jpeg','png','webp'],
+    max: 5 * 1024 * 1024
+  },
+  pdf: {
+    label: 'PDF',
+    accept: ['application/pdf'],
+    exts: ['pdf'],
+    max: 10 * 1024 * 1024
+  }
+};
+
+function uploadToGitHub(event, key){ uploadFileToGitHub(event, key, 'image'); }
+function uploadPdfToGitHub(event, key){ uploadFileToGitHub(event, key, 'pdf'); }
+
+function fileToBase64(file){
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = ev => resolve(ev.target.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function uploadFileName(key, file){
+  const ext = (file.name.split('.').pop() || '').toLowerCase().replace(/[^a-z0-9]/g,'');
+  return `${key}_${Date.now()}.${ext}`;
+}
+
+async function uploadFileToGitHub(event, key, type){
+  const file = event.target.files[0];
+  if (!file) return;
+  const rule = UPLOAD_RULES[type];
+  const statusEl = document.getElementById(`upload_status_${key}`);
+  const ext = (file.name.split('.').pop() || '').toLowerCase();
+  const okMime = rule.accept.includes(file.type);
+  const okExt  = rule.exts.includes(ext);
+
+  if (!okMime && !okExt){
+    flash(`❌ File non valido. Carica un ${rule.label} nel formato corretto.`, 'error', 6000);
+    event.target.value = ''; return;
+  }
+  if (file.size > rule.max){
+    const mb = Math.round(rule.max / 1024 / 1024);
+    flash(`❌ File troppo grande. Dimensione massima: ${mb} MB.`, 'error', 6000);
+    event.target.value = ''; return;
+  }
+
+  if (statusEl){ statusEl.style.color = 'var(--accent)'; statusEl.style.display = 'block'; statusEl.textContent = `⏳ Caricamento ${rule.label} su GitHub...`; }
+
+  const safeName  = uploadFileName(key, file);
+  const filePath  = `assets/${safeName}`;
+  const apiUrl    = `${GH_BASE}/repos/${LS.owner}/${LS.repo}/contents/${filePath}`;
+
+  try {
+    const content = await fileToBase64(file);
+    const res = await fetch(apiUrl, {
+      method: 'PUT',
+      headers: ghHeaders(),
+      body: JSON.stringify({ message: `Upload ${rule.label}: ${key}`, content })
+    });
+    if (!res.ok){ const data = await res.json().catch(() => ({})); throw new Error(data.message || 'Errore API GitHub'); }
+
+    setField(key, filePath);
+    const input = document.getElementById(`f_${key}`);
+    if (input) input.value = filePath;
+    if (type === 'image') updThumb(key);
+    if (type === 'pdf')   updFileLabel(key);
+
+    if (statusEl){ statusEl.textContent = `✅ ${rule.label} caricato con successo.`; setTimeout(() => { statusEl.style.display = 'none'; }, 3000); }
+  } catch (err){
+    if (statusEl){ statusEl.textContent = `❌ Errore nel caricamento ${rule.label}. Riprova.`; statusEl.style.color = 'var(--error)'; }
+    console.error(err);
+  } finally {
+    event.target.value = '';
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════════════
+async function init(){
+  if (!LS.hasAll){ showSetup(); return; }
+  showLoading('Caricamento dal tuo sito GitHub...');
+  try {
+    CFG = await ghGet();
+    ORIG_KEYS = Object.keys(CFG);
+    hideLoading(); showApp(); buildUI();
+  } catch(e){
+    hideLoading();
+    if (e.message === 'TOKEN_INVALID') showSetup('Il token GitHub non è valido o è scaduto. Inseriscilo di nuovo.');
+    else if (e.message === 'REPO_NOT_FOUND') showSetup('Repository non trovato. Controlla username e nome repository.');
+    else showSetup('Errore di connessione: ' + e.message);
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+// SCREENS
+// ════════════════════════════════════════════════════════════
+function showLoading(msg){
+  document.getElementById('loading-text').textContent = msg || 'Caricamento...';
+  document.getElementById('loading-screen').style.display = 'flex';
+  document.getElementById('setup-screen').style.display = 'none';
+  document.getElementById('app-header').style.display = 'none';
+  document.getElementById('main-layout').style.display = 'none';
+}
+function hideLoading(){ document.getElementById('loading-screen').style.display = 'none'; }
+
+function showSetup(errMsg){
+  hideLoading();
+  document.getElementById('setup-screen').style.display = 'flex';
+  document.getElementById('s-token').value = LS.token;
+  document.getElementById('s-owner').value = LS.owner;
+  document.getElementById('s-repo').value  = LS.repo;
+  const e = document.getElementById('setup-err');
+  if (errMsg){ e.textContent = errMsg; e.style.display = 'block'; }
+  else e.style.display = 'none';
+}
+
+function showApp(){
+  document.getElementById('setup-screen').style.display = 'none';
+  document.getElementById('app-header').style.display = 'flex';
+  document.getElementById('main-layout').style.display = 'flex';
+  document.getElementById('gh-status-text').textContent = `${LS.owner}/${LS.repo}`;
+  const previewUrl = `https://${LS.owner}.github.io/${LS.repo}/`;
+  document.getElementById('btn-preview').href = previewUrl;
+  document.getElementById('success-preview-link').href = previewUrl;
+  const sb = document.getElementById('status-bar');
+  sb.innerHTML = `<div class="status-connected"><div class="status-dot"></div>Connesso a <strong>${LS.owner}/${LS.repo}</strong></div>`;
+}
+
+// ════════════════════════════════════════════════════════════
+// SETUP
+// ════════════════════════════════════════════════════════════
+async function doSetup(){
+  const token = document.getElementById('s-token').value.trim();
+  const owner = document.getElementById('s-owner').value.trim();
+  const repo  = document.getElementById('s-repo').value.trim();
+  if (!token){ showSetupErr('Inserisci il Personal Access Token.'); return; }
+  if (!owner){ showSetupErr('Inserisci il tuo username GitHub.'); return; }
+  if (!repo) { showSetupErr('Inserisci il nome del repository.'); return; }
+  const btn = document.getElementById('setup-btn');
+  btn.textContent = 'Verifica in corso...'; btn.disabled = true;
+  LS.token = token; LS.owner = owner; LS.repo = repo;
+  try {
+    CFG = await ghGet();
+    ORIG_KEYS = Object.keys(CFG);
+    document.getElementById('setup-screen').style.display = 'none';
+    showApp(); buildUI();
+  } catch(e){
+    LS.clear();
+    if (e.message === 'TOKEN_INVALID') showSetupErr('❌ Token non valido o scaduto. Creane uno nuovo su GitHub.');
+    else if (e.message === 'REPO_NOT_FOUND') showSetupErr('❌ Repository non trovato. Controlla username e nome.');
+    else showSetupErr('❌ Errore: ' + e.message);
+  }
+  btn.textContent = 'Connetti e carica il sito →'; btn.disabled = false;
+}
+
+function showSetupErr(msg){
+  const e = document.getElementById('setup-err');
+  e.textContent = msg; e.style.display = 'block';
+}
+
+// ════════════════════════════════════════════════════════════
+// SETTINGS MODAL
+// ════════════════════════════════════════════════════════════
+function openSettings(){
+  document.getElementById('m-token').value = LS.token;
+  document.getElementById('m-owner').value = LS.owner;
+  document.getElementById('m-repo').value  = LS.repo;
+  document.getElementById('settings-err').style.display = 'none';
+  document.getElementById('settings-modal').classList.remove('hidden');
+}
+function closeSettings(){ document.getElementById('settings-modal').classList.add('hidden'); }
+
+async function saveSettings(){
+  const token = document.getElementById('m-token').value.trim();
+  const owner = document.getElementById('m-owner').value.trim();
+  const repo  = document.getElementById('m-repo').value.trim();
+  const err   = document.getElementById('settings-err');
+  err.style.display = 'none';
+  if (!token||!owner||!repo){ err.textContent='Tutti i campi sono obbligatori.'; err.style.display='block'; return; }
+  LS.token = token; LS.owner = owner; LS.repo = repo; GH_SHA = null;
+  closeSettings();
+  showLoading('Riconnessione...');
+  try {
+    CFG = await ghGet(); ORIG_KEYS = Object.keys(CFG);
+    hideLoading(); showApp(); buildUI();
+    flash('✅ Connessione aggiornata.', 'success');
+  } catch(e){ hideLoading(); showSetup('Errore con le nuove credenziali: ' + e.message); }
+}
+
+function disconnect(){
+  if (!confirm('Sicuro di voler disconnettere il pannello?')) return;
+  LS.clear(); GH_SHA = null; closeSettings(); location.reload();
+}
+
+// ════════════════════════════════════════════════════════════
+// SAVE TO GITHUB
+// ════════════════════════════════════════════════════════════
+async function saveToGitHub(){
+  if (!validate()) return;
+  syncDerivedFields();
+  fixUrlsTels();
+  const ordered = {};
+  ORIG_KEYS.forEach(k => { ordered[k] = CFG[k]; });
+  const btn = document.getElementById('btn-save');
+  btn.textContent = '⏳ Salvataggio in corso...'; btn.disabled = true;
+  try {
+    await ghPut(ordered);
+    IS_DIRTY = false;
+    document.getElementById('success-banner').style.display = 'flex';
+  } catch(e){
+    let msg = '❌ Errore nel salvataggio.';
+    if (e.message === 'TOKEN_INVALID') msg = '❌ Token non valido. Aggiorna le credenziali (⚙️ in basso a sinistra).';
+    else if (e.message === 'REPO_NOT_FOUND') msg = '❌ Repository non trovato.';
+    else if (e.message === 'CONFLICT') msg = '❌ Conflitto versione: ricarica il pannello e riprova.';
+    else msg = '❌ ' + e.message;
+    flash(msg, 'error', 8000);
+  }
+  btn.textContent = '💾 Salva e metti online'; btn.disabled = false;
+}
+
+// ════════════════════════════════════════════════════════════
+// SEZIONI — configurazione specifica template Yoga
+// ════════════════════════════════════════════════════════════
+const SECTIONS = [
+  {id:'impostazioni', icon:'⚙️',  label:'Impostazioni'},
+  {id:'seo',          icon:'🔍',  label:'SEO & Metadati'},
+  {id:'navbar',       icon:'🧭',  label:'Navbar'},
+  {id:'promozioni',   icon:'📣',  label:'Promozioni'},
+  {id:'hero',         icon:'🏠',  label:'Hero'},
+  {id:'chi_siamo',    icon:'🧘',  label:'Chi Sono'},
+  {id:'servizi',      icon:'📋',  label:'Lezioni'},
+  {id:'galleria',     icon:'🖼️', label:'Galleria'},
+  {id:'recensioni',   icon:'⭐',  label:'Recensioni'},
+  {id:'faq',          icon:'❓',  label:'FAQ'},
+  {id:'footer',       icon:'📍',  label:'Footer & Contatti'},
+  {id:'extra',        icon:'🔧',  label:'Campi Extra'},
+];
+
+// ── LABEL MAP — chiavi specifiche di questo template ─────────
+const LMAP = {
+  crediti_ompage_footer:          'Mostra crediti Ompage nel footer',
+  tema_tipografico:               'Stile tipografico',
+  tema_palette:                   'Palette colori',
+  seo_titolo:                     'Titolo pagina (SEO)',
+  seo_descrizione:                'Descrizione pagina (SEO)',
+  og_immagine:                    'Immagine anteprima social (Open Graph)',
+  navbar_logo_tipo:               'Tipo logo nella navbar',
+  navbar_logo_testo:              'Testo logo',
+  navbar_logo_immagine:           'Immagine logo',
+  navbar_voce_chi_siamo:          'Voce menu — Chi Sono',
+  navbar_voce_servizi:            'Voce menu — Lezioni',
+  navbar_voce_galleria:           'Voce menu — Galleria',
+  navbar_voce_recensioni:         'Voce menu — Recensioni',
+  navbar_voce_faq:                'Voce menu — Domande',
+  navbar_voce_contatti:           'Voce menu — Contatti',
+  barra_attiva:                   'Barra promozioni attiva',
+  barra_testo:                    'Testo della barra',
+  barra_scadenza:                 'Scadenza barra',
+  barra_cta_testo:                'Testo bottone barra',
+  barra_cta_tipo:                 'Tipo bottone barra',
+  barra_cta_contatto:             'Numero o URL bottone barra',
+  popup_attivo:                   'Popup emergenza attivo',
+  popup_testo:                    'Testo popup (es. evento speciale)',
+  popup_scadenza:                 'Scadenza popup',
+  popup_cta_testo:                'Testo bottone popup',
+  popup_cta_tipo:                 'Tipo bottone popup',
+  popup_cta_contatto:             'Numero o URL bottone popup',
+  hero_layout:                    'Layout hero',
+  hero_foto:                      'Foto hero (verticale, soggetto corporeo)',
+  hero_titolo_sx:                 'Titolo — parola sinistra',
+  hero_titolo_dx:                 'Titolo — parola destra',
+  hero_sottotitolo:               'Sottotitolo hero',
+  hero_cta_testo:                 'Testo CTA hero',
+  hero_cta_tipo:                  'Tipo CTA hero',
+  hero_cta_contatto:              'Numero o URL CTA hero',
+  chi_siamo_attivo:               'Sezione "Chi Sono" attiva',
+  chi_siamo_layout:               'Layout sezione',
+  chi_siamo_titolo_riga1:         'Titolo — prima riga',
+  chi_siamo_titolo_riga2:         'Titolo — seconda riga (rientra a destra)',
+  chi_siamo_testo:                'Testo di presentazione',
+  chi_siamo_citazione:            'Citazione (corsivo sotto la foto)',
+  chi_siamo_nome:                 'Il tuo nome',
+  chi_siamo_ruolo:                'Il tuo ruolo / certificazione',
+  chi_siamo_foto:                 'La tua foto',
+  chi_siamo_foto_secondaria:      'Foto secondaria (opzionale)',
+  chi_siamo_passo_1_titolo:       'Passo 1 — Titolo',
+  chi_siamo_passo_1_testo:        'Passo 1 — Testo',
+  chi_siamo_passo_2_titolo:       'Passo 2 — Titolo',
+  chi_siamo_passo_2_testo:        'Passo 2 — Testo',
+  chi_siamo_passo_3_titolo:       'Passo 3 — Titolo',
+  chi_siamo_passo_3_testo:        'Passo 3 — Testo',
+  servizi_attivi:                 'Sezione Lezioni attiva',
+  servizi_layout:                 'Layout lezioni',
+  servizi_titolo:                 'Titolo sezione lezioni',
+  pdf_menu_attivo:                'Programma PDF attivo',
+  pdf_menu_testo_bottone:         'Testo bottone scarica programma',
+  pdf_menu_url:                   'PDF programma / listino',
+  galleria_attiva:                'Galleria attiva',
+  galleria_titolo:                'Titolo galleria',
+  galleria_estesa_attiva:         'Galleria estesa attiva',
+  galleria_estesa_titolo:         'Titolo galleria estesa',
+  galleria_estesa_testo_bottone:  'Testo bottone "Vedi tutte le foto"',
+  recensioni_attive:              'Sezione recensioni attiva',
+  recensioni_titolo:              'Titolo sezione recensioni',
+  footer_nome:                    'Nome attività / insegnante',
+  footer_indirizzo:               'Indirizzo (zona / città)',
+  footer_telefono:                'Telefono',
+  footer_whatsapp:                'WhatsApp',
+  footer_email:                   'Email',
+  footer_cta_tipo:                'Tipo CTA principale',
+  footer_cta_testo:               'Testo bottone contatto',
+  footer_mappa_attiva:            'Mostra foto del luogo nel footer',
+  footer_mappa_url:               'Foto del luogo (dove ti incontri con gli allievi)',
+  footer_orari:                   'Orari disponibilità',
+  footer_instagram:               'Profilo Instagram (URL completo)',
+  footer_facebook:                'Pagina Facebook (URL completo)',
+};
+
+const SMAP = {
+  nome:'Nome', testo:'Testo', descrizione:'Descrizione', foto:'Foto',
+  prezzo:'Prezzo', attivo:'Attivo', attiva:'Attiva', stelle:'Stelle',
+  domanda:'Domanda', risposta:'Risposta', url:'Immagine', didascalia:'Didascalia',
+  titolo:'Titolo', tipo:'Tipo', contatto:'Contatto', layout:'Layout',
+  scadenza:'Scadenza', cta_testo:'Testo CTA', cta_tipo:'Tipo CTA', cta_contatto:'Contatto CTA'
+};
+
+// ── CHIAVI NASCOSTE ──────────────────────────────────────────
+const ADMIN_ONLY_KEYS = new Set(['sito_in_bozza_watermark']);
+const DERIVED_KEYS    = new Set(['schema_nome','schema_indirizzo','schema_telefono','schema_orari']);
+
+function isHiddenKey(key){
+  if (ADMIN_ONLY_KEYS.has(key)) return true;
+  if (DERIVED_KEYS.has(key))    return true;
+  if (key.includes('_placeholder')) return true;
+  // Hero foto extra non usate in questo template
+  if (/^hero_foto_[1-5]$/.test(key))       return true;
+  if (/^hero_placeholder_[1-5]$/.test(key)) return true;
+  if (key === 'hero_sfondo_astratto')       return true;
+  // chi_siamo_foto_secondaria: mostriamo solo se presente valore o layout TRE_PASSI
+  return false;
+}
+
+// ── LABEL ────────────────────────────────────────────────────
+function lbl(key){
+  if (LMAP[key]) return LMAP[key];
+  let m;
+  if (m = key.match(/^servizio_(\d+)_(.+)$/))      return (SMAP[m[2]]||uc(m[2])) + ' — Lezione ' + m[1];
+  if (m = key.match(/^recensione_(\d+)_(.+)$/))     return (SMAP[m[2]]||uc(m[2])) + ' — Recensione ' + m[1];
+  if (m = key.match(/^foto_(\d+)_(.+)$/))           return (SMAP[m[2]]||uc(m[2])) + ' — Foto ' + m[1];
+  if (m = key.match(/^foto_estesa_(\d+)_(.+)$/))    return (SMAP[m[2]]||uc(m[2])) + ' — Foto estesa ' + m[1];
+  if (m = key.match(/^faq_(\d+)_(.+)$/))            return (SMAP[m[2]]||uc(m[2])) + ' — FAQ ' + m[1];
+  if (m = key.match(/^chi_siamo_passo_(\d+)_(.+)$/)) return (SMAP[m[2]]||uc(m[2])) + ' — Passo ' + m[1];
+  return uc(key.replace(/_/g,' '));
+}
+function uc(s){ return s.replace(/\b\w/g, c => c.toUpperCase()); }
+
+// ── SELECT OPTIONS ───────────────────────────────────────────
+const SELOPTS = {
+  tema_tipografico: ['LUSSO_SERIF','MODERNO_TECH','CLASSICO','EDITORIALE_MODERNO'],
+  tema_palette:     ['CHIARO_MINIMALE','DARK_ELEGANTE','NATURA_PASTELLO','ROMANTICO'],
+  hero_layout:      ['CON_FOTO','SENZA_FOTO'],
+  chi_siamo_layout: ['FOTO_E_TESTO','TRE_PASSI','SOLO_TESTO'],
+  servizi_layout:   ['GRIGLIA','LISTA'],
+  navbar_logo_tipo: ['TESTO','IMMAGINE'],
+  footer_cta_tipo:  ['WHATSAPP','TELEFONO'],
+  hero_cta_tipo:    ['WHATSAPP','TELEFONO','URL'],
+  barra_cta_tipo:   ['WHATSAPP','TELEFONO','URL'],
+  popup_cta_tipo:   ['WHATSAPP','TELEFONO','URL'],
+};
+
+const OPTION_LABELS = {
+  tema_tipografico: {
+    LUSSO_SERIF:        'Elegante serif — lusso artigianale (consigliato)',
+    MODERNO_TECH:       'Moderno pulito — premium contemporaneo',
+    CLASSICO:           'Classico editoriale — raffinato e leggibile',
+    EDITORIALE_MODERNO: 'Editoriale moderno — boutique creativa'
+  },
+  tema_palette: {
+    CHIARO_MINIMALE: 'Chiaro minimale — bianco, nero, sabbia',
+    DARK_ELEGANTE:   'Scuro elegante — nero caldo e oro',
+    NATURA_PASTELLO: 'Natura pastello — terracotta e crema (consigliato)',
+    ROMANTICO:       'Romantico — rosa cipria e lavanda'
+  },
+  hero_layout: {
+    CON_FOTO:   'Con foto — composizione tripartita editoriale',
+    SENZA_FOTO: 'Senza foto — solo gradiente atmosferico'
+  },
+  chi_siamo_layout: {
+    FOTO_E_TESTO: 'Foto e testo — layout editoriale (consigliato)',
+    TRE_PASSI:    'Tre passi — mostra il percorso con l\'allievo',
+    SOLO_TESTO:   'Solo testo — minimalista'
+  },
+  servizi_layout: {
+    LISTA:   'Lista editoriale — stile tabella premium (consigliato)',
+    GRIGLIA: 'Griglia — card affiancate'
+  }
+};
+
+// ── MAX LENGTHS ──────────────────────────────────────────────
+const MAX_LENGTHS = [
+  ['seo_titolo',60], ['seo_descrizione',155],
+  ['navbar_logo_testo',55],
+  [/^navbar_voce_/,18],
+  ['barra_testo',120], ['barra_cta_testo',28],
+  ['popup_testo',180], ['popup_cta_testo',28],
+  ['hero_titolo_sx',36], ['hero_titolo_dx',36],
+  ['hero_sottotitolo',150], ['hero_cta_testo',28],
+  ['chi_siamo_titolo_riga1',36], ['chi_siamo_titolo_riga2',36],
+  ['chi_siamo_testo',650], ['chi_siamo_citazione',200],
+  ['chi_siamo_nome',45], ['chi_siamo_ruolo',55],
+  [/^chi_siamo_passo_\d+_titolo$/,55],
+  [/^chi_siamo_passo_\d+_testo$/,220],
+  ['servizi_titolo',72],
+  [/^servizio_\d+_nome$/,45],
+  [/^servizio_\d+_descrizione$/,220],
+  [/^servizio_\d+_prezzo$/,35],
+  ['pdf_menu_testo_bottone',36],
+  ['galleria_titolo',72], ['galleria_estesa_titolo',72],
+  ['galleria_estesa_testo_bottone',36],
+  [/^foto_\d+_didascalia$/,85],
+  ['recensioni_titolo',72],
+  [/^recensione_\d+_nome$/,45],
+  [/^recensione_\d+_testo$/,280],
+  [/^faq_\d+_domanda$/,110],
+  [/^faq_\d+_risposta$/,360],
+  ['footer_nome',45], ['footer_indirizzo',110],
+  ['footer_cta_testo',28], ['footer_orari',140],
+];
+
+function optionLabel(key, value){
+  return OPTION_LABELS[key]?.[value] || value.replace(/_/g,' ');
+}
+
+function maxLen(key){
+  for (const [rule, limit] of MAX_LENGTHS){
+    if (typeof rule === 'string' && rule === key) return limit;
+    if (rule instanceof RegExp && rule.test(key))  return limit;
+  }
+  return 0;
+}
+
+// ── FIELD TYPE DETECTION ─────────────────────────────────────
+function isImageField(key){
+  // footer_mappa_url in questo template è un path immagine
+  if (key === 'footer_mappa_url') return true;
+  return key === 'og_immagine'
+    || key.includes('_foto')
+    || key.includes('_immagine')
+    || /^foto_\d+_url$/.test(key)
+    || /^foto_estesa_\d+_url$/.test(key);
+}
+
+function isPdfField(key){ return key === 'pdf_menu_url'; }
+
+function isUrlField(key){
+  // Questi sono URL reali — NON immagini
+  return key === 'footer_instagram'
+    || key === 'footer_facebook'
+    || (key.includes('_contatto') && !key.includes('_telefono') && !key.includes('_whatsapp'));
+}
+
+function ftype(key){
+  if (isPdfField(key))   return 'pdfpath';
+  if (isImageField(key)) return 'imgpath';
+  if (SELOPTS[key])      return 'select';
+
+  const v = CFG[key];
+  if (v === 'SI' || v === 'NO'
+    || key.endsWith('_attivo') || key.endsWith('_attiva') || key.endsWith('_attivi'))
+    return 'toggle';
+
+  if (['_testo','_descrizione','_risposta','_sottotitolo','_citazione'].some(t => key.includes(t)))
+    return 'textarea';
+
+  if (key === 'footer_instagram' || key === 'footer_facebook') return 'url';
+
+  // Contatti tipo WHATSAPP/TELEFONO
+  if (key.includes('_telefono') || key.includes('_whatsapp')) return 'tel';
+
+  // _contatto può essere tel o URL a seconda del _tipo associato
+  if (key.includes('_contatto')){
+    const base = key.replace('_contatto','');
+    const tipoKey = base + '_tipo';
+    const tipo = CFG[tipoKey] || '';
+    if (tipo === 'URL') return 'url';
+    return 'tel';
+  }
+
+  if (key.includes('_scadenza')) return 'date';
+  return 'text';
+}
+
+function secOf(key){
+  if (key.startsWith('tema_') || ['crediti_ompage_footer'].includes(key)) return 'impostazioni';
+  if (key.startsWith('seo_') || key.startsWith('og_') || key.startsWith('schema_')) return 'seo';
+  if (key.startsWith('navbar_')) return 'navbar';
+  if (key.startsWith('barra_') || key.startsWith('popup_')) return 'promozioni';
+  if (key.startsWith('hero_')) return 'hero';
+  if (key.startsWith('chi_siamo_')) return 'chi_siamo';
+  if (key.startsWith('servizi_') || /^servizio_\d+_/.test(key) || key.startsWith('pdf_menu_')) return 'servizi';
+  if (key.startsWith('galleria_') || /^foto_\d+_/.test(key) || /^foto_estesa_\d+_/.test(key)) return 'galleria';
+  if (key.startsWith('recensioni_') || /^recensione_\d+_/.test(key)) return 'recensioni';
+  if (/^faq_\d+_/.test(key)) return 'faq';
+  if (key.startsWith('footer_')) return 'footer';
+  return 'extra';
+}
+
+function limitAttr(key){
+  const limit = maxLen(key);
+  return limit ? ` maxlength="${limit}"` : '';
+}
+
+function countHtml(key, val){
+  const limit = maxLen(key);
+  if (!limit) return '';
+  const len = String(val || '').length;
+  return `<div class="char-count${len>limit?' over':''}" id="cc_${key}">${len}/${limit}</div>`;
+}
+
+// ── RENDER FIELD ─────────────────────────────────────────────
+function rf(key, val){
+  const t = ftype(key), label = lbl(key), id = 'f_' + key;
+  val = (val == null) ? '' : val;
+
+  if (t === 'toggle'){
+    const on = val === 'SI';
+    return `<div class="fw" id="fw_${key}">
+  <div class="tw">
+    <div class="tt${on?' on':''}" id="tt_${key}" onclick="togField('${key}')"><div class="tthumb"></div></div>
+    <span class="fl" style="margin:0">${h(label)}</span>
+    <span class="tv${on?' on':''}" id="tv_${key}">${on?'SI':'NO'}</span>
+  </div>
+  <input type="hidden" id="${id}" value="${h(val)}" data-key="${key}">
+  <span class="fk" style="margin-top:4px">${key}</span>
+</div>`;
+  }
+
+  let inp = '';
+
+  if (t === 'select'){
+    const opts = SELOPTS[key].map(o =>
+      `<option value="${o}"${val===o?' selected':''}>${optionLabel(key,o)}</option>`
+    ).join('');
+    inp = `<select class="fsel" id="${id}" data-key="${key}" onchange="setField('${key}',this.value)">${opts}</select>`;
+
+  } else if (t === 'textarea'){
+    const hasLimit = !!maxLen(key);
+    inp = `<textarea class="fta" id="${id}" data-key="${key}" rows="3"${limitAttr(key)} oninput="setField('${key}',this.value);ar(this)${hasLimit?`;updateCC('${key}')`:''}">${h(val)}</textarea>${countHtml(key,val)}`;
+
+  } else if (t === 'url'){
+    inp = `<input type="url" class="fi" id="${id}" data-key="${key}" value="${ha(val)}"${limitAttr(key)} placeholder="https://www.esempio.it/..." oninput="setField('${key}',this.value)">
+<div class="dr">Inserisci l'indirizzo web completo (deve iniziare con https://)</div>`;
+
+  } else if (t === 'tel'){
+    inp = `<input type="tel" class="fi" id="${id}" data-key="${key}" value="${ha(val)}"${limitAttr(key)} placeholder="+39 333 1234567" oninput="setField('${key}',this.value)">${countHtml(key,val)}`;
+
+  } else if (t === 'date'){
+    inp = `<input type="date" class="fi" id="${id}" data-key="${key}" value="${ha(val)}" oninput="setField('${key}',this.value);updDr('${key}')">
+<div class="dr" id="dr_${key}">${val?fmtDate(val):''}</div>`;
+
+  } else if (t === 'imgpath'){
+    const hasThumb = val && val.trim() !== '';
+    inp = `<div class="iw">
+  <img src="${ha(val)}" class="ithumb" id="ithumb_${key}" ${hasThumb?'':'style="display:none"'} onerror="this.style.display='none';document.getElementById('iph_${key}').style.display='flex'">
+  <div class="ipholder" id="iph_${key}" ${hasThumb?'style="display:none"':''}>📷</div>
+  <div style="flex:1;display:flex;flex-direction:column;gap:4px;">
+    <input type="text" class="fi" id="${id}" data-key="${key}" value="${ha(val)}" style="font-size:12px;padding:6px;color:var(--text-secondary);" readonly>
+    <div style="display:flex;gap:8px;">
+      <input type="file" id="file_${key}" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="uploadToGitHub(event,'${key}')">
+      <button class="btn btn-outline btn-sm" onclick="document.getElementById('file_${key}').click()">📤 Carica immagine</button>
+      <button class="btn btn-ghost btn-sm" onclick="clrImg('${key}')" title="Rimuovi immagine">✕ Rimuovi</button>
+    </div>
+  </div>
+</div>
+<div class="dr" id="upload_status_${key}" style="color:var(--accent);display:none;">⏳ Caricamento in corso...</div>`;
+
+  } else if (t === 'pdfpath'){
+    const fileName = val ? val.split('/').pop() : 'Nessun PDF caricato';
+    inp = `<div class="file-pill">
+  <span>📄</span>
+  <span class="file-pill-name" id="file_label_${key}">${h(fileName)}</span>
+</div>
+<input type="text" class="fi" id="${id}" data-key="${key}" value="${ha(val)}" style="font-size:12px;padding:6px;color:var(--text-secondary);margin-top:6px;" readonly>
+<input type="file" id="file_${key}" accept="application/pdf,.pdf" style="display:none" onchange="uploadPdfToGitHub(event,'${key}')">
+<div style="display:flex;gap:8px;margin-top:6px;">
+  <button class="btn btn-outline btn-sm" onclick="document.getElementById('file_${key}').click()">📤 Carica PDF</button>
+  <button class="btn btn-ghost btn-sm" onclick="clrFile('${key}')" title="Rimuovi PDF">✕ Rimuovi</button>
+</div>
+<div class="dr" id="upload_status_${key}" style="color:var(--accent);display:none;">⏳ Caricamento in corso...</div>
+<div class="field-help">Il file viene salvato nella cartella <code>assets/</code> del repository.</div>`;
+
+  } else {
+    inp = `<input type="text" class="fi" id="${id}" data-key="${key}" value="${ha(val)}"${limitAttr(key)} oninput="setField('${key}',this.value)${maxLen(key)?`;updateCC('${key}')`:''}">${countHtml(key,val)}`;
+  }
+
+  return `<div class="fw" id="fw_${key}">
+  <label class="fl" for="${id}">${h(label)}</label>
+  <span class="fk">${key}</span>
+  ${inp}
+</div>`;
+}
+
+// ── BUILDER HELPERS ──────────────────────────────────────────
+function sHdr(i, t, s){
+  return `<div class="section-hdr"><div class="section-title">${i} ${h(t)}</div><div class="section-subtitle">${h(s)}</div></div>`;
+}
+function gbox(t, html){
+  return `<div class="gbox"><div class="gbox-title">${t}</div>${html}</div>`;
+}
+function infoBox(txt){
+  return `<div class="info-box">ℹ️ ${txt}</div>`;
+}
+
+function makeCard(cardId, toggleKey, name, body){
+  const on = CFG[toggleKey] === 'SI';
+  return `<div class="card" id="${cardId}">
+  <div class="card-hdr" onclick="toggleCard('${cardId}')">
+    <div class="tt${on?' on':''}" id="tt_${toggleKey}" onclick="event.stopPropagation();togField('${toggleKey}')" style="flex-shrink:0"><div class="tthumb"></div></div>
+    <input type="hidden" id="f_${toggleKey}" value="${on?'SI':'NO'}" data-key="${toggleKey}">
+    <span class="tv${on?' on':''}" id="tv_${toggleKey}">${on?'SI':'NO'}</span>
+    <div class="card-name">${h(name)}</div>
+    <span class="card-chev">▼</span>
+  </div>
+  <div class="card-body">${body}</div>
+</div>`;
+}
+
+// ── SECTION BUILDERS ─────────────────────────────────────────
+
+function buildImpostazioni(keys){
+  const temi = keys.filter(k => k.startsWith('tema_'));
+  const rest  = keys.filter(k => !k.startsWith('tema_'));
+  return sHdr('⚙️','Impostazioni','Configurazioni generali del sito')
+    + rest.map(k => rf(k, CFG[k])).join('')
+    + (temi.length ? gbox('🎨 Stile grafico', temi.map(k => rf(k, CFG[k])).join('')) : '');
+}
+
+function buildSeo(keys){
+  // schema_* sono derivati — mostrarli in sola lettura come info
+  const main   = keys.filter(k => !k.startsWith('schema_'));
+  const schema = keys.filter(k => k.startsWith('schema_'));
+  let schemaHtml = '';
+  if (schema.length){
+    schemaHtml = gbox('📋 Schema.org (derivato automaticamente)',
+      `<div class="info-box">Questi dati vengono compilati automaticamente dai campi Footer &amp; Contatti al momento del salvataggio. Non è necessario modificarli qui.</div>`
+      + schema.map(k => {
+          const val = CFG[k] || '';
+          return `<div class="fw" id="fw_${k}">
+  <label class="fl">${h(lbl(k))}</label>
+  <span class="fk">${k}</span>
+  <input type="text" class="fi" value="${ha(val)}" readonly style="background:#f8f9fa;color:var(--text-secondary)">
+</div>`;
+        }).join('')
+    );
+  }
+  return sHdr('🔍','SEO & Metadati','Ottimizzazione per i motori di ricerca')
+    + main.map(k => rf(k, CFG[k])).join('')
+    + schemaHtml;
+}
+
+function buildNavbar(keys){
+  const logo = keys.filter(k => k.startsWith('navbar_logo_'));
+  const voci = keys.filter(k => k.startsWith('navbar_voce_'));
+  return sHdr('🧭','Navbar','Menu di navigazione')
+    + (logo.length ? gbox('Logo', logo.map(k => rf(k, CFG[k])).join('')) : '')
+    + (voci.length ? gbox('Voci del menu', voci.map(k => rf(k, CFG[k])).join('')) : '');
+}
+
+function buildPromozioni(keys){
+  const barra = keys.filter(k => k.startsWith('barra_'));
+  const popup = keys.filter(k => k.startsWith('popup_'));
+  return sHdr('📣','Promozioni','Barra promozioni e popup emergenza')
+    + infoBox('La <strong>barra promozioni</strong> appare sotto la navbar per offerte frequenti. Il <strong>popup</strong> è riservato a eventi o comunicazioni urgenti.')
+    + (barra.length ? gbox('🔔 Barra promozioni', barra.map(k => rf(k, CFG[k])).join('')) : '')
+    + (popup.length ? gbox('💬 Popup emergenza', popup.map(k => rf(k, CFG[k])).join('')) : '');
+}
+
+function buildHero(keys){
+  // Mostra solo le chiavi rilevanti per questo template
+  const relevant = keys.filter(k =>
+    !k.startsWith('hero_foto_') &&
+    !k.startsWith('hero_placeholder_') &&
+    k !== 'hero_sfondo_astratto'
+  );
+  return sHdr('🏠','Hero','Prima sezione visibile del sito')
+    + infoBox('La hero usa una composizione a tre colonne: testo sinistro / foto centrale / testo destro. La foto deve essere verticale (proporzione 2:3), con un dettaglio corporeo — non il viso intero.')
+    + relevant.map(k => rf(k, CFG[k])).join('');
+}
+
+function buildChiSiamo(keys){
+  const main  = keys.filter(k => !/^chi_siamo_passo_\d+_/.test(k));
+  const passi = keys.filter(k => /^chi_siamo_passo_\d+_/.test(k));
+  const nums  = [...new Set(passi.map(k => k.match(/passo_(\d+)_/)[1]))].sort();
+
+  let passiHtml = '';
+  nums.forEach(n => {
+    passiHtml += `<div style="margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border-section)">
+  <div style="font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:8px">Passo ${n}</div>
+  ${passi.filter(k => k.includes(`_passo_${n}_`)).map(k => rf(k, CFG[k])).join('')}
+</div>`;
+  });
+
+  return sHdr('🧘','Chi Sono','Sezione di presentazione personale')
+    + infoBox('Il titolo viene mostrato su due righe: la seconda riga è rientrata verso destra per un effetto editoriale. Usa parole brevi e d\'impatto (es. "RESPIRA" / "CON INTENZIONE").')
+    + main.map(k => rf(k, CFG[k])).join('')
+    + (passi.length ? gbox('👣 Passi (solo con layout TRE_PASSI)', passiHtml) : '');
+}
+
+function buildServizi(keys){
+  const top  = keys.filter(k => k.startsWith('servizi_'));
+  const pdf  = keys.filter(k => k.startsWith('pdf_menu_'));
+  const nums = [...new Set(
+    keys.filter(k => /^servizio_\d+_/.test(k)).map(k => k.match(/^servizio_(\d+)_/)[1])
+  )].sort((a,b) => +a - +b);
+
+  return sHdr('📋','Lezioni','Le lezioni e i servizi offerti')
+    + infoBox('La lista lezioni usa un layout editoriale: ogni riga ha nome + numero + prezzo + descrizione breve. La prima lezione attiva fornisce anche la foto grande nella colonna sinistra.')
+    + top.map(k => rf(k, CFG[k])).join('')
+    + (pdf.length ? gbox('📄 PDF Programma', pdf.map(k => rf(k, CFG[k])).join('')) : '')
+    + (nums.length ? `<div class="divider"></div><div class="sub-label">Singole lezioni</div>`
+      + nums.map(n => {
+          const atk  = `servizio_${n}_attivo`;
+          const body = keys.filter(k => k.startsWith(`servizio_${n}_`) && k !== atk).map(k => rf(k, CFG[k])).join('');
+          return makeCard(`card_svc_${n}`, atk, CFG[`servizio_${n}_nome`] || `Lezione ${n}`, body);
+        }).join('') : '');
+}
+
+function buildGalleria(keys){
+  const main    = keys.filter(k => k.startsWith('galleria_') && !k.startsWith('galleria_estesa_'));
+  const fNums   = [...new Set(keys.filter(k => /^foto_\d+_/.test(k)).map(k => k.match(/^foto_(\d+)_/)[1]))].sort((a,b) => +a-+b);
+  const estTop  = keys.filter(k => k.startsWith('galleria_estesa_'));
+  const estNums = [...new Set(keys.filter(k => /^foto_estesa_\d+_/.test(k)).map(k => k.match(/^foto_estesa_(\d+)_/)[1]))].sort((a,b) => +a-+b);
+
+  return sHdr('🖼️','Galleria','Le foto della pratica')
+    + infoBox('La galleria usa un layout bento (celle di dimensioni diverse). Servono almeno 4 foto attive per visualizzarla. La prima foto occupa la cella più grande.')
+    + main.map(k => rf(k, CFG[k])).join('')
+    + (fNums.length ? `<div class="divider"></div><div class="sub-label">Foto galleria principale (max 9)</div>`
+      + fNums.map(n => {
+          const atk  = `foto_${n}_attiva`;
+          const body = keys.filter(k => k.startsWith(`foto_${n}_`) && k !== atk).map(k => rf(k, CFG[k])).join('');
+          return makeCard(`card_foto_${n}`, atk, CFG[`foto_${n}_didascalia`] || `Foto ${n}`, body);
+        }).join('') : '')
+    + (estTop.length || estNums.length ? `<div class="divider"></div>`
+      + estTop.map(k => rf(k, CFG[k])).join('')
+      + (estNums.length ? `<div class="sub-label">Foto galleria estesa (max 20)</div>`
+        + estNums.map(n => {
+            const atk  = `foto_estesa_${n}_attiva`;
+            const body = keys.filter(k => k.startsWith(`foto_estesa_${n}_`) && k !== atk).map(k => rf(k, CFG[k])).join('');
+            return makeCard(`card_est_${n}`, atk, `Foto estesa ${n}`, body);
+          }).join('') : '') : '');
+}
+
+function buildRecensioni(keys){
+  const top  = keys.filter(k => k.startsWith('recensioni_'));
+  const nums = [...new Set(
+    keys.filter(k => /^recensione_\d+_/.test(k)).map(k => k.match(/^recensione_(\d+)_/)[1])
+  )].sort((a,b) => +a-+b);
+
+  return sHdr('⭐','Recensioni','Testimonianze degli allievi')
+    + top.map(k => rf(k, CFG[k])).join('')
+    + nums.map(n => {
+        const atk  = `recensione_${n}_attiva`;
+        const body = keys.filter(k => k.startsWith(`recensione_${n}_`) && k !== atk).map(k => rf(k, CFG[k])).join('');
+        return makeCard(`card_rec_${n}`, atk, CFG[`recensione_${n}_nome`] || `Recensione ${n}`, body);
+      }).join('');
+}
+
+function buildFaq(keys){
+  const nums = [...new Set(
+    keys.filter(k => /^faq_\d+_/.test(k)).map(k => k.match(/^faq_(\d+)_/)[1])
+  )].sort((a,b) => +a-+b);
+
+  function faqCard(n){
+    const atk  = `faq_${n}_attiva`;
+    const body = keys.filter(k => k.startsWith(`faq_${n}_`) && k !== atk).map(k => rf(k, CFG[k])).join('');
+    return makeCard(`card_faq_${n}`, atk, CFG[`faq_${n}_domanda`] || `FAQ ${n}`, body);
+  }
+
+  const first4 = nums.slice(0,4);
+  const rest   = nums.slice(4);
+
+  return sHdr('❓','FAQ','Domande frequenti')
+    + infoBox('Le prime 4 FAQ sono ottimizzate per la SEO locale (dove, quanto costa, ecc.). Le prime 4 rimangono sempre visibili; le altre sono collassabili.')
+    + first4.map(n => faqCard(n)).join('')
+    + (rest.length ? `<div class="faq-more" onclick="toggleFaqMore()"><span id="faq-more-icon">▼</span> Mostra altre FAQ (${rest.length})</div>
+<div class="faq-extra" id="faq-extra">${rest.map(n => faqCard(n)).join('')}</div>` : '');
+}
+
+function buildFooter(keys){
+  const contacts = keys.filter(k =>
+    ['footer_nome','footer_indirizzo','footer_telefono','footer_whatsapp','footer_email','footer_orari'].includes(k)
+  );
+  const cta    = keys.filter(k => k.startsWith('footer_cta_'));
+  const mappa  = keys.filter(k => k.startsWith('footer_mappa_'));
+  const social = keys.filter(k => k === 'footer_instagram' || k === 'footer_facebook');
+  const rest   = keys.filter(k => !contacts.includes(k) && !cta.includes(k) && !mappa.includes(k) && !social.includes(k));
+
+  return sHdr('📍','Footer & Contatti','Informazioni di contatto e footer')
+    + (contacts.length ? gbox('📞 Dati di contatto', contacts.map(k => rf(k, CFG[k])).join('')) : '')
+    + (cta.length ? gbox('💬 CTA principale', cta.map(k => rf(k, CFG[k])).join('')) : '')
+    + (mappa.length ? gbox('📍 Foto del luogo', `${infoBox('Carica una foto del luogo dove si svolgono le lezioni. Questa foto appare nel footer accanto all\'indirizzo.')}` + mappa.map(k => rf(k, CFG[k])).join('')) : '')
+    + (social.length ? gbox('📱 Social', social.map(k => rf(k, CFG[k])).join('')) : '')
+    + (rest.length ? rest.map(k => rf(k, CFG[k])).join('') : '');
+}
+
+function buildExtra(keys){
+  return sHdr('🔧','Campi Extra','')
+    + `<div class="extra-notice">ℹ️ Questi campi sono specifici di questo template. Modificali solo se sai cosa stai facendo.</div>`
+    + keys.map(k => rf(k, CFG[k])).join('');
+}
+
+// ── BUILD UI ─────────────────────────────────────────────────
+function buildUI(){
+  const bySection = {};
+  SECTIONS.forEach(s => { bySection[s.id] = []; });
+
+  ORIG_KEYS.forEach(k => {
+    if (isHiddenKey(k)) return;
+    const s = secOf(k);
+    (bySection[s] || bySection.extra).push(k);
+  });
+
+  // Sidebar
+  const nav = document.getElementById('sidebar-nav');
+  nav.innerHTML = '';
+  SECTIONS.forEach(s => {
+    if (!bySection[s.id]?.length) return;
+    let badge = '';
+    if (s.id === 'chi_siamo' && CFG.chi_siamo_attivo !== 'SI')
+      badge = `<span class="nav-badge off">OFF</span>`;
+    if (s.id === 'servizi' && CFG.servizi_attivi !== 'SI')
+      badge = `<span class="nav-badge off">OFF</span>`;
+    if (s.id === 'galleria' && CFG.galleria_attiva !== 'SI')
+      badge = `<span class="nav-badge off">OFF</span>`;
+    if (s.id === 'recensioni' && CFG.recensioni_attive !== 'SI')
+      badge = `<span class="nav-badge off">OFF</span>`;
+
+    const el = document.createElement('div');
+    el.className = 'nav-item'; el.id = 'nav_' + s.id;
+    el.innerHTML = `<span class="nav-icon">${s.icon}</span><span class="nav-label">${s.label}</span>${badge}`;
+    el.onclick = () => showSec(s.id);
+    nav.appendChild(el);
+  });
+
+  // Main content
+  const wrap = document.getElementById('sections-wrap');
+  wrap.innerHTML = '';
+  const builders = {
+    impostazioni: buildImpostazioni,
+    seo:          buildSeo,
+    navbar:       buildNavbar,
+    promozioni:   buildPromozioni,
+    hero:         buildHero,
+    chi_siamo:    buildChiSiamo,
+    servizi:      buildServizi,
+    galleria:     buildGalleria,
+    recensioni:   buildRecensioni,
+    faq:          buildFaq,
+    footer:       buildFooter,
+    extra:        buildExtra
+  };
+
+  SECTIONS.forEach(s => {
+    if (!bySection[s.id]?.length) return;
+    const div = document.createElement('div');
+    div.className = 'section-pane'; div.id = 'sec_' + s.id;
+    div.innerHTML = (builders[s.id] || buildExtra)(bySection[s.id]);
+    wrap.appendChild(div);
+  });
+
+  setTimeout(() => { document.querySelectorAll('.fta').forEach(ta => ar(ta)); }, 80);
+
+  const first = SECTIONS.find(s => bySection[s.id]?.length);
+  if (first) showSec(first.id);
+
+  document.getElementById('site-name').textContent =
+    CFG.navbar_logo_testo || CFG.seo_titolo || 'Yoga';
+}
+
+// ════════════════════════════════════════════════════════════
+// NAV
+// ════════════════════════════════════════════════════════════
+function showSec(id){
+  document.querySelectorAll('.section-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('sec_' + id)?.classList.add('active');
+  document.getElementById('nav_' + id)?.classList.add('active');
+  document.getElementById('main-content').scrollTop = 0;
+  if (window.innerWidth <= 768) closeSidebar();
+}
+
+function toggleCard(id){ document.getElementById(id)?.classList.toggle('open'); }
+
+function toggleFaqMore(){
+  const e = document.getElementById('faq-extra');
+  const i = document.getElementById('faq-more-icon');
+  if (!e) return;
+  const open = e.classList.toggle('open');
+  if (i) i.textContent = open ? '▲' : '▼';
+}
+
+// ════════════════════════════════════════════════════════════
+// FIELD UPDATES
+// ════════════════════════════════════════════════════════════
+function setField(key, val){ CFG[key] = val; IS_DIRTY = true; }
+
+function togField(key){
+  const v = CFG[key] === 'SI' ? 'NO' : 'SI';
+  CFG[key] = v; IS_DIRTY = true;
+  document.getElementById('tt_' + key)?.classList.toggle('on', v === 'SI');
+  const tv = document.getElementById('tv_' + key);
+  if (tv){ tv.textContent = v; tv.classList.toggle('on', v === 'SI'); }
+  const inp = document.getElementById('f_' + key);
+  if (inp) inp.value = v;
+}
+
+function updateCC(key){
+  const el = document.getElementById('f_' + key);
+  const cc = document.getElementById('cc_' + key);
+  const limit = maxLen(key);
+  if (el && cc && limit){
+    const l = el.value.length;
+    cc.textContent = `${l}/${limit}`;
+    cc.classList.toggle('over', l > limit);
+  }
+}
+
+function updDr(key){
+  const el = document.getElementById('f_' + key);
+  const dr = document.getElementById('dr_' + key);
+  if (el && dr) dr.textContent = el.value ? fmtDate(el.value) : '';
+}
+
+function ar(ta){ ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px'; }
+
+function updThumb(key){
+  const inp = document.getElementById('f_' + key);
+  const th  = document.getElementById('ithumb_' + key);
+  const ph  = document.getElementById('iph_' + key);
+  if (!inp) return;
+  const v = inp.value.trim();
+  if (th && ph){
+    if (v){ th.src = v; th.style.display = ''; ph.style.display = 'none'; }
+    else  { th.style.display = 'none'; ph.style.display = ''; }
+  }
+}
+
+function clrImg(key){
+  const inp = document.getElementById('f_' + key);
+  if (inp){ inp.value = ''; setField(key, ''); updThumb(key); }
+}
+
+function updFileLabel(key){
+  const inp   = document.getElementById('f_' + key);
+  const label = document.getElementById('file_label_' + key);
+  if (!inp || !label) return;
+  const v = inp.value.trim();
+  label.textContent = v ? v.split('/').pop() : 'Nessun PDF caricato';
+}
+
+function clrFile(key){
+  const inp = document.getElementById('f_' + key);
+  if (inp){ inp.value = ''; setField(key, ''); updFileLabel(key); }
+}
+
+// ════════════════════════════════════════════════════════════
+// VALIDATION
+// ════════════════════════════════════════════════════════════
+function validate(){
+  const errs = [];
+
+  if (!CFG.seo_titolo?.trim())
+    errs.push({ k:'seo_titolo', m:'Il titolo SEO non può essere vuoto.' });
+  if (!CFG.footer_nome?.trim())
+    errs.push({ k:'footer_nome', m:'Il nome nel footer non può essere vuoto.' });
+  if (!CFG.footer_whatsapp?.trim() && !CFG.footer_telefono?.trim())
+    errs.push({ k:'footer_whatsapp', m:'Inserisci almeno WhatsApp o Telefono nel footer.' });
+
+  // Controlla limiti caratteri
+  ORIG_KEYS.forEach(k => {
+    if (isHiddenKey(k)) return;
+    const limit = maxLen(k);
+    if (limit && String(CFG[k] || '').length > limit)
+      errs.push({ k, m:`"${lbl(k)}" supera il limite di ${limit} caratteri.` });
+  });
+
+  if (errs.length){
+    flash('⚠️ ' + errs[0].m, 'warning');
+    showSec(secOf(errs[0].k));
+    setTimeout(() => document.getElementById('f_' + errs[0].k)?.scrollIntoView({ behavior:'smooth', block:'center' }), 200);
+    return false;
+  }
+  return true;
+}
+
+// ════════════════════════════════════════════════════════════
+// DERIVED FIELDS SYNC
+// ════════════════════════════════════════════════════════════
+function syncDerivedFields(){
+  if ('schema_nome' in CFG)
+    CFG.schema_nome = CFG.footer_nome || CFG.navbar_logo_testo || CFG.schema_nome || '';
+  if ('schema_indirizzo' in CFG)
+    CFG.schema_indirizzo = CFG.footer_indirizzo || CFG.schema_indirizzo || '';
+  if ('schema_telefono' in CFG)
+    CFG.schema_telefono = CFG.footer_telefono || CFG.footer_whatsapp || CFG.schema_telefono || '';
+  if ('schema_orari' in CFG)
+    CFG.schema_orari = CFG.footer_orari || CFG.schema_orari || '';
+}
+
+// ════════════════════════════════════════════════════════════
+// FIX URLs — imgpath e pdfpath NON vengono mai toccati
+// ════════════════════════════════════════════════════════════
+function fixUrlsTels(){
+  ORIG_KEYS.forEach(key => {
+    const t = ftype(key);
+    if (t === 'url' && CFG[key]){
+      const v = CFG[key].trim();
+      if (v && !v.startsWith('http') && !v.startsWith('/') && !v.startsWith('assets/')){
+        CFG[key] = 'https://' + v;
+        const inp = document.getElementById('f_' + key);
+        if (inp) inp.value = CFG[key];
+      }
+    }
+    if (t === 'tel' && CFG[key])
+      CFG[key] = CFG[key].replace(/[^\d+\s]/g,'');
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+// FLASH
+// ════════════════════════════════════════════════════════════
+let _ft;
+function flash(msg, type='success', dur=4000){
+  const b = document.getElementById('flash');
+  const t = document.getElementById('flash-text');
+  b.className = `flash flash-${type}`;
+  t.innerHTML = msg;
+  b.style.display = 'flex';
+  clearTimeout(_ft);
+  _ft = setTimeout(hideFlash, dur);
+}
+function hideFlash(){ document.getElementById('flash').style.display = 'none'; }
+
+// ════════════════════════════════════════════════════════════
+// MOBILE SIDEBAR
+// ════════════════════════════════════════════════════════════
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebar-overlay').classList.toggle('visible');
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').classList.remove('visible');
+}
+
+// ════════════════════════════════════════════════════════════
+// UTILS
+// ════════════════════════════════════════════════════════════
+function h(s){
+  if (!s && s !== 0) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function ha(s){
+  if (!s) return '';
+  return String(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function fmtDate(d){
+  try { return new Date(d + 'T00:00:00').toLocaleDateString('it-IT',{ weekday:'long', year:'numeric', month:'long', day:'numeric' }); }
+  catch(e){ return d; }
+}
+
+window.addEventListener('beforeunload', e => {
+  if (IS_DIRTY){ e.preventDefault(); e.returnValue = ''; }
+});
+
+init();
+</script>
+</body>
+</html>
