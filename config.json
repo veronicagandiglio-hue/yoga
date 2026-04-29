@@ -3,16 +3,13 @@
   "crediti_ompage_footer": "SI",
   "tema_tipografico": "LUSSO_SERIF",
   "tema_palette": "NATURA_PASTELLO",
-
   "seo_titolo": "Chiara Rossi Yoga | Lezioni Private di Yoga a Milano",
   "seo_descrizione": "Lezioni private di yoga a Milano con Chiara Rossi. Hatha, Vinyasa e meditazione su misura per te. Prima lezione conoscitiva gratuita.",
   "og_immagine": "og-image.jpg",
-
   "schema_nome": "Chiara Rossi Yoga",
   "schema_indirizzo": "Via Brera 12, Milano",
   "schema_telefono": "+39 333 1234567",
   "schema_orari": "Lun-Ven 8:00-20:00",
-
   "navbar_logo_tipo": "TESTO",
   "navbar_logo_testo": "āsana",
   "navbar_logo_immagine": "",
@@ -22,28 +19,25 @@
   "navbar_voce_recensioni": "Recensioni",
   "navbar_voce_faq": "Domande",
   "navbar_voce_contatti": "Contatti",
-
   "barra_attiva": "NO",
   "barra_testo": "Prima lezione conoscitiva gratuita — solo per nuovi allievi",
   "barra_scadenza": "",
   "barra_cta_testo": "Prenota ora",
   "barra_cta_tipo": "WHATSAPP",
   "barra_cta_contatto": "+39 333 1234567",
-
   "popup_attivo": "NO",
   "popup_testo": "",
   "popup_scadenza": "",
   "popup_cta_testo": "Scopri di più",
   "popup_cta_tipo": "WHATSAPP",
   "popup_cta_contatto": "+39 333 1234567",
-
   "hero_layout": "CON_FOTO",
-  "hero_foto": "hero.jpg",
-  "hero_placeholder": "placeholder_hero.jpg",
+  "hero_foto": "ChatGPT Image 29 apr 2026, 23_28_02.png",
+  "hero_placeholder": "ChatGPT Image 29 apr 2026, 23_28_02.png",
   "hero_sfondo_astratto": "",
   "hero_sfondo_astratto_placeholder": "placeholder_hero.jpg",
   "hero_foto_1": "",
-  "hero_placeholder_1": "placeholder_hero_1.jpg",
+  "hero_placeholder_1": "ChatGPT Image 29 apr 2026, 23_28_02.png",
   "hero_foto_2": "",
   "hero_placeholder_2": "placeholder_hero_2.jpg",
   "hero_foto_3": "",
@@ -58,7 +52,6 @@
   "hero_cta_testo": "Scrivimi su WhatsApp",
   "hero_cta_tipo": "WHATSAPP",
   "hero_cta_contatto": "+39 333 1234567",
-
   "chi_siamo_attivo": "SI",
   "chi_siamo_layout": "FOTO_E_TESTO",
   "chi_siamo_titolo_riga1": "RESPIRA",
@@ -83,7 +76,6 @@
   "chi_siamo_passo_3_testo": "Risultati visibili nella postura, nella respirazione e nella mente.",
   "chi_siamo_passo_3_foto": "",
   "chi_siamo_passo_3_placeholder": "placeholder_passo_3.jpg",
-
   "servizi_attivi": "SI",
   "servizi_layout": "LISTA",
   "servizi_titolo": "Le Lezioni",
@@ -126,7 +118,6 @@
   "pdf_menu_attivo": "NO",
   "pdf_menu_testo_bottone": "Scarica il programma completo",
   "pdf_menu_url": "",
-
   "galleria_attiva": "SI",
   "galleria_titolo": "La Pratica",
   "foto_1_attiva": "SI",
@@ -165,7 +156,6 @@
   "foto_9_url": "",
   "foto_9_didascalia": "",
   "foto_9_placeholder": "placeholder_gallery_9.jpg",
-
   "galleria_estesa_attiva": "SI",
   "galleria_estesa_titolo": "Tutti gli scatti",
   "galleria_estesa_testo_bottone": "Vedi tutte le foto",
@@ -229,7 +219,6 @@
   "foto_estesa_20_attiva": "NO",
   "foto_estesa_20_url": "",
   "foto_estesa_20_placeholder": "placeholder_ext_20.jpg",
-
   "recensioni_attive": "SI",
   "recensioni_titolo": "Cosa dicono",
   "recensione_1_attiva": "SI",
@@ -252,7 +241,6 @@
   "recensione_5_nome": "Francesca R.",
   "recensione_5_testo": "Chiara è un'insegnante straordinaria. Ogni lezione è diversa, sempre calibrata su come mi sento quel giorno. Non ho mai trovato questo livello di attenzione in nessun altro studio.",
   "recensione_5_stelle": "5",
-
   "faq_1_attiva": "SI",
   "faq_1_domanda": "Dove si svolgono le lezioni di yoga privato a Milano?",
   "faq_1_risposta": "Le lezioni si svolgono a domicilio tuo, in uno spazio da me selezionato in zona Brera, oppure online via videocall. Concordiamo insieme la soluzione più comoda in base alla tua posizione.",
@@ -283,7 +271,6 @@
   "faq_10_attiva": "NO",
   "faq_10_domanda": "È possibile acquistare lezioni come regalo?",
   "faq_10_risposta": "Certo. Contattami via WhatsApp e preparo un buono regalo personalizzato. È uno dei doni più apprezzati da chi non sa da dove iniziare ma vuole prendersi cura di sé.",
-
   "footer_nome": "Chiara Rossi Yoga",
   "footer_indirizzo": "Via Brera 12, 20121 Milano",
   "footer_telefono": "+39 333 1234567",
