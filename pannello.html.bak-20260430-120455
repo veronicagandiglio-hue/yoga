@@ -1,0 +1,895 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ompage - Pannello Yoga</title>
+  <style>
+    :root {
+      --bg: #f5efe8;
+      --surface: #fffaf4;
+      --surface-2: #fbf4ed;
+      --ink: #241d19;
+      --muted: #776a61;
+      --line: rgba(36, 29, 25, 0.14);
+      --line-strong: rgba(36, 29, 25, 0.24);
+      --accent: #bd775b;
+      --accent-dark: #8d513d;
+      --sage: #7b8a67;
+      --ok: #25724f;
+      --warn: #a26122;
+      --error: #b53a2d;
+      --shadow: 0 18px 58px rgba(50, 32, 20, 0.12);
+      --sidebar: 18rem;
+      --topbar: 4.2rem;
+      --radius: 8px;
+      --font: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --display: Georgia, "Times New Roman", serif;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--font);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    button, input, textarea, select { font: inherit; }
+    button { cursor: pointer; }
+    a { color: inherit; }
+    .hidden { display: none !important; }
+
+    .topbar {
+      position: fixed;
+      inset: 0 0 auto 0;
+      height: var(--topbar);
+      z-index: 30;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 1rem;
+      padding: 0 1rem;
+      background: rgba(245, 239, 232, 0.9);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(16px);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .brand-mark {
+      width: 2rem;
+      height: 2rem;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--ink);
+      color: var(--surface);
+      font-family: var(--display);
+      font-size: 1.15rem;
+    }
+    .site-title {
+      min-width: 0;
+      color: var(--muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      text-align: center;
+    }
+    .top-actions {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn {
+      min-height: 2.35rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      padding: 0.55rem 0.9rem;
+      border: 1px solid var(--line-strong);
+      border-radius: 999px;
+      background: var(--surface);
+      color: var(--ink);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.88rem;
+      transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
+    }
+    .btn:hover { transform: translateY(-1px); border-color: rgba(36, 29, 25, 0.35); }
+    .btn.primary { background: var(--ink); border-color: var(--ink); color: var(--surface); }
+    .btn.primary:hover { background: var(--accent); border-color: var(--accent); }
+    .btn.danger { background: #fff3f0; border-color: rgba(181, 58, 45, 0.32); color: var(--error); }
+    .btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: var(--sidebar) minmax(0, 1fr);
+      min-height: 100vh;
+      padding-top: var(--topbar);
+    }
+    .sidebar {
+      position: fixed;
+      top: var(--topbar);
+      bottom: 0;
+      left: 0;
+      width: var(--sidebar);
+      overflow: auto;
+      padding: 1rem;
+      border-right: 1px solid var(--line);
+      background: rgba(255, 250, 244, 0.42);
+    }
+    .search {
+      width: 100%;
+      margin-bottom: 1rem;
+      padding: 0.7rem 0.85rem;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--surface);
+      color: var(--ink);
+      outline: none;
+    }
+    .search:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(189, 119, 91, 0.14); }
+    .nav-list { display: grid; gap: 0.35rem; }
+    .nav-item {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      min-height: 2.5rem;
+      padding: 0.55rem 0.75rem;
+      border: 1px solid transparent;
+      border-radius: var(--radius);
+      background: transparent;
+      color: var(--muted);
+      text-align: left;
+    }
+    .nav-item:hover, .nav-item.active {
+      background: var(--surface);
+      color: var(--ink);
+      border-color: var(--line);
+    }
+    .nav-count {
+      min-width: 1.65rem;
+      padding: 0.15rem 0.45rem;
+      border-radius: 999px;
+      background: rgba(36, 29, 25, 0.08);
+      color: var(--muted);
+      text-align: center;
+      font-size: 0.75rem;
+    }
+    .sidebar-foot {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+    .main {
+      grid-column: 2;
+      padding: 2rem;
+    }
+    .panel {
+      display: none;
+      max-width: 1120px;
+      margin: 0 auto 3rem;
+    }
+    .panel.active { display: block; }
+    .panel-head {
+      display: grid;
+      gap: 0.55rem;
+      margin-bottom: 1.25rem;
+    }
+    .kicker {
+      color: var(--sage);
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-size: 0.72rem;
+      font-weight: 800;
+    }
+    h1 {
+      margin: 0;
+      font-family: var(--display);
+      font-size: 3rem;
+      line-height: 0.98;
+      font-weight: 500;
+    }
+    .panel-note {
+      margin: 0;
+      max-width: 44rem;
+      color: var(--muted);
+    }
+    .field-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.85rem;
+    }
+    .field {
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      padding: 1rem;
+      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.7) inset;
+    }
+    .field.wide { grid-column: 1 / -1; }
+    .field-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 0.55rem;
+    }
+    .label-main { font-weight: 700; }
+    .label-key {
+      color: var(--muted);
+      font-size: 0.74rem;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .control, textarea, select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface-2);
+      color: var(--ink);
+      outline: none;
+      padding: 0.72rem 0.8rem;
+    }
+    textarea {
+      min-height: 7rem;
+      resize: vertical;
+    }
+    .control:focus, textarea:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(189, 119, 91, 0.14);
+    }
+    .toggle-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      min-height: 2.65rem;
+    }
+    .toggle {
+      position: relative;
+      width: 3.2rem;
+      height: 1.75rem;
+      border: 0;
+      border-radius: 999px;
+      background: rgba(36, 29, 25, 0.22);
+      padding: 0.18rem;
+    }
+    .toggle span {
+      display: block;
+      width: 1.38rem;
+      height: 1.38rem;
+      border-radius: 50%;
+      background: var(--surface);
+      box-shadow: 0 2px 8px rgba(36, 29, 25, 0.18);
+      transition: transform 180ms ease;
+    }
+    .toggle.on { background: var(--sage); }
+    .toggle.on span { transform: translateX(1.42rem); }
+    .toggle-value { color: var(--muted); font-weight: 700; }
+    .image-row {
+      display: grid;
+      grid-template-columns: 4rem minmax(0, 1fr);
+      gap: 0.75rem;
+      align-items: center;
+    }
+    .thumb {
+      width: 4rem;
+      height: 4rem;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background: var(--surface-2);
+    }
+    .thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .help {
+      margin-top: 0.45rem;
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+    .dirty-dot {
+      display: inline-block;
+      width: 0.55rem;
+      height: 0.55rem;
+      border-radius: 50%;
+      background: var(--line-strong);
+    }
+    .dirty-dot.on { background: var(--accent); box-shadow: 0 0 0 5px rgba(189, 119, 91, 0.12); }
+
+    .screen {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      display: grid;
+      place-items: center;
+      padding: 1.2rem;
+      background: var(--bg);
+    }
+    .loader {
+      width: min(100%, 30rem);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      padding: 2rem;
+      text-align: center;
+    }
+    .loader h2 {
+      margin: 0 0 0.6rem;
+      font-family: var(--display);
+      font-size: 2rem;
+      font-weight: 500;
+    }
+    .loader p { margin: 0 0 1.2rem; color: var(--muted); }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 70;
+      display: none;
+      place-items: center;
+      padding: 1rem;
+      background: rgba(36, 29, 25, 0.35);
+      backdrop-filter: blur(10px);
+    }
+    .modal.open { display: grid; }
+    .modal-card {
+      width: min(100%, 34rem);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      padding: 1.3rem;
+      border: 1px solid var(--line);
+    }
+    .modal-card h2 {
+      margin: 0 0 0.4rem;
+      font-family: var(--display);
+      font-size: 2rem;
+      font-weight: 500;
+    }
+    .modal-card p { color: var(--muted); margin: 0 0 1rem; }
+    .modal-grid { display: grid; gap: 0.75rem; }
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      margin-top: 1rem;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 1rem;
+      z-index: 90;
+      transform: translateX(-50%) translateY(1rem);
+      opacity: 0;
+      pointer-events: none;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--ink);
+      color: var(--surface);
+      padding: 0.7rem 1rem;
+      box-shadow: var(--shadow);
+      transition: opacity 180ms ease, transform 180ms ease;
+      max-width: calc(100vw - 2rem);
+      text-align: center;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%); }
+
+    @media (max-width: 900px) {
+      :root { --sidebar: 0rem; }
+      .layout { display: block; }
+      .sidebar {
+        position: static;
+        width: auto;
+        height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+        padding-top: calc(var(--topbar) + 1rem);
+      }
+      .main { padding: 1rem; }
+      .field-grid { grid-template-columns: 1fr; }
+      .topbar { grid-template-columns: 1fr auto; }
+      .site-title { display: none; }
+      .top-actions .btn:not(.primary) { display: none; }
+      h1 { font-size: 2.3rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark">o</span><span>Ompage Yoga</span></div>
+    <div class="site-title" id="site-title">Caricamento configurazione...</div>
+    <div class="top-actions">
+      <span class="dirty-dot" id="dirty-dot" title="Modifiche non salvate"></span>
+      <a class="btn" href="index.html" target="_blank" rel="noopener">Anteprima</a>
+      <button class="btn" type="button" id="download-btn">Scarica JSON</button>
+      <button class="btn" type="button" id="settings-btn">GitHub</button>
+      <button class="btn primary" type="button" id="save-btn">Salva online</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <input class="search" id="search" type="search" placeholder="Cerca campo">
+      <nav class="nav-list" id="nav-list" aria-label="Sezioni pannello"></nav>
+      <div class="sidebar-foot" id="connection-status">Config locale non ancora caricata.</div>
+    </aside>
+    <main class="main" id="main"></main>
+  </div>
+
+  <div class="screen" id="loading-screen">
+    <div class="loader">
+      <h2>Carico il pannello</h2>
+      <p>Sto leggendo config.json e preparo i campi modificabili.</p>
+      <button class="btn hidden" type="button" id="retry-local">Riprova</button>
+      <label class="btn hidden" id="import-label">
+        Importa config.json
+        <input type="file" id="import-file" accept="application/json,.json" hidden>
+      </label>
+    </div>
+  </div>
+
+  <div class="modal" id="settings-modal" aria-hidden="true">
+    <div class="modal-card">
+      <h2>Connessione GitHub</h2>
+      <p>Serve un token con permesso repo per aggiornare config.json nel repository del sito. I dati restano nel browser.</p>
+      <div class="modal-grid">
+        <label>
+          <span class="label-main">Token</span>
+          <input class="control" id="gh-token" type="password" autocomplete="off" placeholder="ghp_...">
+        </label>
+        <label>
+          <span class="label-main">Username o organizzazione</span>
+          <input class="control" id="gh-owner" type="text" autocomplete="off" placeholder="nome-account">
+        </label>
+        <label>
+          <span class="label-main">Repository</span>
+          <input class="control" id="gh-repo" type="text" autocomplete="off" placeholder="mio-sito-yoga">
+        </label>
+      </div>
+      <div class="modal-actions">
+        <button class="btn danger" type="button" id="disconnect-btn">Scollega</button>
+        <button class="btn" type="button" id="settings-close">Annulla</button>
+        <button class="btn primary" type="button" id="settings-save">Salva dati</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    "use strict";
+
+    let CFG = {};
+    let ORIGINAL_KEYS = [];
+    let ACTIVE_SECTION = "";
+    let DIRTY = false;
+    let GH_SHA = null;
+
+    const $ = (selector, root = document) => root.querySelector(selector);
+    const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+    const clean = (value) => String(value || "").trim();
+    const esc = (value) => clean(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+
+    const STORE = {
+      get token() { return localStorage.getItem("ompage_gh_token") || ""; },
+      get owner() { return localStorage.getItem("ompage_gh_owner") || ""; },
+      get repo() { return localStorage.getItem("ompage_gh_repo") || ""; },
+      set token(value) { localStorage.setItem("ompage_gh_token", value); },
+      set owner(value) { localStorage.setItem("ompage_gh_owner", value); },
+      set repo(value) { localStorage.setItem("ompage_gh_repo", value); },
+      clear() {
+        localStorage.removeItem("ompage_gh_token");
+        localStorage.removeItem("ompage_gh_owner");
+        localStorage.removeItem("ompage_gh_repo");
+      }
+    };
+
+    const SECTIONS = [
+      { id: "impostazioni", label: "Impostazioni", note: "Tema, watermark e preferenze generali.", test: (key) => /^(sito_|crediti_|tema_)/.test(key) },
+      { id: "seo", label: "SEO", note: "Titoli, descrizioni, Open Graph e dati strutturati.", test: (key) => /^(seo_|og_|schema_)/.test(key) },
+      { id: "navbar", label: "Navbar", note: "Logo, voci di menu e navigazione.", test: (key) => /^navbar_/.test(key) },
+      { id: "promozioni", label: "Promozioni", note: "Barra superiore e popup temporanei.", test: (key) => /^(barra_|popup_)/.test(key) },
+      { id: "hero", label: "Hero", note: "Titolo principale, CTA e immagini di apertura.", test: (key) => /^hero_/.test(key) },
+      { id: "chi_siamo", label: "Chi sono", note: "Biografia, citazione, foto e passaggi del metodo.", test: (key) => /^chi_siamo_/.test(key) },
+      { id: "servizi", label: "Lezioni", note: "Percorsi, prezzi, descrizioni e immagini.", test: (key) => /^(servizi_|servizio_|pdf_menu_)/.test(key) },
+      { id: "galleria", label: "Galleria", note: "Foto principali e galleria estesa.", test: (key) => /^(galleria_|foto_)/.test(key) },
+      { id: "recensioni", label: "Recensioni", note: "Testimonianze degli allievi.", test: (key) => /^(recensioni_|recensione_)/.test(key) },
+      { id: "faq", label: "FAQ", note: "Domande e risposte pubblicate nel sito.", test: (key) => /^faq_/.test(key) },
+      { id: "footer", label: "Footer", note: "Contatti, social e CTA finale.", test: (key) => /^footer_/.test(key) },
+      { id: "extra", label: "Extra", note: "Campi non riconosciuti dal pannello.", test: () => true }
+    ];
+
+    const CHOICES = {
+      tema_tipografico: ["LUSSO_SERIF", "MODERNO", "EDITORIALE"],
+      tema_palette: ["NATURA_PASTELLO", "TERRA", "SAGE", "MINIMALE"],
+      navbar_logo_tipo: ["TESTO", "IMMAGINE"],
+      hero_layout: ["CON_FOTO", "SOLO_TESTO", "GALLERIA"],
+      chi_siamo_layout: ["FOTO_E_TESTO", "SOLO_TESTO"],
+      servizi_layout: ["LISTA", "GRIGLIA"],
+      hero_cta_tipo: ["WHATSAPP", "TELEFONO", "EMAIL", "URL"],
+      barra_cta_tipo: ["WHATSAPP", "TELEFONO", "EMAIL", "URL"],
+      popup_cta_tipo: ["WHATSAPP", "TELEFONO", "EMAIL", "URL"],
+      footer_cta_tipo: ["WHATSAPP", "TELEFONO", "EMAIL", "URL"]
+    };
+
+    function sectionFor(key) {
+      return SECTIONS.find((section) => section.test(key)) || SECTIONS[SECTIONS.length - 1];
+    }
+
+    function humanLabel(key) {
+      return key
+        .replace(/_/g, " ")
+        .replace(/\bseo\b/i, "SEO")
+        .replace(/\bcta\b/i, "CTA")
+        .replace(/\bfaq\b/i, "FAQ")
+        .replace(/\bog\b/i, "OG")
+        .replace(/\b\w/g, (match) => match.toUpperCase());
+    }
+
+    function isImageKey(key) {
+      return /(foto|placeholder|immagine|image|mappa_url)$/i.test(key) && !/pdf/i.test(key);
+    }
+
+    function isLongText(key, value) {
+      return clean(value).length > 90 || /(testo|descrizione|risposta|citazione|domanda)/i.test(key);
+    }
+
+    function isToggleValue(value) {
+      return clean(value) === "SI" || clean(value) === "NO";
+    }
+
+    function fieldType(key, value) {
+      if (isToggleValue(value)) return "toggle";
+      if (CHOICES[key]) return "select";
+      if (isImageKey(key)) return "image";
+      if (/email/i.test(key)) return "email";
+      if (/telefono|whatsapp/i.test(key)) return "tel";
+      if (/url|instagram|facebook/i.test(key) && !isImageKey(key)) return "url";
+      if (/scadenza/i.test(key)) return "date";
+      if (isLongText(key, value)) return "textarea";
+      return "text";
+    }
+
+    function svgPlaceholder(label) {
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240"><rect width="240" height="240" fill="#ead9c8"/><circle cx="120" cy="108" r="42" fill="none" stroke="#241d19" stroke-opacity=".24" stroke-width="2"/><text x="120" y="178" text-anchor="middle" font-family="Georgia,serif" font-size="18" fill="#241d19" fill-opacity=".58">${esc(label || "Foto")}</text></svg>`;
+      return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg);
+    }
+
+    function renderField(key) {
+      const value = CFG[key] ?? "";
+      const type = fieldType(key, value);
+      const wide = type === "textarea" || clean(value).length > 70 ? " wide" : "";
+      const label = `<div class="field-label"><span class="label-main">${esc(humanLabel(key))}</span><span class="label-key">${esc(key)}</span></div>`;
+      let control = "";
+
+      if (type === "toggle") {
+        const on = clean(value) === "SI";
+        control = `<div class="toggle-line"><button class="toggle ${on ? "on" : ""}" type="button" data-toggle="${esc(key)}" aria-label="${esc(humanLabel(key))}"><span></span></button><span class="toggle-value" data-toggle-value="${esc(key)}">${on ? "SI" : "NO"}</span></div>`;
+      } else if (type === "select") {
+        control = `<select data-key="${esc(key)}">${CHOICES[key].map((choice) => `<option value="${esc(choice)}"${clean(value) === choice ? " selected" : ""}>${esc(choice)}</option>`).join("")}</select>`;
+      } else if (type === "textarea") {
+        control = `<textarea data-key="${esc(key)}">${esc(value)}</textarea>`;
+      } else if (type === "image") {
+        control = `<div class="image-row"><div class="thumb"><img data-preview="${esc(key)}" alt=""></div><input class="control" data-key="${esc(key)}" type="text" value="${esc(value)}" placeholder="nome-file.jpg"></div><div class="help">Se il campo foto resta vuoto, il sito userà il relativo placeholder.</div>`;
+      } else {
+        control = `<input class="control" data-key="${esc(key)}" type="${type}" value="${esc(value)}">`;
+      }
+
+      return `<section class="field${wide}" data-field="${esc(key)}" data-search="${esc((humanLabel(key) + " " + key + " " + value).toLowerCase())}">${label}${control}</section>`;
+    }
+
+    function render() {
+      const grouped = {};
+      SECTIONS.forEach((section) => grouped[section.id] = []);
+      ORIGINAL_KEYS.forEach((key) => grouped[sectionFor(key).id].push(key));
+
+      const nav = $("#nav-list");
+      nav.innerHTML = "";
+      SECTIONS.forEach((section) => {
+        const keys = grouped[section.id] || [];
+        if (!keys.length) return;
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "nav-item";
+        button.dataset.section = section.id;
+        button.innerHTML = `<span>${esc(section.label)}</span><span class="nav-count">${keys.length}</span>`;
+        button.addEventListener("click", () => showSection(section.id));
+        nav.appendChild(button);
+      });
+
+      const main = $("#main");
+      main.innerHTML = "";
+      SECTIONS.forEach((section) => {
+        const keys = grouped[section.id] || [];
+        if (!keys.length) return;
+        const panel = document.createElement("section");
+        panel.className = "panel";
+        panel.id = "panel-" + section.id;
+        panel.innerHTML = `
+          <div class="panel-head">
+            <span class="kicker">Config</span>
+            <h1>${esc(section.label)}</h1>
+            <p class="panel-note">${esc(section.note)}</p>
+          </div>
+          <div class="field-grid">${keys.map(renderField).join("")}</div>`;
+        main.appendChild(panel);
+      });
+
+      hydrateFields();
+      const first = SECTIONS.find((section) => grouped[section.id]?.length);
+      showSection(ACTIVE_SECTION || first?.id || "");
+      $("#site-title").textContent = CFG.seo_titolo || CFG.footer_nome || CFG.navbar_logo_testo || "Sito yoga";
+      updateStatus();
+    }
+
+    function hydrateFields() {
+      $$("[data-key]").forEach((input) => {
+        input.addEventListener("input", () => {
+          CFG[input.dataset.key] = input.value;
+          markDirty();
+          if (isImageKey(input.dataset.key)) updatePreview(input.dataset.key);
+        });
+      });
+      $$("[data-toggle]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const key = button.dataset.toggle;
+          const next = CFG[key] === "SI" ? "NO" : "SI";
+          CFG[key] = next;
+          button.classList.toggle("on", next === "SI");
+          const value = $(`[data-toggle-value="${CSS.escape(key)}"]`);
+          if (value) value.textContent = next;
+          markDirty();
+        });
+      });
+      $$("textarea").forEach(autoGrow);
+      $$("textarea").forEach((textarea) => textarea.addEventListener("input", () => autoGrow(textarea)));
+      $$("[data-preview]").forEach((img) => updatePreview(img.dataset.preview));
+    }
+
+    function autoGrow(textarea) {
+      textarea.style.height = "auto";
+      textarea.style.height = Math.max(112, textarea.scrollHeight) + "px";
+    }
+
+    function updatePreview(key) {
+      const img = $(`[data-preview="${CSS.escape(key)}"]`);
+      if (!img) return;
+      const value = clean(CFG[key]);
+      img.onerror = () => {
+        img.onerror = null;
+        img.src = svgPlaceholder(humanLabel(key));
+      };
+      img.src = value || svgPlaceholder(humanLabel(key));
+    }
+
+    function showSection(id) {
+      if (!id) return;
+      ACTIVE_SECTION = id;
+      $$(".panel").forEach((panel) => panel.classList.toggle("active", panel.id === "panel-" + id));
+      $$(".nav-item").forEach((item) => item.classList.toggle("active", item.dataset.section === id));
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function markDirty(value = true) {
+      DIRTY = value;
+      $("#dirty-dot").classList.toggle("on", DIRTY);
+    }
+
+    function updateStatus() {
+      const status = $("#connection-status");
+      if (STORE.owner && STORE.repo) {
+        status.textContent = `GitHub collegato: ${STORE.owner}/${STORE.repo}`;
+      } else {
+        status.textContent = "Nessun repository GitHub collegato. Puoi comunque scaricare il JSON.";
+      }
+    }
+
+    function filterFields(query) {
+      const q = clean(query).toLowerCase();
+      $$("[data-field]").forEach((field) => {
+        field.classList.toggle("hidden", q && !field.dataset.search.includes(q));
+      });
+    }
+
+    function downloadConfig() {
+      const blob = new Blob([JSON.stringify(CFG, null, 2) + "\n"], { type: "application/json;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "config.json";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      toast("config.json scaricato.");
+    }
+
+    function toBase64(str) {
+      const bytes = new TextEncoder().encode(str);
+      let binary = "";
+      bytes.forEach((byte) => binary += String.fromCharCode(byte));
+      return btoa(binary);
+    }
+
+    async function githubFetch(path, options = {}) {
+      if (!STORE.token || !STORE.owner || !STORE.repo) throw new Error("Connessione GitHub incompleta.");
+      const url = `https://api.github.com/repos/${encodeURIComponent(STORE.owner)}/${encodeURIComponent(STORE.repo)}/contents/${path}`;
+      const response = await fetch(url, {
+        ...options,
+        headers: {
+          "Accept": "application/vnd.github+json",
+          "Authorization": `Bearer ${STORE.token}`,
+          "X-GitHub-Api-Version": "2022-11-28",
+          ...(options.headers || {})
+        }
+      });
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`GitHub ${response.status}: ${text}`);
+      }
+      return response.json();
+    }
+
+    async function saveToGitHub() {
+      if (!STORE.token || !STORE.owner || !STORE.repo) {
+        openSettings();
+        toast("Inserisci prima i dati GitHub.");
+        return;
+      }
+      const button = $("#save-btn");
+      button.disabled = true;
+      button.textContent = "Salvo...";
+      try {
+        let sha = GH_SHA;
+        if (!sha) {
+          const current = await githubFetch("config.json");
+          sha = current.sha;
+          GH_SHA = sha;
+        }
+        const content = JSON.stringify(CFG, null, 2) + "\n";
+        const result = await githubFetch("config.json", {
+          method: "PUT",
+          body: JSON.stringify({
+            message: "Aggiorna configurazione sito yoga",
+            content: toBase64(content),
+            sha
+          })
+        });
+        GH_SHA = result.content?.sha || null;
+        markDirty(false);
+        toast("Sito aggiornato su GitHub.");
+      } catch (error) {
+        console.error(error);
+        toast("Errore GitHub: controlla token, repository e permessi.");
+      } finally {
+        button.disabled = false;
+        button.textContent = "Salva online";
+      }
+    }
+
+    async function loadLocalConfig() {
+      const response = await fetch("config.json?ts=" + Date.now(), { cache: "no-store" });
+      if (!response.ok) throw new Error("HTTP " + response.status);
+      return response.json();
+    }
+
+    function setConfig(config) {
+      CFG = config;
+      ORIGINAL_KEYS = Object.keys(config);
+      render();
+      markDirty(false);
+      $("#loading-screen").classList.add("hidden");
+    }
+
+    async function init() {
+      bindChrome();
+      try {
+        const config = await loadLocalConfig();
+        setConfig(config);
+      } catch (error) {
+        console.warn(error);
+        $("#loading-screen h2").textContent = "Non trovo config.json";
+        $("#loading-screen p").textContent = "Se stai aprendo il pannello da desktop, importa manualmente il file oppure pubblicalo insieme al sito.";
+        $("#retry-local").classList.remove("hidden");
+        $("#import-label").classList.remove("hidden");
+      }
+    }
+
+    function bindChrome() {
+      $("#search").addEventListener("input", (event) => filterFields(event.target.value));
+      $("#download-btn").addEventListener("click", downloadConfig);
+      $("#save-btn").addEventListener("click", saveToGitHub);
+      $("#settings-btn").addEventListener("click", openSettings);
+      $("#settings-close").addEventListener("click", closeSettings);
+      $("#settings-save").addEventListener("click", saveSettings);
+      $("#disconnect-btn").addEventListener("click", disconnect);
+      $("#retry-local").addEventListener("click", init);
+      $("#import-file").addEventListener("change", importFile);
+      window.addEventListener("beforeunload", (event) => {
+        if (!DIRTY) return;
+        event.preventDefault();
+        event.returnValue = "";
+      });
+    }
+
+    function openSettings() {
+      $("#gh-token").value = STORE.token;
+      $("#gh-owner").value = STORE.owner;
+      $("#gh-repo").value = STORE.repo;
+      $("#settings-modal").classList.add("open");
+      $("#settings-modal").setAttribute("aria-hidden", "false");
+    }
+    function closeSettings() {
+      $("#settings-modal").classList.remove("open");
+      $("#settings-modal").setAttribute("aria-hidden", "true");
+    }
+    function saveSettings() {
+      STORE.token = clean($("#gh-token").value);
+      STORE.owner = clean($("#gh-owner").value);
+      STORE.repo = clean($("#gh-repo").value);
+      GH_SHA = null;
+      closeSettings();
+      updateStatus();
+      toast("Dati GitHub salvati.");
+    }
+    function disconnect() {
+      STORE.clear();
+      GH_SHA = null;
+      closeSettings();
+      updateStatus();
+      toast("GitHub scollegato.");
+    }
+
+    function importFile(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          setConfig(JSON.parse(String(reader.result || "{}")));
+          toast("Config importato.");
+        } catch (error) {
+          console.error(error);
+          toast("Il file non è un JSON valido.");
+        }
+      };
+      reader.readAsText(file, "utf-8");
+    }
+
+    let toastTimer = 0;
+    function toast(message) {
+      const el = $("#toast");
+      el.textContent = message;
+      el.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.remove("show"), 2800);
+    }
+
+    init();
+  </script>
+</body>
+</html>

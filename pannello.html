@@ -8,20 +8,19 @@
     :root {
       --bg: #f5efe8;
       --surface: #fffaf4;
-      --surface-2: #fbf4ed;
+      --soft: #fbf4ed;
       --ink: #241d19;
-      --muted: #776a61;
+      --muted: #73665e;
       --line: rgba(36, 29, 25, 0.14);
       --line-strong: rgba(36, 29, 25, 0.24);
       --accent: #bd775b;
-      --accent-dark: #8d513d;
-      --sage: #7b8a67;
-      --ok: #25724f;
-      --warn: #a26122;
+      --sage: #738260;
+      --ok: #23704d;
+      --warn: #9b5d1e;
       --error: #b53a2d;
-      --shadow: 0 18px 58px rgba(50, 32, 20, 0.12);
+      --shadow: 0 18px 60px rgba(45, 29, 18, 0.12);
       --sidebar: 18rem;
-      --topbar: 4.2rem;
+      --topbar: 4.25rem;
       --radius: 8px;
       --font: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       --display: Georgia, "Times New Roman", serif;
@@ -37,6 +36,7 @@
       font-size: 14px;
       line-height: 1.5;
     }
+    body.locked { overflow: hidden; }
     button, input, textarea, select { font: inherit; }
     button { cursor: pointer; }
     a { color: inherit; }
@@ -45,22 +45,23 @@
     .topbar {
       position: fixed;
       inset: 0 0 auto 0;
-      height: var(--topbar);
       z-index: 30;
+      height: var(--topbar);
       display: grid;
-      grid-template-columns: auto 1fr auto;
+      grid-template-columns: auto minmax(0, 1fr) auto;
       align-items: center;
       gap: 1rem;
       padding: 0 1rem;
-      background: rgba(245, 239, 232, 0.9);
+      background: rgba(245, 239, 232, 0.92);
       border-bottom: 1px solid var(--line);
       backdrop-filter: blur(16px);
     }
     .brand {
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: 0.7rem;
-      font-weight: 700;
+      gap: 0.65rem;
+      min-width: 0;
+      font-weight: 800;
       white-space: nowrap;
     }
     .brand-mark {
@@ -72,21 +73,32 @@
       background: var(--ink);
       color: var(--surface);
       font-family: var(--display);
-      font-size: 1.15rem;
+      font-size: 1.1rem;
     }
     .site-title {
       min-width: 0;
+      text-align: center;
       color: var(--muted);
       overflow: hidden;
-      text-overflow: ellipsis;
       white-space: nowrap;
-      text-align: center;
+      text-overflow: ellipsis;
     }
     .top-actions {
       display: flex;
-      justify-content: flex-end;
       align-items: center;
-      gap: 0.5rem;
+      justify-content: flex-end;
+      gap: 0.55rem;
+    }
+    .dirty-dot {
+      width: 0.55rem;
+      height: 0.55rem;
+      border-radius: 50%;
+      background: rgba(36, 29, 25, 0.18);
+      flex: 0 0 auto;
+    }
+    .dirty-dot.on {
+      background: var(--accent);
+      box-shadow: 0 0 0 5px rgba(189, 119, 91, 0.14);
     }
 
     .btn {
@@ -95,26 +107,28 @@
       align-items: center;
       justify-content: center;
       gap: 0.45rem;
-      padding: 0.55rem 0.9rem;
+      padding: 0.55rem 0.95rem;
       border: 1px solid var(--line-strong);
       border-radius: 999px;
       background: var(--surface);
       color: var(--ink);
-      text-decoration: none;
-      font-weight: 600;
       font-size: 0.88rem;
-      transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
+      font-weight: 700;
+      text-decoration: none;
+      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
     }
-    .btn:hover { transform: translateY(-1px); border-color: rgba(36, 29, 25, 0.35); }
+    .btn:hover { transform: translateY(-1px); border-color: rgba(36, 29, 25, 0.34); }
     .btn.primary { background: var(--ink); border-color: var(--ink); color: var(--surface); }
     .btn.primary:hover { background: var(--accent); border-color: var(--accent); }
-    .btn.danger { background: #fff3f0; border-color: rgba(181, 58, 45, 0.32); color: var(--error); }
+    .btn.ghost { background: transparent; }
+    .btn.danger { background: #fff3f0; border-color: rgba(181, 58, 45, 0.28); color: var(--error); }
+    .btn.small { min-height: 2rem; padding: 0.35rem 0.7rem; font-size: 0.8rem; }
     .btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
 
     .layout {
+      min-height: 100vh;
       display: grid;
       grid-template-columns: var(--sidebar) minmax(0, 1fr);
-      min-height: 100vh;
       padding-top: var(--topbar);
     }
     .sidebar {
@@ -123,31 +137,34 @@
       bottom: 0;
       left: 0;
       width: var(--sidebar);
-      overflow: auto;
       padding: 1rem;
+      overflow: auto;
       border-right: 1px solid var(--line);
-      background: rgba(255, 250, 244, 0.42);
+      background: rgba(255, 250, 244, 0.46);
     }
     .search {
       width: 100%;
       margin-bottom: 1rem;
-      padding: 0.7rem 0.85rem;
+      padding: 0.72rem 0.88rem;
       border: 1px solid var(--line);
       border-radius: 999px;
       background: var(--surface);
       color: var(--ink);
       outline: none;
     }
-    .search:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(189, 119, 91, 0.14); }
+    .search:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(189, 119, 91, 0.14);
+    }
     .nav-list { display: grid; gap: 0.35rem; }
     .nav-item {
       width: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 0.75rem;
       min-height: 2.5rem;
-      padding: 0.55rem 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0.56rem 0.75rem;
       border: 1px solid transparent;
       border-radius: var(--radius);
       background: transparent;
@@ -156,12 +173,12 @@
     }
     .nav-item:hover, .nav-item.active {
       background: var(--surface);
-      color: var(--ink);
       border-color: var(--line);
+      color: var(--ink);
     }
     .nav-count {
       min-width: 1.65rem;
-      padding: 0.15rem 0.45rem;
+      padding: 0.12rem 0.45rem;
       border-radius: 999px;
       background: rgba(36, 29, 25, 0.08);
       color: var(--muted);
@@ -175,6 +192,7 @@
       color: var(--muted);
       font-size: 0.82rem;
     }
+
     .main {
       grid-column: 2;
       padding: 2rem;
@@ -204,11 +222,7 @@
       line-height: 0.98;
       font-weight: 500;
     }
-    .panel-note {
-      margin: 0;
-      max-width: 44rem;
-      color: var(--muted);
-    }
+    .panel-note { max-width: 46rem; margin: 0; color: var(--muted); }
     .field-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -220,7 +234,6 @@
       border-radius: var(--radius);
       background: var(--surface);
       padding: 1rem;
-      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.7) inset;
     }
     .field.wide { grid-column: 1 / -1; }
     .field-label {
@@ -229,23 +242,23 @@
       gap: 1rem;
       margin-bottom: 0.55rem;
     }
-    .label-main { font-weight: 700; }
+    .label-main { font-weight: 800; }
     .label-key {
       color: var(--muted);
-      font-size: 0.74rem;
       font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 0.74rem;
       overflow: hidden;
-      text-overflow: ellipsis;
       white-space: nowrap;
+      text-overflow: ellipsis;
     }
     .control, textarea, select {
       width: 100%;
       border: 1px solid var(--line);
       border-radius: var(--radius);
-      background: var(--surface-2);
+      background: var(--soft);
       color: var(--ink);
       outline: none;
-      padding: 0.72rem 0.8rem;
+      padding: 0.72rem 0.82rem;
     }
     textarea {
       min-height: 7rem;
@@ -255,6 +268,20 @@
       border-color: var(--accent);
       box-shadow: 0 0 0 3px rgba(189, 119, 91, 0.14);
     }
+    .help {
+      margin-top: 0.45rem;
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+    .char-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: 0.35rem;
+      color: var(--muted);
+      font-size: 0.76rem;
+    }
+    .char-count.over { color: var(--error); font-weight: 800; }
     .toggle-line {
       display: flex;
       align-items: center;
@@ -282,35 +309,80 @@
     }
     .toggle.on { background: var(--sage); }
     .toggle.on span { transform: translateX(1.42rem); }
-    .toggle-value { color: var(--muted); font-weight: 700; }
-    .image-row {
+    .toggle-value { color: var(--muted); font-weight: 800; }
+
+    .upload-box {
       display: grid;
-      grid-template-columns: 4rem minmax(0, 1fr);
+      gap: 0.75rem;
+    }
+    .upload-current {
+      display: grid;
+      grid-template-columns: 4rem minmax(0, 1fr) auto;
       gap: 0.75rem;
       align-items: center;
+      min-height: 4rem;
     }
     .thumb {
       width: 4rem;
       height: 4rem;
-      border-radius: var(--radius);
+      display: grid;
+      place-items: center;
       overflow: hidden;
       border: 1px solid var(--line);
-      background: var(--surface-2);
+      border-radius: var(--radius);
+      background: var(--soft);
+      color: var(--muted);
+      font-size: 0.72rem;
+      text-align: center;
     }
     .thumb img { width: 100%; height: 100%; object-fit: cover; }
-    .help {
-      margin-top: 0.45rem;
+    .file-name {
+      min-width: 0;
       color: var(--muted);
-      font-size: 0.78rem;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
-    .dirty-dot {
-      display: inline-block;
-      width: 0.55rem;
-      height: 0.55rem;
+    .file-picker input { display: none; }
+    .upload-status { display: none; color: var(--sage); font-size: 0.82rem; }
+    .upload-status.show { display: block; }
+
+    .card {
+      grid-column: 1 / -1;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      overflow: hidden;
+    }
+    .card summary {
+      min-height: 3.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.9rem 1rem;
+      cursor: pointer;
+      list-style: none;
+      font-weight: 800;
+    }
+    .card summary::-webkit-details-marker { display: none; }
+    .card summary::after {
+      content: "+";
+      width: 1.75rem;
+      height: 1.75rem;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
       border-radius: 50%;
-      background: var(--line-strong);
+      color: var(--muted);
+      flex: 0 0 auto;
     }
-    .dirty-dot.on { background: var(--accent); box-shadow: 0 0 0 5px rgba(189, 119, 91, 0.12); }
+    .card[open] summary::after { content: "-"; }
+    .card-body {
+      padding: 1rem;
+      border-top: 1px solid var(--line);
+      background: rgba(251, 244, 237, 0.52);
+    }
 
     .screen {
       position: fixed;
@@ -319,25 +391,37 @@
       display: grid;
       place-items: center;
       padding: 1.2rem;
-      background: var(--bg);
+      background:
+        linear-gradient(180deg, rgba(232, 189, 166, 0.28), rgba(245, 239, 232, 0) 22rem),
+        var(--bg);
     }
-    .loader {
-      width: min(100%, 30rem);
+    .setup-card, .modal-card {
+      width: min(100%, 34rem);
       border: 1px solid var(--line);
       border-radius: var(--radius);
       background: var(--surface);
       box-shadow: var(--shadow);
-      padding: 2rem;
-      text-align: center;
+      padding: 1.5rem;
     }
-    .loader h2 {
-      margin: 0 0 0.6rem;
+    .setup-card h2, .modal-card h2 {
+      margin: 0 0 0.45rem;
       font-family: var(--display);
-      font-size: 2rem;
+      font-size: 2.2rem;
       font-weight: 500;
     }
-    .loader p { margin: 0 0 1.2rem; color: var(--muted); }
-
+    .setup-card p, .modal-card p { margin: 0 0 1rem; color: var(--muted); }
+    .form-grid { display: grid; gap: 0.8rem; }
+    .form-grid label { display: grid; gap: 0.35rem; }
+    .error-box {
+      display: none;
+      padding: 0.75rem 0.9rem;
+      border: 1px solid rgba(181, 58, 45, 0.28);
+      border-radius: var(--radius);
+      background: #fff3f0;
+      color: var(--error);
+      font-size: 0.86rem;
+    }
+    .error-box.show { display: block; }
     .modal {
       position: fixed;
       inset: 0;
@@ -349,29 +433,28 @@
       backdrop-filter: blur(10px);
     }
     .modal.open { display: grid; }
-    .modal-card {
-      width: min(100%, 34rem);
-      border-radius: var(--radius);
-      background: var(--surface);
-      box-shadow: var(--shadow);
-      padding: 1.3rem;
-      border: 1px solid var(--line);
-    }
-    .modal-card h2 {
-      margin: 0 0 0.4rem;
-      font-family: var(--display);
-      font-size: 2rem;
-      font-weight: 500;
-    }
-    .modal-card p { color: var(--muted); margin: 0 0 1rem; }
-    .modal-grid { display: grid; gap: 0.75rem; }
-    .modal-actions {
+    .modal-actions, .setup-actions {
       display: flex;
       justify-content: flex-end;
       flex-wrap: wrap;
       gap: 0.55rem;
       margin-top: 1rem;
     }
+    .loading {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.65rem;
+      color: var(--muted);
+    }
+    .spinner {
+      width: 1rem;
+      height: 1rem;
+      border: 2px solid rgba(36, 29, 25, 0.18);
+      border-top-color: var(--ink);
+      border-radius: 50%;
+      animation: spin 800ms linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
     .toast {
       position: fixed;
@@ -381,94 +464,114 @@
       transform: translateX(-50%) translateY(1rem);
       opacity: 0;
       pointer-events: none;
+      max-width: calc(100vw - 2rem);
       border: 1px solid var(--line);
       border-radius: 999px;
       background: var(--ink);
       color: var(--surface);
-      padding: 0.7rem 1rem;
+      padding: 0.72rem 1rem;
       box-shadow: var(--shadow);
-      transition: opacity 180ms ease, transform 180ms ease;
-      max-width: calc(100vw - 2rem);
       text-align: center;
+      transition: opacity 180ms ease, transform 180ms ease;
     }
     .toast.show { opacity: 1; transform: translateX(-50%); }
 
-    @media (max-width: 900px) {
+    @media (max-width: 920px) {
       :root { --sidebar: 0rem; }
       .layout { display: block; }
       .sidebar {
         position: static;
         width: auto;
-        height: auto;
+        padding-top: calc(var(--topbar) + 1rem);
         border-right: 0;
         border-bottom: 1px solid var(--line);
-        padding-top: calc(var(--topbar) + 1rem);
       }
       .main { padding: 1rem; }
       .field-grid { grid-template-columns: 1fr; }
-      .topbar { grid-template-columns: 1fr auto; }
+      .topbar { grid-template-columns: auto 1fr; }
       .site-title { display: none; }
-      .top-actions .btn:not(.primary) { display: none; }
+      .top-actions .btn.ghost { display: none; }
       h1 { font-size: 2.3rem; }
     }
   </style>
 </head>
-<body>
+<body class="locked">
   <header class="topbar">
     <div class="brand"><span class="brand-mark">o</span><span>Ompage Yoga</span></div>
-    <div class="site-title" id="site-title">Caricamento configurazione...</div>
+    <div class="site-title" id="site-title">Connessione richiesta</div>
     <div class="top-actions">
       <span class="dirty-dot" id="dirty-dot" title="Modifiche non salvate"></span>
-      <a class="btn" href="index.html" target="_blank" rel="noopener">Anteprima</a>
-      <button class="btn" type="button" id="download-btn">Scarica JSON</button>
-      <button class="btn" type="button" id="settings-btn">GitHub</button>
+      <a class="btn ghost" href="index.html" target="_blank" rel="noopener">Anteprima</a>
+      <button class="btn ghost" type="button" id="connection-btn">Connessione</button>
       <button class="btn primary" type="button" id="save-btn">Salva online</button>
     </div>
   </header>
 
-  <div class="layout">
+  <div class="layout" id="app" aria-hidden="true">
     <aside class="sidebar">
       <input class="search" id="search" type="search" placeholder="Cerca campo">
       <nav class="nav-list" id="nav-list" aria-label="Sezioni pannello"></nav>
-      <div class="sidebar-foot" id="connection-status">Config locale non ancora caricata.</div>
+      <div class="sidebar-foot" id="connection-status">Non connesso.</div>
     </aside>
     <main class="main" id="main"></main>
   </div>
 
-  <div class="screen" id="loading-screen">
-    <div class="loader">
-      <h2>Carico il pannello</h2>
-      <p>Sto leggendo config.json e preparo i campi modificabili.</p>
-      <button class="btn hidden" type="button" id="retry-local">Riprova</button>
-      <label class="btn hidden" id="import-label">
-        Importa config.json
-        <input type="file" id="import-file" accept="application/json,.json" hidden>
-      </label>
+  <section class="screen" id="setup-screen">
+    <div class="setup-card">
+      <h2>Accedi al pannello</h2>
+      <p>Inserisci le credenziali GitHub del repository del sito. Senza connessione il cliente non entra nel pannello e non vede i campi.</p>
+      <div class="error-box" id="setup-error"></div>
+      <div class="form-grid">
+        <label>
+          <span class="label-main">Personal Access Token GitHub</span>
+          <input class="control" id="setup-token" type="password" autocomplete="off" placeholder="ghp_...">
+          <span class="help">Serve un token con permesso repo/contents per leggere e salvare config.json e asset.</span>
+        </label>
+        <label>
+          <span class="label-main">Username o organizzazione</span>
+          <input class="control" id="setup-owner" type="text" autocomplete="off" placeholder="nome-account">
+        </label>
+        <label>
+          <span class="label-main">Repository</span>
+          <input class="control" id="setup-repo" type="text" autocomplete="off" placeholder="mio-sito-yoga">
+        </label>
+      </div>
+      <div class="setup-actions">
+        <button class="btn primary" type="button" id="setup-submit">Connetti e carica</button>
+      </div>
     </div>
-  </div>
+  </section>
+
+  <section class="screen hidden" id="loading-screen">
+    <div class="setup-card">
+      <h2>Carico il sito</h2>
+      <p class="loading"><span class="spinner"></span><span id="loading-text">Lettura di config.json da GitHub...</span></p>
+    </div>
+  </section>
 
   <div class="modal" id="settings-modal" aria-hidden="true">
     <div class="modal-card">
       <h2>Connessione GitHub</h2>
-      <p>Serve un token con permesso repo per aggiornare config.json nel repository del sito. I dati restano nel browser.</p>
-      <div class="modal-grid">
+      <p>Modifica repository o token. I dati sono salvati solo nel browser.</p>
+      <div class="error-box" id="settings-error"></div>
+      <div class="form-grid">
         <label>
           <span class="label-main">Token</span>
-          <input class="control" id="gh-token" type="password" autocomplete="off" placeholder="ghp_...">
+          <input class="control" id="settings-token" type="password" autocomplete="off">
         </label>
         <label>
-          <span class="label-main">Username o organizzazione</span>
-          <input class="control" id="gh-owner" type="text" autocomplete="off" placeholder="nome-account">
+          <span class="label-main">Owner</span>
+          <input class="control" id="settings-owner" type="text" autocomplete="off">
         </label>
         <label>
           <span class="label-main">Repository</span>
-          <input class="control" id="gh-repo" type="text" autocomplete="off" placeholder="mio-sito-yoga">
+          <input class="control" id="settings-repo" type="text" autocomplete="off">
         </label>
       </div>
       <div class="modal-actions">
         <button class="btn danger" type="button" id="disconnect-btn">Scollega</button>
         <button class="btn" type="button" id="settings-close">Annulla</button>
-        <button class="btn primary" type="button" id="settings-save">Salva dati</button>
+        <button class="btn primary" type="button" id="settings-save">Salva</button>
       </div>
     </div>
   </div>
@@ -478,11 +581,17 @@
   <script>
     "use strict";
 
+    const GH_BASE = "https://api.github.com";
+    const ASSET_DIR = "assets";
+    const IMAGE_MAX_BYTES = 8 * 1024 * 1024;
+    const PDF_MAX_BYTES = 12 * 1024 * 1024;
+
     let CFG = {};
     let ORIGINAL_KEYS = [];
+    let CONFIG_SHA = null;
     let ACTIVE_SECTION = "";
     let DIRTY = false;
-    let GH_SHA = null;
+    let UPLOADING = false;
 
     const $ = (selector, root = document) => root.querySelector(selector);
     const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
@@ -495,40 +604,50 @@
       .replace(/'/g, "&#39;");
 
     const STORE = {
-      get token() { return localStorage.getItem("ompage_gh_token") || ""; },
-      get owner() { return localStorage.getItem("ompage_gh_owner") || ""; },
-      get repo() { return localStorage.getItem("ompage_gh_repo") || ""; },
+      get token() { return localStorage.getItem("ompage_gh_token") || localStorage.getItem("ompage_token") || ""; },
+      get owner() { return localStorage.getItem("ompage_gh_owner") || localStorage.getItem("ompage_owner") || ""; },
+      get repo() { return localStorage.getItem("ompage_gh_repo") || localStorage.getItem("ompage_repo") || ""; },
       set token(value) { localStorage.setItem("ompage_gh_token", value); },
       set owner(value) { localStorage.setItem("ompage_gh_owner", value); },
       set repo(value) { localStorage.setItem("ompage_gh_repo", value); },
       clear() {
-        localStorage.removeItem("ompage_gh_token");
-        localStorage.removeItem("ompage_gh_owner");
-        localStorage.removeItem("ompage_gh_repo");
+        ["ompage_gh_token", "ompage_gh_owner", "ompage_gh_repo", "ompage_token", "ompage_owner", "ompage_repo"].forEach((key) => localStorage.removeItem(key));
       }
     };
 
-    const SECTIONS = [
-      { id: "impostazioni", label: "Impostazioni", note: "Tema, watermark e preferenze generali.", test: (key) => /^(sito_|crediti_|tema_)/.test(key) },
-      { id: "seo", label: "SEO", note: "Titoli, descrizioni, Open Graph e dati strutturati.", test: (key) => /^(seo_|og_|schema_)/.test(key) },
-      { id: "navbar", label: "Navbar", note: "Logo, voci di menu e navigazione.", test: (key) => /^navbar_/.test(key) },
-      { id: "promozioni", label: "Promozioni", note: "Barra superiore e popup temporanei.", test: (key) => /^(barra_|popup_)/.test(key) },
+    const ADMIN_ONLY_KEYS = new Set([
+      "sito_in_bozza_watermark",
+      "crediti_ompage_footer"
+    ]);
+
+    const DERIVED_KEYS = new Set([
+      "schema_nome",
+      "schema_indirizzo",
+      "schema_telefono",
+      "schema_orari"
+    ]);
+
+    const SECTION_DEFS = [
+      { id: "impostazioni", label: "Impostazioni", note: "Tema e preferenze visive modificabili dal cliente.", test: (key) => /^tema_/.test(key) },
+      { id: "seo", label: "SEO", note: "Titolo, descrizione e immagine di anteprima social.", test: (key) => /^seo_|^og_/.test(key) },
+      { id: "navbar", label: "Navbar", note: "Logo e voci del menu.", test: (key) => /^navbar_/.test(key) },
+      { id: "promozioni", label: "Promozioni", note: "Barra superiore e popup temporanei.", test: (key) => /^barra_|^popup_/.test(key) },
       { id: "hero", label: "Hero", note: "Titolo principale, CTA e immagini di apertura.", test: (key) => /^hero_/.test(key) },
-      { id: "chi_siamo", label: "Chi sono", note: "Biografia, citazione, foto e passaggi del metodo.", test: (key) => /^chi_siamo_/.test(key) },
-      { id: "servizi", label: "Lezioni", note: "Percorsi, prezzi, descrizioni e immagini.", test: (key) => /^(servizi_|servizio_|pdf_menu_)/.test(key) },
-      { id: "galleria", label: "Galleria", note: "Foto principali e galleria estesa.", test: (key) => /^(galleria_|foto_)/.test(key) },
-      { id: "recensioni", label: "Recensioni", note: "Testimonianze degli allievi.", test: (key) => /^(recensioni_|recensione_)/.test(key) },
-      { id: "faq", label: "FAQ", note: "Domande e risposte pubblicate nel sito.", test: (key) => /^faq_/.test(key) },
-      { id: "footer", label: "Footer", note: "Contatti, social e CTA finale.", test: (key) => /^footer_/.test(key) },
-      { id: "extra", label: "Extra", note: "Campi non riconosciuti dal pannello.", test: () => true }
+      { id: "chi_siamo", label: "Chi sono", note: "Biografia, citazione, foto e metodo.", test: (key) => /^chi_siamo_/.test(key) },
+      { id: "servizi", label: "Lezioni", note: "Percorsi, prezzi, descrizioni, PDF e foto.", test: (key) => /^servizi_|^servizio_|^pdf_menu_/.test(key) },
+      { id: "galleria", label: "Galleria", note: "Foto principali e galleria estesa.", test: (key) => /^galleria_|^foto_/.test(key) },
+      { id: "recensioni", label: "Recensioni", note: "Testimonianze e valutazioni.", test: (key) => /^recensioni_|^recensione_/.test(key) },
+      { id: "faq", label: "FAQ", note: "Domande frequenti.", test: (key) => /^faq_/.test(key) },
+      { id: "footer", label: "Footer", note: "Dati di contatto, social, Google Maps e CTA finale.", test: (key) => /^footer_/.test(key) },
+      { id: "extra", label: "Extra", note: "Campi non classificati.", test: () => true }
     ];
 
-    const CHOICES = {
+    const SELECT_CHOICES = {
       tema_tipografico: ["LUSSO_SERIF", "MODERNO", "EDITORIALE"],
       tema_palette: ["NATURA_PASTELLO", "TERRA", "SAGE", "MINIMALE"],
       navbar_logo_tipo: ["TESTO", "IMMAGINE"],
       hero_layout: ["CON_FOTO", "SOLO_TESTO", "GALLERIA"],
-      chi_siamo_layout: ["FOTO_E_TESTO", "SOLO_TESTO"],
+      chi_siamo_layout: ["FOTO_E_TESTO", "SOLO_TESTO", "PASSI"],
       servizi_layout: ["LISTA", "GRIGLIA"],
       hero_cta_tipo: ["WHATSAPP", "TELEFONO", "EMAIL", "URL"],
       barra_cta_tipo: ["WHATSAPP", "TELEFONO", "EMAIL", "URL"],
@@ -536,95 +655,342 @@
       footer_cta_tipo: ["WHATSAPP", "TELEFONO", "EMAIL", "URL"]
     };
 
-    function sectionFor(key) {
-      return SECTIONS.find((section) => section.test(key)) || SECTIONS[SECTIONS.length - 1];
+    const LABELS = {
+      seo_titolo: "Titolo SEO",
+      seo_descrizione: "Descrizione SEO",
+      og_immagine: "Immagine anteprima social",
+      navbar_logo_testo: "Testo logo",
+      navbar_logo_immagine: "Logo immagine",
+      footer_mappa_url: "Link Google Maps",
+      footer_instagram: "Link Instagram",
+      footer_facebook: "Link Facebook",
+      pdf_menu_url: "PDF programma",
+      hero_foto: "Foto hero"
+    };
+
+    const HELP = {
+      footer_instagram: "Incolla il link completo del profilo Instagram, per esempio https://www.instagram.com/nomeprofilo.",
+      footer_facebook: "Incolla il link completo della pagina Facebook, per esempio https://www.facebook.com/nomepagina.",
+      footer_mappa_url: "Incolla il link Google Maps dell'indirizzo o dell'attivita. Non caricare immagini qui.",
+      og_immagine: "Carica l'immagine che appare quando il sito viene condiviso su WhatsApp, Facebook o social.",
+      pdf_menu_url: "Carica un PDF. Il file verra salvato nel repository e il sito usera il suo percorso.",
+      navbar_logo_immagine: "Carica un logo in PNG, JPG, WebP o SVG. Se il logo e testuale puoi lasciare vuoto.",
+      hero_cta_contatto: "Se il tipo CTA e WhatsApp o telefono, inserisci il numero. Se e email o URL, inserisci il valore corrispondente.",
+      barra_cta_contatto: "Se il tipo CTA e WhatsApp o telefono, inserisci il numero. Se e email o URL, inserisci il valore corrispondente.",
+      popup_cta_contatto: "Se il tipo CTA e WhatsApp o telefono, inserisci il numero. Se e email o URL, inserisci il valore corrispondente."
+    };
+
+    function isHiddenKey(key) {
+      if (ADMIN_ONLY_KEYS.has(key)) return true;
+      if (DERIVED_KEYS.has(key)) return true;
+      if (key.includes("_placeholder")) return true;
+      return false;
+    }
+
+    function isToggle(value) {
+      return clean(value) === "SI" || clean(value) === "NO";
+    }
+
+    function isPdfUploadKey(key) {
+      return key === "pdf_menu_url";
+    }
+
+    function isImageUploadKey(key) {
+      if (key === "footer_mappa_url") return false;
+      if (key === "pdf_menu_url") return false;
+      if (key === "og_immagine" || key === "navbar_logo_immagine") return true;
+      if (/^foto_\d+_url$/.test(key)) return true;
+      if (/^foto_estesa_\d+_url$/.test(key)) return true;
+      if (/_foto(_\d+)?$/.test(key)) return true;
+      if (/sfondo_astratto$/.test(key)) return true;
+      return false;
+    }
+
+    function isUploadKey(key) {
+      return isImageUploadKey(key) || isPdfUploadKey(key);
+    }
+
+    function maxLen(key) {
+      if (key === "seo_titolo") return 70;
+      if (key === "seo_descrizione") return 160;
+      if (/navbar_voce_/.test(key)) return 22;
+      if (/titolo_riga/.test(key)) return 24;
+      if (key === "hero_titolo_sx" || key === "hero_titolo_dx") return 24;
+      if (key === "hero_sottotitolo") return 120;
+      if (/_cta_testo$/.test(key)) return 34;
+      if (/^barra_testo$|^popup_testo$/.test(key)) return 140;
+      if (/^chi_siamo_testo$/.test(key)) return 620;
+      if (/^chi_siamo_citazione$/.test(key)) return 180;
+      if (/^chi_siamo_nome$|^footer_nome$/.test(key)) return 70;
+      if (/^chi_siamo_ruolo$/.test(key)) return 70;
+      if (/^servizi_titolo$|^galleria_titolo$|^recensioni_titolo$|^galleria_estesa_titolo$/.test(key)) return 60;
+      if (/^servizio_\d+_nome$/.test(key)) return 45;
+      if (/^servizio_\d+_descrizione$/.test(key)) return 260;
+      if (/^servizio_\d+_prezzo$/.test(key)) return 34;
+      if (/^foto_\d+_didascalia$/.test(key)) return 90;
+      if (/^recensione_\d+_nome$/.test(key)) return 45;
+      if (/^recensione_\d+_testo$/.test(key)) return 360;
+      if (/^faq_\d+_domanda$/.test(key)) return 120;
+      if (/^faq_\d+_risposta$/.test(key)) return 420;
+      if (/^footer_indirizzo$/.test(key)) return 120;
+      if (/^footer_orari$/.test(key)) return 100;
+      if (/^footer_email$/.test(key)) return 80;
+      if (/^footer_telefono$|^footer_whatsapp$/.test(key)) return 32;
+      if (/^chi_siamo_passo_\d+_titolo$/.test(key)) return 35;
+      if (/^chi_siamo_passo_\d+_testo$/.test(key)) return 130;
+      return 0;
+    }
+
+    function fieldType(key, value) {
+      if (isUploadKey(key)) return isPdfUploadKey(key) ? "pdf" : "image";
+      if (isToggle(value)) return "toggle";
+      if (key === "recensione_1_stelle" || /^recensione_\d+_stelle$/.test(key)) return "stars";
+      if (SELECT_CHOICES[key]) return "select";
+      if (/scadenza/i.test(key)) return "date";
+      if (key === "footer_mappa_url" || key === "footer_instagram" || key === "footer_facebook") return "url";
+      if (/_cta_contatto$/.test(key)) return ctaContactType(key);
+      if (/email/i.test(key)) return "email";
+      if (/telefono|whatsapp/i.test(key)) return "tel";
+      if (/url$/i.test(key)) return "url";
+      if (maxLen(key) > 110 || clean(value).length > 95 || /(testo|descrizione|risposta|citazione|domanda)/i.test(key)) return "textarea";
+      return "text";
+    }
+
+    function ctaContactType(key) {
+      const prefix = key.replace("_contatto", "");
+      const tipo = clean(CFG[prefix + "_tipo"]).toUpperCase();
+      if (tipo === "EMAIL") return "email";
+      if (tipo === "URL") return "url";
+      return "tel";
     }
 
     function humanLabel(key) {
+      if (LABELS[key]) return LABELS[key];
       return key
         .replace(/_/g, " ")
         .replace(/\bseo\b/i, "SEO")
         .replace(/\bcta\b/i, "CTA")
         .replace(/\bfaq\b/i, "FAQ")
         .replace(/\bog\b/i, "OG")
+        .replace(/\bpdf\b/i, "PDF")
+        .replace(/\burl\b/i, "URL")
         .replace(/\b\w/g, (match) => match.toUpperCase());
     }
 
-    function isImageKey(key) {
-      return /(foto|placeholder|immagine|image|mappa_url)$/i.test(key) && !/pdf/i.test(key);
+    function sectionFor(key) {
+      return SECTION_DEFS.find((section) => section.test(key)) || SECTION_DEFS[SECTION_DEFS.length - 1];
     }
 
-    function isLongText(key, value) {
-      return clean(value).length > 90 || /(testo|descrizione|risposta|citazione|domanda)/i.test(key);
-    }
-
-    function isToggleValue(value) {
-      return clean(value) === "SI" || clean(value) === "NO";
-    }
-
-    function fieldType(key, value) {
-      if (isToggleValue(value)) return "toggle";
-      if (CHOICES[key]) return "select";
-      if (isImageKey(key)) return "image";
-      if (/email/i.test(key)) return "email";
-      if (/telefono|whatsapp/i.test(key)) return "tel";
-      if (/url|instagram|facebook/i.test(key) && !isImageKey(key)) return "url";
-      if (/scadenza/i.test(key)) return "date";
-      if (isLongText(key, value)) return "textarea";
-      return "text";
-    }
-
-    function svgPlaceholder(label) {
-      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240"><rect width="240" height="240" fill="#ead9c8"/><circle cx="120" cy="108" r="42" fill="none" stroke="#241d19" stroke-opacity=".24" stroke-width="2"/><text x="120" y="178" text-anchor="middle" font-family="Georgia,serif" font-size="18" fill="#241d19" fill-opacity=".58">${esc(label || "Foto")}</text></svg>`;
-      return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg);
-    }
-
-    function renderField(key) {
-      const value = CFG[key] ?? "";
-      const type = fieldType(key, value);
-      const wide = type === "textarea" || clean(value).length > 70 ? " wide" : "";
-      const label = `<div class="field-label"><span class="label-main">${esc(humanLabel(key))}</span><span class="label-key">${esc(key)}</span></div>`;
-      let control = "";
-
-      if (type === "toggle") {
-        const on = clean(value) === "SI";
-        control = `<div class="toggle-line"><button class="toggle ${on ? "on" : ""}" type="button" data-toggle="${esc(key)}" aria-label="${esc(humanLabel(key))}"><span></span></button><span class="toggle-value" data-toggle-value="${esc(key)}">${on ? "SI" : "NO"}</span></div>`;
-      } else if (type === "select") {
-        control = `<select data-key="${esc(key)}">${CHOICES[key].map((choice) => `<option value="${esc(choice)}"${clean(value) === choice ? " selected" : ""}>${esc(choice)}</option>`).join("")}</select>`;
-      } else if (type === "textarea") {
-        control = `<textarea data-key="${esc(key)}">${esc(value)}</textarea>`;
-      } else if (type === "image") {
-        control = `<div class="image-row"><div class="thumb"><img data-preview="${esc(key)}" alt=""></div><input class="control" data-key="${esc(key)}" type="text" value="${esc(value)}" placeholder="nome-file.jpg"></div><div class="help">Se il campo foto resta vuoto, il sito userà il relativo placeholder.</div>`;
-      } else {
-        control = `<input class="control" data-key="${esc(key)}" type="${type}" value="${esc(value)}">`;
+    function groupInfo(key) {
+      const patterns = [
+        [/^servizio_(\d+)_/, "servizio", "Lezione"],
+        [/^foto_(\d+)_/, "foto", "Foto"],
+        [/^foto_estesa_(\d+)_/, "foto_estesa", "Foto estesa"],
+        [/^recensione_(\d+)_/, "recensione", "Recensione"],
+        [/^faq_(\d+)_/, "faq", "FAQ"],
+        [/^chi_siamo_passo_(\d+)_/, "passo", "Passo metodo"]
+      ];
+      for (const [regex, type, label] of patterns) {
+        const match = key.match(regex);
+        if (match) return { id: type + "_" + match[1], type, number: match[1], label: label + " " + match[1] };
       }
-
-      return `<section class="field${wide}" data-field="${esc(key)}" data-search="${esc((humanLabel(key) + " " + key + " " + value).toLowerCase())}">${label}${control}</section>`;
+      return null;
     }
 
-    function render() {
-      const grouped = {};
-      SECTIONS.forEach((section) => grouped[section.id] = []);
-      ORIGINAL_KEYS.forEach((key) => grouped[sectionFor(key).id].push(key));
+    function groupTitle(group) {
+      const n = group.number;
+      if (group.type === "servizio") return CFG[`servizio_${n}_nome`] || `Lezione ${n}`;
+      if (group.type === "recensione") return CFG[`recensione_${n}_nome`] || `Recensione ${n}`;
+      if (group.type === "faq") return CFG[`faq_${n}_domanda`] || `FAQ ${n}`;
+      if (group.type === "foto") return CFG[`foto_${n}_didascalia`] || `Foto ${n}`;
+      if (group.type === "foto_estesa") return `Foto estesa ${n}`;
+      if (group.type === "passo") return CFG[`chi_siamo_passo_${n}_titolo`] || `Passo metodo ${n}`;
+      return group.label;
+    }
+
+    function guessRepoFromUrl() {
+      const params = new URLSearchParams(location.search);
+      const guessed = { owner: params.get("owner") || "", repo: params.get("repo") || "" };
+      const host = location.hostname;
+      if (!guessed.owner && host.endsWith(".github.io")) guessed.owner = host.split(".")[0];
+      const parts = location.pathname.split("/").filter(Boolean);
+      if (!guessed.repo && host.endsWith(".github.io") && parts[0] && parts[0] !== "pannello.html") guessed.repo = parts[0];
+      return guessed;
+    }
+
+    function utf8ToBase64(text) {
+      const bytes = new TextEncoder().encode(text);
+      let binary = "";
+      bytes.forEach((byte) => binary += String.fromCharCode(byte));
+      return btoa(binary);
+    }
+
+    function base64ToUtf8(base64) {
+      const binary = atob(base64.replace(/\s/g, ""));
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
+      return new TextDecoder().decode(bytes);
+    }
+
+    async function githubRequest(path, options = {}) {
+      const token = STORE.token;
+      const owner = STORE.owner;
+      const repo = STORE.repo;
+      if (!token || !owner || !repo) throw new Error("Connessione GitHub incompleta.");
+      const url = `${GH_BASE}/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contents/${path}`;
+      const response = await fetch(url, {
+        ...options,
+        headers: {
+          Accept: "application/vnd.github+json",
+          Authorization: `Bearer ${token}`,
+          "X-GitHub-Api-Version": "2022-11-28",
+          ...(options.headers || {})
+        }
+      });
+      if (!response.ok) {
+        let message = response.statusText;
+        try {
+          const data = await response.json();
+          message = data.message || message;
+        } catch (error) {}
+        const err = new Error(message);
+        err.status = response.status;
+        throw err;
+      }
+      return response.json();
+    }
+
+    async function loadConfigFromGitHub() {
+      setLoading(true, "Lettura di config.json da GitHub...");
+      const file = await githubRequest("config.json");
+      CONFIG_SHA = file.sha;
+      CFG = JSON.parse(base64ToUtf8(file.content || ""));
+      ORIGINAL_KEYS = Object.keys(CFG);
+      renderPanel();
+      setLoading(false);
+      showApp();
+      markDirty(false);
+      toast("Pannello caricato.");
+    }
+
+    async function putFile(path, contentBase64, message, sha) {
+      return githubRequest(path, {
+        method: "PUT",
+        body: JSON.stringify({
+          message,
+          content: contentBase64,
+          ...(sha ? { sha } : {})
+        })
+      });
+    }
+
+    async function saveConfigToGitHub() {
+      if (UPLOADING) {
+        toast("Aspetta la fine del caricamento file.");
+        return;
+      }
+      syncDerivedFields();
+      const errors = validateConfig();
+      if (errors.length) {
+        showValidationError(errors[0]);
+        return;
+      }
+      const button = $("#save-btn");
+      button.disabled = true;
+      button.textContent = "Salvo...";
+      try {
+        const content = JSON.stringify(CFG, null, 2) + "\n";
+        let result;
+        try {
+          result = await putFile("config.json", utf8ToBase64(content), "Aggiorna configurazione sito", CONFIG_SHA);
+        } catch (error) {
+          if (error.status !== 409) throw error;
+          const fresh = await githubRequest("config.json");
+          CONFIG_SHA = fresh.sha;
+          result = await putFile("config.json", utf8ToBase64(content), "Aggiorna configurazione sito", CONFIG_SHA);
+        }
+        CONFIG_SHA = result.content?.sha || CONFIG_SHA;
+        markDirty(false);
+        toast("Sito aggiornato online.");
+      } catch (error) {
+        console.error(error);
+        toast("Errore salvataggio: " + error.message);
+      } finally {
+        button.disabled = false;
+        button.textContent = "Salva online";
+      }
+    }
+
+    function syncDerivedFields() {
+      if ("schema_nome" in CFG) CFG.schema_nome = CFG.footer_nome || CFG.navbar_logo_testo || CFG.schema_nome || "";
+      if ("schema_indirizzo" in CFG) CFG.schema_indirizzo = CFG.footer_indirizzo || CFG.schema_indirizzo || "";
+      if ("schema_telefono" in CFG) CFG.schema_telefono = CFG.footer_telefono || CFG.footer_whatsapp || CFG.schema_telefono || "";
+      if ("schema_orari" in CFG) CFG.schema_orari = CFG.footer_orari || CFG.schema_orari || "";
+    }
+
+    function validateConfig() {
+      const errors = [];
+      const required = [
+        ["seo_titolo", "Il titolo SEO e obbligatorio."],
+        ["seo_descrizione", "La descrizione SEO e obbligatoria."],
+        ["footer_nome", "Il nome nel footer e obbligatorio."],
+        ["hero_titolo_sx", "La prima riga del titolo hero e obbligatoria."],
+        ["hero_titolo_dx", "La seconda riga del titolo hero e obbligatoria."]
+      ];
+      if (CFG.navbar_logo_tipo === "TESTO") required.push(["navbar_logo_testo", "Il testo logo e obbligatorio se il logo e testuale."]);
+      required.forEach(([key, message]) => {
+        if (!clean(CFG[key])) errors.push({ key, message });
+      });
+      if (!clean(CFG.footer_telefono) && !clean(CFG.footer_whatsapp) && !clean(CFG.footer_email)) {
+        errors.push({ key: "footer_telefono", message: "Inserisci almeno telefono, WhatsApp o email." });
+      }
+      ORIGINAL_KEYS.forEach((key) => {
+        if (isHiddenKey(key)) return;
+        const limit = maxLen(key);
+        if (limit && clean(CFG[key]).length > limit) {
+          errors.push({ key, message: `${humanLabel(key)} supera il limite di ${limit} caratteri.` });
+        }
+        if (fieldType(key, CFG[key]) === "url" && clean(CFG[key]) && !/^https?:\/\//i.test(clean(CFG[key]))) {
+          errors.push({ key, message: `${humanLabel(key)} deve iniziare con http:// o https://.` });
+        }
+      });
+      return errors;
+    }
+
+    function showValidationError(error) {
+      const section = sectionFor(error.key);
+      showSection(section.id);
+      setTimeout(() => {
+        const field = document.querySelector(`[data-field="${error.key}"]`);
+        if (field) field.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 80);
+      toast(error.message);
+    }
+
+    function renderPanel() {
+      const visibleKeys = ORIGINAL_KEYS.filter((key) => !isHiddenKey(key));
+      const bySection = {};
+      SECTION_DEFS.forEach((section) => bySection[section.id] = []);
+      visibleKeys.forEach((key) => bySection[sectionFor(key).id].push(key));
 
       const nav = $("#nav-list");
       nav.innerHTML = "";
-      SECTIONS.forEach((section) => {
-        const keys = grouped[section.id] || [];
+      SECTION_DEFS.forEach((section) => {
+        const keys = bySection[section.id] || [];
         if (!keys.length) return;
-        const button = document.createElement("button");
-        button.type = "button";
-        button.className = "nav-item";
-        button.dataset.section = section.id;
-        button.innerHTML = `<span>${esc(section.label)}</span><span class="nav-count">${keys.length}</span>`;
-        button.addEventListener("click", () => showSection(section.id));
-        nav.appendChild(button);
+        const item = document.createElement("button");
+        item.type = "button";
+        item.className = "nav-item";
+        item.dataset.section = section.id;
+        item.innerHTML = `<span>${esc(section.label)}</span><span class="nav-count">${keys.length}</span>`;
+        item.addEventListener("click", () => showSection(section.id));
+        nav.appendChild(item);
       });
 
       const main = $("#main");
       main.innerHTML = "";
-      SECTIONS.forEach((section) => {
-        const keys = grouped[section.id] || [];
+      SECTION_DEFS.forEach((section) => {
+        const keys = bySection[section.id] || [];
         if (!keys.length) return;
         const panel = document.createElement("section");
         panel.className = "panel";
@@ -635,23 +1001,116 @@
             <h1>${esc(section.label)}</h1>
             <p class="panel-note">${esc(section.note)}</p>
           </div>
-          <div class="field-grid">${keys.map(renderField).join("")}</div>`;
+          <div class="field-grid">${renderSectionKeys(keys)}</div>`;
         main.appendChild(panel);
       });
 
-      hydrateFields();
-      const first = SECTIONS.find((section) => grouped[section.id]?.length);
-      showSection(ACTIVE_SECTION || first?.id || "");
-      $("#site-title").textContent = CFG.seo_titolo || CFG.footer_nome || CFG.navbar_logo_testo || "Sito yoga";
+      $("#site-title").textContent = CFG.seo_titolo || CFG.footer_nome || CFG.navbar_logo_testo || "Sito";
       updateStatus();
+      hydrateFields();
+      const first = SECTION_DEFS.find((section) => bySection[section.id]?.length);
+      showSection(ACTIVE_SECTION || first?.id || "");
+    }
+
+    function renderSectionKeys(keys) {
+      const normal = [];
+      const groups = new Map();
+      keys.forEach((key) => {
+        const group = groupInfo(key);
+        if (!group) {
+          normal.push(key);
+          return;
+        }
+        if (!groups.has(group.id)) groups.set(group.id, { ...group, keys: [] });
+        groups.get(group.id).keys.push(key);
+      });
+      const fields = normal.map(renderField).join("");
+      const cards = Array.from(groups.values()).map(renderCard).join("");
+      return fields + cards;
+    }
+
+    function renderCard(group) {
+      return `
+        <details class="card" data-card="${esc(group.id)}" data-search="${esc((groupTitle(group) + " " + group.keys.join(" ")).toLowerCase())}">
+          <summary><span>${esc(groupTitle(group))}</span></summary>
+          <div class="card-body"><div class="field-grid">${group.keys.map(renderField).join("")}</div></div>
+        </details>`;
+    }
+
+    function renderField(key) {
+      const value = CFG[key] ?? "";
+      const type = fieldType(key, value);
+      const limit = maxLen(key);
+      const wide = type === "textarea" || type === "image" || type === "pdf" || limit > 100 ? " wide" : "";
+      const dataSearch = (humanLabel(key) + " " + key + " " + value).toLowerCase();
+      const label = `<div class="field-label"><span class="label-main">${esc(humanLabel(key))}</span><span class="label-key">${esc(key)}</span></div>`;
+      const help = HELP[key] ? `<div class="help">${esc(HELP[key])}</div>` : "";
+      let control = "";
+
+      if (type === "toggle") {
+        const on = value === "SI";
+        control = `<div class="toggle-line"><button class="toggle ${on ? "on" : ""}" type="button" data-toggle="${esc(key)}" aria-label="${esc(humanLabel(key))}"><span></span></button><span class="toggle-value" data-toggle-value="${esc(key)}">${on ? "SI" : "NO"}</span></div>`;
+      } else if (type === "select" || type === "stars") {
+        const choices = type === "stars" ? ["5", "4", "3", "2", "1"] : withCurrentChoice(SELECT_CHOICES[key] || [], value);
+        control = `<select data-key="${esc(key)}">${choices.map((choice) => `<option value="${esc(choice)}"${clean(value) === choice ? " selected" : ""}>${esc(choice)}</option>`).join("")}</select>`;
+      } else if (type === "textarea") {
+        control = `<textarea data-key="${esc(key)}"${limit ? ` maxlength="${limit}"` : ""}>${esc(value)}</textarea>${charRow(key, value, limit)}`;
+      } else if (type === "image" || type === "pdf") {
+        control = renderUploadField(key, type);
+      } else {
+        control = `<input class="control" data-key="${esc(key)}" type="${type}" value="${esc(value)}"${limit ? ` maxlength="${limit}"` : ""}>${charRow(key, value, limit)}`;
+      }
+
+      return `<section class="field${wide}" data-field="${esc(key)}" data-search="${esc(dataSearch)}">${label}${control}${help}</section>`;
+    }
+
+    function withCurrentChoice(choices, value) {
+      const current = clean(value);
+      if (current && !choices.includes(current)) return [current, ...choices];
+      return choices;
+    }
+
+    function charRow(key, value, limit) {
+      if (!limit) return "";
+      const length = clean(value).length;
+      return `<div class="char-row"><span>Limite layout</span><span class="char-count${length > limit ? " over" : ""}" data-count="${esc(key)}">${length}/${limit}</span></div>`;
+    }
+
+    function renderUploadField(key, type) {
+      const value = clean(CFG[key]);
+      const accept = type === "pdf" ? "application/pdf,.pdf" : "image/jpeg,image/png,image/webp,image/gif,image/svg+xml";
+      const kindText = type === "pdf" ? "PDF" : "immagine";
+      const preview = type === "pdf"
+        ? `<div class="thumb">PDF</div>`
+        : `<div class="thumb" data-thumb="${esc(key)}">${value ? `<img src="${esc(value)}" alt="">` : "Nessun file"}</div>`;
+      return `
+        <div class="upload-box" data-upload-box="${esc(key)}">
+          <div class="upload-current">
+            ${preview}
+            <div class="file-name" data-file-name="${esc(key)}">${value ? esc(value) : `Nessun ${kindText} caricato`}</div>
+            <button class="btn small" type="button" data-clear-upload="${esc(key)}">Rimuovi</button>
+          </div>
+          <label class="btn file-picker">
+            Carica ${kindText}
+            <input type="file" data-upload="${esc(key)}" data-upload-type="${esc(type)}" accept="${accept}">
+          </label>
+          <div class="upload-status" data-upload-status="${esc(key)}"></div>
+          <div class="help">Il file viene caricato in ${ASSET_DIR}/ e nel JSON resta solo il path relativo.</div>
+        </div>`;
     }
 
     function hydrateFields() {
-      $$("[data-key]").forEach((input) => {
-        input.addEventListener("input", () => {
-          CFG[input.dataset.key] = input.value;
-          markDirty();
-          if (isImageKey(input.dataset.key)) updatePreview(input.dataset.key);
+      $$("[data-key]").forEach((field) => {
+        field.addEventListener("input", () => {
+          CFG[field.dataset.key] = field.value;
+          updateCounter(field.dataset.key);
+          markDirty(true);
+          if (field.dataset.key.endsWith("_tipo")) renderPanel();
+        });
+        field.addEventListener("change", () => {
+          CFG[field.dataset.key] = field.value;
+          markDirty(true);
+          if (field.dataset.key.endsWith("_tipo")) renderPanel();
         });
       });
       $$("[data-toggle]").forEach((button) => {
@@ -660,14 +1119,27 @@
           const next = CFG[key] === "SI" ? "NO" : "SI";
           CFG[key] = next;
           button.classList.toggle("on", next === "SI");
-          const value = $(`[data-toggle-value="${CSS.escape(key)}"]`);
-          if (value) value.textContent = next;
-          markDirty();
+          const text = document.querySelector(`[data-toggle-value="${key}"]`);
+          if (text) text.textContent = next;
+          markDirty(true);
         });
       });
-      $$("textarea").forEach(autoGrow);
-      $$("textarea").forEach((textarea) => textarea.addEventListener("input", () => autoGrow(textarea)));
-      $$("[data-preview]").forEach((img) => updatePreview(img.dataset.preview));
+      $$("textarea").forEach((textarea) => {
+        autoGrow(textarea);
+        textarea.addEventListener("input", () => autoGrow(textarea));
+      });
+      $$("[data-upload]").forEach((input) => {
+        input.addEventListener("change", () => handleUpload(input));
+      });
+      $$("[data-clear-upload]").forEach((button) => {
+        button.addEventListener("click", () => clearUpload(button.dataset.clearUpload));
+      });
+      $$("[data-thumb] img").forEach((img) => {
+        img.onerror = () => {
+          const parent = img.parentElement;
+          if (parent) parent.textContent = "File";
+        };
+      });
     }
 
     function autoGrow(textarea) {
@@ -675,15 +1147,110 @@
       textarea.style.height = Math.max(112, textarea.scrollHeight) + "px";
     }
 
-    function updatePreview(key) {
-      const img = $(`[data-preview="${CSS.escape(key)}"]`);
-      if (!img) return;
+    function updateCounter(key) {
+      const count = document.querySelector(`[data-count="${key}"]`);
+      if (!count) return;
+      const limit = maxLen(key);
+      const length = clean(CFG[key]).length;
+      count.textContent = `${length}/${limit}`;
+      count.classList.toggle("over", length > limit);
+    }
+
+    async function handleUpload(input) {
+      const key = input.dataset.upload;
+      const type = input.dataset.uploadType;
+      const file = input.files && input.files[0];
+      if (!file) return;
+
+      if (type === "image" && !/^image\//.test(file.type)) {
+        toast("Carica un file immagine valido.");
+        input.value = "";
+        return;
+      }
+      if (type === "pdf" && file.type !== "application/pdf" && !/\.pdf$/i.test(file.name)) {
+        toast("Carica un PDF valido.");
+        input.value = "";
+        return;
+      }
+      if (type === "image" && file.size > IMAGE_MAX_BYTES) {
+        toast("Immagine troppo grande: massimo 8 MB.");
+        input.value = "";
+        return;
+      }
+      if (type === "pdf" && file.size > PDF_MAX_BYTES) {
+        toast("PDF troppo grande: massimo 12 MB.");
+        input.value = "";
+        return;
+      }
+
+      const status = document.querySelector(`[data-upload-status="${key}"]`);
+      setUploadStatus(key, "Caricamento in corso...");
+      UPLOADING = true;
+      try {
+        const content = await fileToBase64(file);
+        const path = `${ASSET_DIR}/${slug(key)}-${Date.now()}-${slug(file.name)}`;
+        const result = await putFile(path, content, `Carica asset ${path}`);
+        CFG[key] = result.content?.path || path;
+        updateUploadView(key, type);
+        markDirty(true);
+        setUploadStatus(key, "File caricato. Ricordati di salvare la configurazione.");
+        toast("File caricato nel repository.");
+      } catch (error) {
+        console.error(error);
+        setUploadStatus(key, "Errore caricamento: " + error.message);
+        toast("Errore caricamento file.");
+      } finally {
+        UPLOADING = false;
+        input.value = "";
+        if (status) status.classList.add("show");
+      }
+    }
+
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result).split(",")[1] || "");
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function slug(value) {
+      const parts = clean(value).split(".");
+      const ext = parts.length > 1 ? "." + parts.pop().toLowerCase().replace(/[^a-z0-9]/g, "") : "";
+      const base = parts.join(".")
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .slice(0, 54) || "file";
+      return base + ext;
+    }
+
+    function setUploadStatus(key, text) {
+      const status = document.querySelector(`[data-upload-status="${key}"]`);
+      if (!status) return;
+      status.textContent = text;
+      status.classList.add("show");
+    }
+
+    function updateUploadView(key, type) {
       const value = clean(CFG[key]);
-      img.onerror = () => {
-        img.onerror = null;
-        img.src = svgPlaceholder(humanLabel(key));
-      };
-      img.src = value || svgPlaceholder(humanLabel(key));
+      const name = document.querySelector(`[data-file-name="${key}"]`);
+      if (name) name.textContent = value || (type === "pdf" ? "Nessun PDF caricato" : "Nessuna immagine caricata");
+      const thumb = document.querySelector(`[data-thumb="${key}"]`);
+      if (thumb) {
+        thumb.innerHTML = value ? `<img src="${esc(value)}" alt="">` : "Nessun file";
+        const img = thumb.querySelector("img");
+        if (img) img.onerror = () => thumb.textContent = "File";
+      }
+    }
+
+    function clearUpload(key) {
+      CFG[key] = "";
+      updateUploadView(key, fieldType(key, ""));
+      setUploadStatus(key, "File rimosso dalla configurazione. Il file gia caricato non viene cancellato dal repository.");
+      markDirty(true);
     }
 
     function showSection(id) {
@@ -694,190 +1261,96 @@
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    function markDirty(value = true) {
+    function filterFields(query) {
+      const q = clean(query).toLowerCase();
+      $$("[data-field], [data-card]").forEach((el) => {
+        const haystack = el.dataset.search || "";
+        el.classList.toggle("hidden", Boolean(q) && !haystack.includes(q));
+      });
+    }
+
+    function markDirty(value) {
       DIRTY = value;
       $("#dirty-dot").classList.toggle("on", DIRTY);
     }
 
-    function updateStatus() {
-      const status = $("#connection-status");
-      if (STORE.owner && STORE.repo) {
-        status.textContent = `GitHub collegato: ${STORE.owner}/${STORE.repo}`;
-      } else {
-        status.textContent = "Nessun repository GitHub collegato. Puoi comunque scaricare il JSON.";
-      }
+    function setLoading(on, text) {
+      $("#loading-text").textContent = text || "Caricamento...";
+      $("#loading-screen").classList.toggle("hidden", !on);
+      $("#setup-screen").classList.add("hidden");
     }
 
-    function filterFields(query) {
-      const q = clean(query).toLowerCase();
-      $$("[data-field]").forEach((field) => {
-        field.classList.toggle("hidden", q && !field.dataset.search.includes(q));
-      });
+    function showSetup(message) {
+      document.body.classList.add("locked");
+      $("#app").setAttribute("aria-hidden", "true");
+      $("#loading-screen").classList.add("hidden");
+      $("#setup-screen").classList.remove("hidden");
+      const error = $("#setup-error");
+      error.textContent = message || "";
+      error.classList.toggle("show", Boolean(message));
     }
 
-    function downloadConfig() {
-      const blob = new Blob([JSON.stringify(CFG, null, 2) + "\n"], { type: "application/json;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "config.json";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-      toast("config.json scaricato.");
-    }
-
-    function toBase64(str) {
-      const bytes = new TextEncoder().encode(str);
-      let binary = "";
-      bytes.forEach((byte) => binary += String.fromCharCode(byte));
-      return btoa(binary);
-    }
-
-    async function githubFetch(path, options = {}) {
-      if (!STORE.token || !STORE.owner || !STORE.repo) throw new Error("Connessione GitHub incompleta.");
-      const url = `https://api.github.com/repos/${encodeURIComponent(STORE.owner)}/${encodeURIComponent(STORE.repo)}/contents/${path}`;
-      const response = await fetch(url, {
-        ...options,
-        headers: {
-          "Accept": "application/vnd.github+json",
-          "Authorization": `Bearer ${STORE.token}`,
-          "X-GitHub-Api-Version": "2022-11-28",
-          ...(options.headers || {})
-        }
-      });
-      if (!response.ok) {
-        const text = await response.text();
-        throw new Error(`GitHub ${response.status}: ${text}`);
-      }
-      return response.json();
-    }
-
-    async function saveToGitHub() {
-      if (!STORE.token || !STORE.owner || !STORE.repo) {
-        openSettings();
-        toast("Inserisci prima i dati GitHub.");
-        return;
-      }
-      const button = $("#save-btn");
-      button.disabled = true;
-      button.textContent = "Salvo...";
-      try {
-        let sha = GH_SHA;
-        if (!sha) {
-          const current = await githubFetch("config.json");
-          sha = current.sha;
-          GH_SHA = sha;
-        }
-        const content = JSON.stringify(CFG, null, 2) + "\n";
-        const result = await githubFetch("config.json", {
-          method: "PUT",
-          body: JSON.stringify({
-            message: "Aggiorna configurazione sito yoga",
-            content: toBase64(content),
-            sha
-          })
-        });
-        GH_SHA = result.content?.sha || null;
-        markDirty(false);
-        toast("Sito aggiornato su GitHub.");
-      } catch (error) {
-        console.error(error);
-        toast("Errore GitHub: controlla token, repository e permessi.");
-      } finally {
-        button.disabled = false;
-        button.textContent = "Salva online";
-      }
-    }
-
-    async function loadLocalConfig() {
-      const response = await fetch("config.json?ts=" + Date.now(), { cache: "no-store" });
-      if (!response.ok) throw new Error("HTTP " + response.status);
-      return response.json();
-    }
-
-    function setConfig(config) {
-      CFG = config;
-      ORIGINAL_KEYS = Object.keys(config);
-      render();
-      markDirty(false);
+    function showApp() {
+      document.body.classList.remove("locked");
+      $("#app").setAttribute("aria-hidden", "false");
+      $("#setup-screen").classList.add("hidden");
       $("#loading-screen").classList.add("hidden");
     }
 
-    async function init() {
-      bindChrome();
-      try {
-        const config = await loadLocalConfig();
-        setConfig(config);
-      } catch (error) {
-        console.warn(error);
-        $("#loading-screen h2").textContent = "Non trovo config.json";
-        $("#loading-screen p").textContent = "Se stai aprendo il pannello da desktop, importa manualmente il file oppure pubblicalo insieme al sito.";
-        $("#retry-local").classList.remove("hidden");
-        $("#import-label").classList.remove("hidden");
-      }
-    }
-
-    function bindChrome() {
-      $("#search").addEventListener("input", (event) => filterFields(event.target.value));
-      $("#download-btn").addEventListener("click", downloadConfig);
-      $("#save-btn").addEventListener("click", saveToGitHub);
-      $("#settings-btn").addEventListener("click", openSettings);
-      $("#settings-close").addEventListener("click", closeSettings);
-      $("#settings-save").addEventListener("click", saveSettings);
-      $("#disconnect-btn").addEventListener("click", disconnect);
-      $("#retry-local").addEventListener("click", init);
-      $("#import-file").addEventListener("change", importFile);
-      window.addEventListener("beforeunload", (event) => {
-        if (!DIRTY) return;
-        event.preventDefault();
-        event.returnValue = "";
-      });
+    function updateStatus() {
+      $("#connection-status").textContent = STORE.owner && STORE.repo
+        ? `Connesso a ${STORE.owner}/${STORE.repo}. Le immagini vengono caricate in ${ASSET_DIR}/.`
+        : "Non connesso.";
     }
 
     function openSettings() {
-      $("#gh-token").value = STORE.token;
-      $("#gh-owner").value = STORE.owner;
-      $("#gh-repo").value = STORE.repo;
+      $("#settings-token").value = STORE.token;
+      $("#settings-owner").value = STORE.owner;
+      $("#settings-repo").value = STORE.repo;
+      $("#settings-error").classList.remove("show");
       $("#settings-modal").classList.add("open");
       $("#settings-modal").setAttribute("aria-hidden", "false");
     }
+
     function closeSettings() {
       $("#settings-modal").classList.remove("open");
       $("#settings-modal").setAttribute("aria-hidden", "true");
     }
-    function saveSettings() {
-      STORE.token = clean($("#gh-token").value);
-      STORE.owner = clean($("#gh-owner").value);
-      STORE.repo = clean($("#gh-repo").value);
-      GH_SHA = null;
+
+    async function saveSettingsAndReload() {
+      const token = clean($("#settings-token").value);
+      const owner = clean($("#settings-owner").value);
+      const repo = clean($("#settings-repo").value);
+      if (!token || !owner || !repo) {
+        showInlineError("settings-error", "Compila token, owner e repository.");
+        return;
+      }
+      STORE.token = token;
+      STORE.owner = owner;
+      STORE.repo = repo;
       closeSettings();
-      updateStatus();
-      toast("Dati GitHub salvati.");
-    }
-    function disconnect() {
-      STORE.clear();
-      GH_SHA = null;
-      closeSettings();
-      updateStatus();
-      toast("GitHub scollegato.");
+      try {
+        await loadConfigFromGitHub();
+      } catch (error) {
+        console.error(error);
+        showSetup("Connessione non riuscita: " + error.message);
+      }
     }
 
-    function importFile(event) {
-      const file = event.target.files?.[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        try {
-          setConfig(JSON.parse(String(reader.result || "{}")));
-          toast("Config importato.");
-        } catch (error) {
-          console.error(error);
-          toast("Il file non è un JSON valido.");
-        }
-      };
-      reader.readAsText(file, "utf-8");
+    function disconnect() {
+      STORE.clear();
+      CFG = {};
+      ORIGINAL_KEYS = [];
+      CONFIG_SHA = null;
+      closeSettings();
+      showSetup("Connessione scollegata.");
+      updateStatus();
+    }
+
+    function showInlineError(id, message) {
+      const box = $("#" + id);
+      box.textContent = message;
+      box.classList.add("show");
     }
 
     let toastTimer = 0;
@@ -886,7 +1359,57 @@
       el.textContent = message;
       el.classList.add("show");
       clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => el.classList.remove("show"), 2800);
+      toastTimer = setTimeout(() => el.classList.remove("show"), 3000);
+    }
+
+    function bindChrome() {
+      $("#setup-submit").addEventListener("click", async () => {
+        const token = clean($("#setup-token").value);
+        const owner = clean($("#setup-owner").value);
+        const repo = clean($("#setup-repo").value);
+        if (!token || !owner || !repo) {
+          showInlineError("setup-error", "Compila token, owner e repository.");
+          return;
+        }
+        STORE.token = token;
+        STORE.owner = owner;
+        STORE.repo = repo;
+        try {
+          await loadConfigFromGitHub();
+        } catch (error) {
+          console.error(error);
+          showSetup("Connessione non riuscita: " + error.message);
+        }
+      });
+      $("#connection-btn").addEventListener("click", openSettings);
+      $("#settings-close").addEventListener("click", closeSettings);
+      $("#settings-save").addEventListener("click", saveSettingsAndReload);
+      $("#disconnect-btn").addEventListener("click", disconnect);
+      $("#save-btn").addEventListener("click", saveConfigToGitHub);
+      $("#search").addEventListener("input", (event) => filterFields(event.target.value));
+      window.addEventListener("beforeunload", (event) => {
+        if (!DIRTY) return;
+        event.preventDefault();
+        event.returnValue = "";
+      });
+    }
+
+    async function init() {
+      bindChrome();
+      const guessed = guessRepoFromUrl();
+      $("#setup-owner").value = STORE.owner || guessed.owner;
+      $("#setup-repo").value = STORE.repo || guessed.repo;
+      $("#setup-token").value = STORE.token;
+      if (!STORE.token || !STORE.owner || !STORE.repo) {
+        showSetup("");
+        return;
+      }
+      try {
+        await loadConfigFromGitHub();
+      } catch (error) {
+        console.error(error);
+        showSetup("Connessione non riuscita: " + error.message);
+      }
     }
 
     init();
