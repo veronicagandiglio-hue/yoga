@@ -638,13 +638,13 @@
       { id: "galleria", label: "Galleria", note: "Foto principali e galleria estesa.", test: (key) => /^galleria_|^foto_/.test(key) },
       { id: "recensioni", label: "Recensioni", note: "Testimonianze e valutazioni.", test: (key) => /^recensioni_|^recensione_/.test(key) },
       { id: "faq", label: "FAQ", note: "Domande frequenti.", test: (key) => /^faq_/.test(key) },
-      { id: "footer", label: "Footer", note: "Dati di contatto, social, Google Maps e CTA finale.", test: (key) => /^footer_/.test(key) },
+      { id: "footer", label: "Footer", note: "Dati di contatto, social, pulsante Google Maps e CTA finale.", test: (key) => /^footer_/.test(key) },
       { id: "extra", label: "Extra", note: "Campi non classificati.", test: () => true }
     ];
 
     const SELECT_CHOICES = {
       tema_tipografico: ["LUSSO_SERIF", "MODERNO", "EDITORIALE"],
-      tema_palette: ["NATURA_PASTELLO", "TERRA", "SAGE", "MINIMALE"],
+      tema_palette: ["NATURA_PASTELLO", "TERRA", "SAGE", "MINIMALE", "CREMA_NOTTE"],
       navbar_logo_tipo: ["TESTO", "IMMAGINE"],
       hero_layout: ["CON_FOTO", "SOLO_TESTO", "GALLERIA"],
       chi_siamo_layout: ["FOTO_E_TESTO", "SOLO_TESTO", "PASSI"],
@@ -661,7 +661,6 @@
       og_immagine: "Immagine anteprima social",
       navbar_logo_testo: "Testo logo",
       navbar_logo_immagine: "Logo immagine",
-      footer_mappa_url: "Link Google Maps",
       footer_instagram: "Link Instagram",
       footer_facebook: "Link Facebook",
       pdf_menu_url: "PDF programma",
@@ -671,13 +670,14 @@
     const HELP = {
       footer_instagram: "Incolla il link completo del profilo Instagram, per esempio https://www.instagram.com/nomeprofilo.",
       footer_facebook: "Incolla il link completo della pagina Facebook, per esempio https://www.facebook.com/nomepagina.",
-      footer_mappa_url: "Incolla il link Google Maps dell'indirizzo o dell'attivita. Non caricare immagini qui.",
-      og_immagine: "Carica l'immagine che appare quando il sito viene condiviso su WhatsApp, Facebook o social.",
+      og_immagine: "Carica l'immagine che appare quando il sito viene condiviso su WhatsApp, Facebook o social. Sarà convertita in WebP.",
       pdf_menu_url: "Carica un PDF. Il file verra salvato nel repository e il sito usera il suo percorso.",
       navbar_logo_immagine: "Carica un logo in PNG, JPG, WebP o SVG. Se il logo e testuale puoi lasciare vuoto.",
       hero_cta_contatto: "Se il tipo CTA e WhatsApp o telefono, inserisci il numero. Se e email o URL, inserisci il valore corrispondente.",
       barra_cta_contatto: "Se il tipo CTA e WhatsApp o telefono, inserisci il numero. Se e email o URL, inserisci il valore corrispondente.",
-      popup_cta_contatto: "Se il tipo CTA e WhatsApp o telefono, inserisci il numero. Se e email o URL, inserisci il valore corrispondente."
+      popup_cta_contatto: "Se il tipo CTA e WhatsApp o telefono, inserisci il numero. Se e email o URL, inserisci il valore corrispondente.",
+      barra_scadenza: "Inserisci una data (es. cliccando sul calendario). Se la lasci vuota, la barra sarà sempre visibile. Se inserita, sparirà il giorno dopo la data indicata.",
+      popup_scadenza: "Come per la barra: se vuoto dura per sempre, se inserisci una data si disattiverà in automatico una volta superata."
     };
 
     function isHiddenKey(key) {
@@ -715,7 +715,7 @@
       if (key === "seo_descrizione") return 160;
       if (/navbar_voce_/.test(key)) return 22;
       if (/titolo_riga/.test(key)) return 24;
-      if (key === "hero_titolo_sx" || key === "hero_titolo_dx") return 24;
+      if (key === "hero_titolo") return 50;
       if (key === "hero_sottotitolo") return 120;
       if (/_cta_testo$/.test(key)) return 34;
       if (/^barra_testo$|^popup_testo$/.test(key)) return 140;
@@ -747,7 +747,7 @@
       if (key === "recensione_1_stelle" || /^recensione_\d+_stelle$/.test(key)) return "stars";
       if (SELECT_CHOICES[key]) return "select";
       if (/scadenza/i.test(key)) return "date";
-      if (key === "footer_mappa_url" || key === "footer_instagram" || key === "footer_facebook") return "url";
+      if (key === "footer_instagram" || key === "footer_facebook") return "url";
       if (/_cta_contatto$/.test(key)) return ctaContactType(key);
       if (/email/i.test(key)) return "email";
       if (/telefono|whatsapp/i.test(key)) return "tel";
@@ -934,8 +934,7 @@
         ["seo_titolo", "Il titolo SEO e obbligatorio."],
         ["seo_descrizione", "La descrizione SEO e obbligatoria."],
         ["footer_nome", "Il nome nel footer e obbligatorio."],
-        ["hero_titolo_sx", "La prima riga del titolo hero e obbligatoria."],
-        ["hero_titolo_dx", "La seconda riga del titolo hero e obbligatoria."]
+        ["hero_titolo", "Il titolo della sezione hero e obbligatorio."]
       ];
       if (CFG.navbar_logo_tipo === "TESTO") required.push(["navbar_logo_testo", "Il testo logo e obbligatorio se il logo e testuale."]);
       required.forEach(([key, message]) => {
@@ -1095,7 +1094,7 @@
             <input type="file" data-upload="${esc(key)}" data-upload-type="${esc(type)}" accept="${accept}">
           </label>
           <div class="upload-status" data-upload-status="${esc(key)}"></div>
-          <div class="help">Il file viene caricato in ${ASSET_DIR}/ e nel JSON resta solo il path relativo.</div>
+          <div class="help">Il file viene caricato in ${ASSET_DIR}/ e nel JSON resta solo il path relativo. Le immagini (no SVG) sono convertite in WebP compresso per massimizzare la velocità del sito.</div>
         </div>`;
     }
 
@@ -1105,7 +1104,12 @@
           CFG[field.dataset.key] = field.value;
           updateCounter(field.dataset.key);
           markDirty(true);
-          if (field.dataset.key.endsWith("_tipo")) renderPanel();
+          // Ricarica il pannello se si cambia il tipo di CTA per visualizzare il giusto campo "contatto"
+          if (field.dataset.key.endsWith("_tipo")) {
+             renderPanel();
+             const inputContatto = document.querySelector(`[data-key="${field.dataset.key.replace('_tipo', '_contatto')}"]`);
+             if(inputContatto) inputContatto.focus();
+          }
         });
         field.addEventListener("change", () => {
           CFG[field.dataset.key] = field.value;
@@ -1156,6 +1160,44 @@
       count.classList.toggle("over", length > limit);
     }
 
+    async function compressImageToWebP(file) {
+      return new Promise((resolve, reject) => {
+        if (file.type === "image/svg+xml") {
+          // Ignora SVG e lo restituisce intatto in base64
+          const reader = new FileReader();
+          reader.onload = () => resolve({ base64: String(reader.result).split(",")[1], ext: ".svg" });
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+          return;
+        }
+
+        const img = new Image();
+        const url = URL.createObjectURL(file);
+        img.onload = () => {
+          URL.revokeObjectURL(url);
+          let width = img.width;
+          let height = img.height;
+          
+          if (width > 1920) {
+            height = Math.round((height * 1920) / width);
+            width = 1920;
+          }
+
+          const canvas = document.createElement("canvas");
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, width, height);
+
+          const dataUrl = canvas.toDataURL("image/webp", 0.82);
+          const base64 = dataUrl.split(",")[1];
+          resolve({ base64, ext: ".webp" });
+        };
+        img.onerror = reject;
+        img.src = url;
+      });
+    }
+
     async function handleUpload(input) {
       const key = input.dataset.upload;
       const type = input.dataset.uploadType;
@@ -1184,17 +1226,27 @@
       }
 
       const status = document.querySelector(`[data-upload-status="${key}"]`);
-      setUploadStatus(key, "Caricamento in corso...");
+      setUploadStatus(key, "Elaborazione e caricamento in corso...");
       UPLOADING = true;
       try {
-        const content = await fileToBase64(file);
-        const path = `${ASSET_DIR}/${slug(key)}-${Date.now()}-${slug(file.name)}`;
+        let content, path;
+        
+        if (type === "image") {
+          const { base64, ext } = await compressImageToWebP(file);
+          content = base64;
+          const safeName = slug(file.name.replace(/\.[^/.]+$/, ""));
+          path = `${ASSET_DIR}/${safeName}-${Date.now()}${ext}`;
+        } else {
+          content = await fileToBase64(file);
+          path = `${ASSET_DIR}/${slug(key)}-${Date.now()}-${slug(file.name)}`;
+        }
+        
         const result = await putFile(path, content, `Carica asset ${path}`);
         CFG[key] = result.content?.path || path;
         updateUploadView(key, type);
         markDirty(true);
-        setUploadStatus(key, "File caricato. Ricordati di salvare la configurazione.");
-        toast("File caricato nel repository.");
+        setUploadStatus(key, "File caricato! Ricordati di Salvare online la configurazione in alto a destra.");
+        toast("File elaborato e caricato.");
       } catch (error) {
         console.error(error);
         setUploadStatus(key, "Errore caricamento: " + error.message);
@@ -1249,7 +1301,7 @@
     function clearUpload(key) {
       CFG[key] = "";
       updateUploadView(key, fieldType(key, ""));
-      setUploadStatus(key, "File rimosso dalla configurazione. Il file gia caricato non viene cancellato dal repository.");
+      setUploadStatus(key, "File rimosso dalla configurazione. Il file gia caricato non viene cancellato dal repository per sicurezza.");
       markDirty(true);
     }
 
