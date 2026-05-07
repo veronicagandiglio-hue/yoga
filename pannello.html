@@ -1,508 +1,775 @@
 <!doctype html>
 <html lang="it">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Ompage - Pannello Yoga</title>
-  <style>
-    :root {
-      --bg: #f5efe8;
-      --surface: #fffaf4;
-      --soft: #fbf4ed;
-      --ink: #241d19;
-      --muted: #73665e;
-      --line: rgba(36, 29, 25, 0.14);
-      --line-strong: rgba(36, 29, 25, 0.24);
-      --accent: #bd775b;
-      --sage: #738260;
-      --ok: #23704d;
-      --warn: #9b5d1e;
-      --error: #b53a2d;
-      --shadow: 0 18px 60px rgba(45, 29, 18, 0.12);
-      --sidebar: 18rem;
-      --topbar: 4.25rem;
-      --radius: 8px;
-      --font: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      --display: Georgia, "Times New Roman", serif;
-    }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ompage - Pannello</title>
+<style>
+:root {
+  --bg: #f3efe8;
+  --surface: #fffaf3;
+  --soft: #f8f1e9;
+  --ink: #181715;
+  --muted: #6e6860;
+  --line: rgba(24, 23, 21, 0.14);
+  --line-strong: rgba(24, 23, 21, 0.26);
+  --accent: #a35f48;
+  --accent-2: #537264;
+  --ok: #24714d;
+  --warn: #9a5b17;
+  --error: #b53b2f;
+  --shadow: 0 20px 70px rgba(32, 24, 16, 0.13);
+  --sidebar: 18.5rem;
+  --topbar: 4.4rem;
+  --radius: 8px;
+  --font: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --display: Georgia, "Times New Roman", serif;
+}
+* { box-sizing: border-box; }
+html, body { min-height: 100%; }
+body {
+  margin: 0;
+  background:
+    linear-gradient(90deg, rgba(24, 23, 21, 0.04) 1px, transparent 1px) 0 0 / 4rem 4rem,
+    var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 14px;
+  line-height: 1.5;
+}
+body.locked { overflow: hidden; }
+button, input, textarea, select { font: inherit; }
+button { cursor: pointer; }
+a { color: inherit; }
+.hidden { display: none !important; }
 
-    * { box-sizing: border-box; }
-    html, body { min-height: 100%; }
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--ink);
-      font-family: var(--font);
-      font-size: 14px;
-      line-height: 1.5;
-    }
-    body.locked { overflow: hidden; }
-    button, input, textarea, select { font: inherit; }
-    button { cursor: pointer; }
-    a { color: inherit; }
-    .hidden { display: none !important; }
+.topbar {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 40;
+  height: var(--topbar);
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 0 1rem;
+  background: rgba(243, 239, 232, 0.9);
+  border-bottom: 1px solid var(--line);
+  backdrop-filter: blur(16px);
+}
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
+  font-weight: 900;
+  white-space: nowrap;
+}
+.brand-mark {
+  width: 2rem;
+  height: 2rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--surface);
+  font-family: var(--display);
+  font-size: 1.1rem;
+  line-height: 1;
+}
+.site-title {
+  min-width: 0;
+  text-align: center;
+  color: var(--muted);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.top-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.55rem;
+  min-width: 0;
+}
+.dirty-dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: rgba(24, 23, 21, 0.2);
+  flex: 0 0 auto;
+}
+.dirty-dot.on {
+  background: var(--accent);
+  box-shadow: 0 0 0 5px rgba(163, 95, 72, 0.16);
+}
+.btn {
+  min-height: 2.35rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  max-width: 100%;
+  padding: 0.55rem 0.95rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 0.88rem;
+  font-weight: 800;
+  line-height: 1.1;
+  text-align: center;
+  text-decoration: none;
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease, color 160ms ease;
+  overflow-wrap: anywhere;
+}
+.btn:hover {
+  transform: translateY(-1px);
+  border-color: rgba(24, 23, 21, 0.38);
+}
+.btn.primary {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--surface);
+}
+.btn.primary:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.btn.ghost { background: transparent; }
+.btn.danger {
+  background: #fff3f0;
+  border-color: rgba(181, 59, 47, 0.28);
+  color: var(--error);
+}
+.btn.small { min-height: 2rem; padding: 0.35rem 0.7rem; font-size: 0.8rem; }
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+.btn-dev-download {
+  min-height: 2.35rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.55rem 0.95rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  font-size: 0.75rem;
+  text-decoration: none;
+}
+.layout {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: var(--sidebar) minmax(0, 1fr);
+  padding-top: var(--topbar);
+}
+.sidebar {
+  position: fixed;
+  top: var(--topbar);
+  bottom: 0;
+  left: 0;
+  width: var(--sidebar);
+  padding: 1rem;
+  overflow: auto;
+  border-right: 1px solid var(--line);
+  background: rgba(255, 250, 243, 0.52);
+}
+.search {
+  width: 100%;
+  margin-bottom: 1rem;
+  padding: 0.72rem 0.88rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  outline: none;
+}
+.search:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(163, 95, 72, 0.14);
+}
+.nav-list { display: grid; gap: 0.35rem; }
+.nav-item {
+  width: 100%;
+  min-height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.56rem 0.75rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--muted);
+  text-align: left;
+}
+.nav-item:hover,
+.nav-item.active {
+  background: var(--surface);
+  border-color: var(--line);
+  color: var(--ink);
+}
+.nav-count {
+  min-width: 1.65rem;
+  padding: 0.12rem 0.45rem;
+  border-radius: 999px;
+  background: rgba(24, 23, 21, 0.08);
+  color: var(--muted);
+  text-align: center;
+  font-size: 0.75rem;
+}
+.sidebar-foot {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+.main { grid-column: 2; padding: 2rem; }
+.panel {
+  display: none;
+  max-width: 1140px;
+  margin: 0 auto 3rem;
+}
+.panel.active { display: block; }
+.panel-head {
+  display: grid;
+  gap: 0.55rem;
+  margin-bottom: 1.25rem;
+}
+.kicker {
+  color: var(--accent-2);
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+h1 {
+  margin: 0;
+  font-family: var(--display);
+  font-size: 3rem;
+  line-height: 0.98;
+  font-weight: 500;
+}
+.panel-note {
+  max-width: 46rem;
+  margin: 0;
+  color: var(--muted);
+}
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+.field {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  padding: 1rem;
+}
+.field.wide { grid-column: 1 / -1; }
+.field-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.55rem;
+}
+.label-main { font-weight: 900; }
+.control, textarea, select {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--soft);
+  color: var(--ink);
+  outline: none;
+  padding: 0.72rem 0.82rem;
+}
+textarea {
+  min-height: 7rem;
+  resize: vertical;
+}
+.control:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(163, 95, 72, 0.14);
+}
+.help {
+  margin-top: 0.6rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+.char-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.35rem;
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+.char-count.over {
+  color: var(--error);
+  font-weight: 900;
+}
+.toggle-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.toggle {
+  position: relative;
+  width: 3.2rem;
+  height: 1.75rem;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(24, 23, 21, 0.22);
+  padding: 0.18rem;
+}
+.toggle span {
+  display: block;
+  width: 1.38rem;
+  height: 1.38rem;
+  border-radius: 50%;
+  background: var(--surface);
+  box-shadow: 0 2px 8px rgba(24, 23, 21, 0.18);
+  transition: transform 180ms ease;
+}
+.toggle.on { background: var(--accent-2); }
+.toggle.on span { transform: translateX(1.42rem); }
+.toggle-value {
+  color: var(--muted);
+  font-weight: 900;
+}
+.upload-box { display: grid; gap: 0.75rem; }
+.upload-current {
+  display: grid;
+  grid-template-columns: 4rem minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  align-items: center;
+  min-height: 4rem;
+}
+.thumb {
+  width: 4rem;
+  height: 4rem;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--soft);
+  color: var(--muted);
+  font-size: 0.72rem;
+  text-align: center;
+}
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.file-name {
+  min-width: 0;
+  color: var(--muted);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.file-picker input { display: none; }
+.upload-status {
+  display: none;
+  color: var(--accent-2);
+  font-size: 0.82rem;
+}
+.upload-status.show { display: block; }
+.card {
+  grid-column: 1 / -1;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  overflow: hidden;
+}
+.card summary {
+  min-height: 3.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 1rem;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 900;
+}
+.card summary::-webkit-details-marker { display: none; }
+.card summary::after {
+  content: "+";
+  width: 1.75rem;
+  height: 1.75rem;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  color: var(--muted);
+  flex: 0 0 auto;
+}
+.card[open] summary::after { content: "-"; }
+.card-body {
+  padding: 1rem;
+  border-top: 1px solid var(--line);
+  background: rgba(248, 241, 233, 0.58);
+}
+.screen {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 1.2rem;
+  background:
+    linear-gradient(180deg, rgba(163, 95, 72, 0.2), rgba(243, 239, 232, 0) 22rem),
+    var(--bg);
+}
+.setup-card, .modal-card {
+  width: min(100%, 35rem);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  padding: 1.5rem;
+}
+.setup-card h2, .modal-card h2 {
+  margin: 0 0 0.45rem;
+  font-family: var(--display);
+  font-size: 2.2rem;
+  font-weight: 500;
+}
+.setup-card p, .modal-card p {
+  margin: 0 0 1rem;
+  color: var(--muted);
+}
+.form-grid { display: grid; gap: 0.8rem; }
+.form-grid label { display: grid; gap: 0.35rem; }
+.error-box {
+  display: none;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid rgba(181, 59, 47, 0.28);
+  border-radius: var(--radius);
+  background: #fff3f0;
+  color: var(--error);
+  font-size: 0.86rem;
+}
+.error-box.show { display: block; }
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: none;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(24, 23, 21, 0.35);
+  backdrop-filter: blur(10px);
+}
+.modal.open { display: grid; }
+.modal-actions, .setup-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-top: 1rem;
+}
+.loading {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: var(--muted);
+}
+.spinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(24, 23, 21, 0.18);
+  border-top-color: var(--ink);
+  border-radius: 50%;
+  animation: spin 800ms linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 1rem;
+  z-index: 120;
+  transform: translateX(-50%) translateY(1rem);
+  opacity: 0;
+  pointer-events: none;
+  max-width: calc(100vw - 2rem);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--surface);
+  padding: 0.72rem 1rem;
+  box-shadow: var(--shadow);
+  text-align: center;
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%);
+}
+@media (max-width: 920px) {
+  :root { --sidebar: 0rem; }
+  .layout { display: block; }
+  .sidebar {
+    position: static;
+    width: auto;
+    padding-top: calc(var(--topbar) + 1rem);
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .main { padding: 1rem; }
+  .field-grid { grid-template-columns: 1fr; }
+  .topbar { grid-template-columns: auto 1fr; }
+  .site-title { display: none; }
+  .top-actions .btn.ghost { display: none; }
+  h1 { font-size: 2.35rem; }
+}
 
-    .topbar {
-      position: fixed;
-      inset: 0 0 auto 0;
-      z-index: 30;
-      height: var(--topbar);
-      display: grid;
-      grid-template-columns: auto minmax(0, 1fr) auto;
-      align-items: center;
-      gap: 1rem;
-      padding: 0 1rem;
-      background: rgba(245, 239, 232, 0.92);
-      border-bottom: 1px solid var(--line);
-      backdrop-filter: blur(16px);
-    }
-    .brand {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.65rem;
-      min-width: 0;
-      font-weight: 800;
-      white-space: nowrap;
-    }
-    .brand-mark {
-      width: 2rem;
-      height: 2rem;
-      display: grid;
-      place-items: center;
-      border-radius: 50%;
-      background: var(--ink);
-      color: var(--surface);
-      font-family: var(--display);
-      font-size: 1.1rem;
-    }
-    .site-title {
-      min-width: 0;
-      text-align: center;
-      color: var(--muted);
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-    }
-    .top-actions {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 0.55rem;
-    }
-    .dirty-dot {
-      width: 0.55rem;
-      height: 0.55rem;
-      border-radius: 50%;
-      background: rgba(36, 29, 25, 0.18);
-      flex: 0 0 auto;
-    }
-    .dirty-dot.on {
-      background: var(--accent);
-      box-shadow: 0 0 0 5px rgba(189, 119, 91, 0.14);
-    }
+/* ── GUIDA BOT ── */
+.nav-item-guida {
+  width: 100%;
+  min-height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.56rem 0.75rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--muted);
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  margin-top: 0.35rem;
+}
+.nav-item-guida:hover, .nav-item-guida.active {
+  background: var(--surface);
+  border-color: var(--line);
+  color: var(--ink);
+}
+.panel-guida {
+  display: none;
+  position: fixed;
+  top: var(--topbar);
+  left: var(--sidebar);
+  right: 0;
+  bottom: 0;
+  overflow-y: auto;
+  background: var(--bg);
+  z-index: 10;
+  padding: 2rem;
+}
+.panel-guida.active { display: block; }
+@media (max-width: 920px) {
+  .panel-guida { left: 0; padding: 1rem; }
+}
+.guida-textarea {
+  width: 100%;
+  min-height: 480px;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--soft);
+  color: var(--ink);
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  line-height: 1.65;
+  resize: vertical;
+  outline: none;
+}
+.guida-textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(163, 95, 72, 0.14);
+}
+.guida-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+.guida-status { color: var(--muted); font-size: 0.82rem; }
+.guida-hint {
+  margin-top: 1rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid rgba(83,114,100,.28);
+  border-radius: var(--radius);
+  background: rgba(83,114,100,.06);
+  color: var(--accent-2);
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
 
-    .btn {
-      min-height: 2.35rem;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.45rem;
-      padding: 0.55rem 0.95rem;
-      border: 1px solid var(--line-strong);
-      border-radius: 999px;
-      background: var(--surface);
-      color: var(--ink);
-      font-size: 0.88rem;
-      font-weight: 700;
-      text-decoration: none;
-      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
-    }
-    .btn:hover { transform: translateY(-1px); border-color: rgba(36, 29, 25, 0.34); }
-    .btn.primary { background: var(--ink); border-color: var(--ink); color: var(--surface); }
-    .btn.primary:hover { background: var(--accent); border-color: var(--accent); }
-    .btn.ghost { background: transparent; }
-    .btn.danger { background: #fff3f0; border-color: rgba(181, 58, 45, 0.28); color: var(--error); }
-    .btn.small { min-height: 2rem; padding: 0.35rem 0.7rem; font-size: 0.8rem; }
-    .btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
-
-    .layout {
-      min-height: 100vh;
-      display: grid;
-      grid-template-columns: var(--sidebar) minmax(0, 1fr);
-      padding-top: var(--topbar);
-    }
-    .sidebar {
-      position: fixed;
-      top: var(--topbar);
-      bottom: 0;
-      left: 0;
-      width: var(--sidebar);
-      padding: 1rem;
-      overflow: auto;
-      border-right: 1px solid var(--line);
-      background: rgba(255, 250, 244, 0.46);
-    }
-    .search {
-      width: 100%;
-      margin-bottom: 1rem;
-      padding: 0.72rem 0.88rem;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      background: var(--surface);
-      color: var(--ink);
-      outline: none;
-    }
-    .search:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(189, 119, 91, 0.14);
-    }
-    .nav-list { display: grid; gap: 0.35rem; }
-    .nav-item {
-      width: 100%;
-      min-height: 2.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.75rem;
-      padding: 0.56rem 0.75rem;
-      border: 1px solid transparent;
-      border-radius: var(--radius);
-      background: transparent;
-      color: var(--muted);
-      text-align: left;
-    }
-    .nav-item:hover, .nav-item.active {
-      background: var(--surface);
-      border-color: var(--line);
-      color: var(--ink);
-    }
-    .nav-count {
-      min-width: 1.65rem;
-      padding: 0.12rem 0.45rem;
-      border-radius: 999px;
-      background: rgba(36, 29, 25, 0.08);
-      color: var(--muted);
-      text-align: center;
-      font-size: 0.75rem;
-    }
-    .sidebar-foot {
-      margin-top: 1rem;
-      padding-top: 1rem;
-      border-top: 1px solid var(--line);
-      color: var(--muted);
-      font-size: 0.82rem;
-    }
-
-    .main {
-      grid-column: 2;
-      padding: 2rem;
-    }
-    .panel {
-      display: none;
-      max-width: 1120px;
-      margin: 0 auto 3rem;
-    }
-    .panel.active { display: block; }
-    .panel-head {
-      display: grid;
-      gap: 0.55rem;
-      margin-bottom: 1.25rem;
-    }
-    .kicker {
-      color: var(--sage);
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      font-size: 0.72rem;
-      font-weight: 800;
-    }
-    h1 {
-      margin: 0;
-      font-family: var(--display);
-      font-size: 3rem;
-      line-height: 0.98;
-      font-weight: 500;
-    }
-    .panel-note { max-width: 46rem; margin: 0; color: var(--muted); }
-    .field-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 0.85rem;
-    }
-    .field {
-      min-width: 0;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: var(--surface);
-      padding: 1rem;
-    }
-    .field.wide { grid-column: 1 / -1; }
-    .field-label {
-      display: flex;
-      justify-content: space-between;
-      gap: 1rem;
-      margin-bottom: 0.55rem;
-    }
-    .label-main { font-weight: 800; }
-    .label-key {
-      color: var(--muted);
-      font-family: "SFMono-Regular", Consolas, monospace;
-      font-size: 0.74rem;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-    }
-    .control, textarea, select {
-      width: 100%;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: var(--soft);
-      color: var(--ink);
-      outline: none;
-      padding: 0.72rem 0.82rem;
-    }
-    textarea {
-      min-height: 7rem;
-      resize: vertical;
-    }
-    .control:focus, textarea:focus, select:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(189, 119, 91, 0.14);
-    }
-    .help {
-      margin-top: 0.45rem;
-      color: var(--muted);
-      font-size: 0.78rem;
-    }
-    .char-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 1rem;
-      margin-top: 0.35rem;
-      color: var(--muted);
-      font-size: 0.76rem;
-    }
-    .char-count.over { color: var(--error); font-weight: 800; }
-    .toggle-line {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      min-height: 2.65rem;
-    }
-    .toggle {
-      position: relative;
-      width: 3.2rem;
-      height: 1.75rem;
-      border: 0;
-      border-radius: 999px;
-      background: rgba(36, 29, 25, 0.22);
-      padding: 0.18rem;
-    }
-    .toggle span {
-      display: block;
-      width: 1.38rem;
-      height: 1.38rem;
-      border-radius: 50%;
-      background: var(--surface);
-      box-shadow: 0 2px 8px rgba(36, 29, 25, 0.18);
-      transition: transform 180ms ease;
-    }
-    .toggle.on { background: var(--sage); }
-    .toggle.on span { transform: translateX(1.42rem); }
-    .toggle-value { color: var(--muted); font-weight: 800; }
-
-    .upload-box {
-      display: grid;
-      gap: 0.75rem;
-    }
-    .upload-current {
-      display: grid;
-      grid-template-columns: 4rem minmax(0, 1fr) auto;
-      gap: 0.75rem;
-      align-items: center;
-      min-height: 4rem;
-    }
-    .thumb {
-      width: 4rem;
-      height: 4rem;
-      display: grid;
-      place-items: center;
-      overflow: hidden;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: var(--soft);
-      color: var(--muted);
-      font-size: 0.72rem;
-      text-align: center;
-    }
-    .thumb img { width: 100%; height: 100%; object-fit: cover; }
-    .file-name {
-      min-width: 0;
-      color: var(--muted);
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-    }
-    .file-picker input { display: none; }
-    .upload-status { display: none; color: var(--sage); font-size: 0.82rem; }
-    .upload-status.show { display: block; }
-
-    .card {
-      grid-column: 1 / -1;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: var(--surface);
-      overflow: hidden;
-    }
-    .card summary {
-      min-height: 3.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      padding: 0.9rem 1rem;
-      cursor: pointer;
-      list-style: none;
-      font-weight: 800;
-    }
-    .card summary::-webkit-details-marker { display: none; }
-    .card summary::after {
-      content: "+";
-      width: 1.75rem;
-      height: 1.75rem;
-      display: grid;
-      place-items: center;
-      border: 1px solid var(--line);
-      border-radius: 50%;
-      color: var(--muted);
-      flex: 0 0 auto;
-    }
-    .card[open] summary::after { content: "-"; }
-    .card-body {
-      padding: 1rem;
-      border-top: 1px solid var(--line);
-      background: rgba(251, 244, 237, 0.52);
-    }
-
-    .screen {
-      position: fixed;
-      inset: 0;
-      z-index: 80;
-      display: grid;
-      place-items: center;
-      padding: 1.2rem;
-      background:
-        linear-gradient(180deg, rgba(232, 189, 166, 0.28), rgba(245, 239, 232, 0) 22rem),
-        var(--bg);
-    }
-    .setup-card, .modal-card {
-      width: min(100%, 34rem);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: var(--surface);
-      box-shadow: var(--shadow);
-      padding: 1.5rem;
-    }
-    .setup-card h2, .modal-card h2 {
-      margin: 0 0 0.45rem;
-      font-family: var(--display);
-      font-size: 2.2rem;
-      font-weight: 500;
-    }
-    .setup-card p, .modal-card p { margin: 0 0 1rem; color: var(--muted); }
-    .form-grid { display: grid; gap: 0.8rem; }
-    .form-grid label { display: grid; gap: 0.35rem; }
-    .error-box {
-      display: none;
-      padding: 0.75rem 0.9rem;
-      border: 1px solid rgba(181, 58, 45, 0.28);
-      border-radius: var(--radius);
-      background: #fff3f0;
-      color: var(--error);
-      font-size: 0.86rem;
-    }
-    .error-box.show { display: block; }
-    .modal {
-      position: fixed;
-      inset: 0;
-      z-index: 70;
-      display: none;
-      place-items: center;
-      padding: 1rem;
-      background: rgba(36, 29, 25, 0.35);
-      backdrop-filter: blur(10px);
-    }
-    .modal.open { display: grid; }
-    .modal-actions, .setup-actions {
-      display: flex;
-      justify-content: flex-end;
-      flex-wrap: wrap;
-      gap: 0.55rem;
-      margin-top: 1rem;
-    }
-    .loading {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.65rem;
-      color: var(--muted);
-    }
-    .spinner {
-      width: 1rem;
-      height: 1rem;
-      border: 2px solid rgba(36, 29, 25, 0.18);
-      border-top-color: var(--ink);
-      border-radius: 50%;
-      animation: spin 800ms linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    .toast {
-      position: fixed;
-      left: 50%;
-      bottom: 1rem;
-      z-index: 90;
-      transform: translateX(-50%) translateY(1rem);
-      opacity: 0;
-      pointer-events: none;
-      max-width: calc(100vw - 2rem);
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      background: var(--ink);
-      color: var(--surface);
-      padding: 0.72rem 1rem;
-      box-shadow: var(--shadow);
-      text-align: center;
-      transition: opacity 180ms ease, transform 180ms ease;
-    }
-    .toast.show { opacity: 1; transform: translateX(-50%); }
-
-    @media (max-width: 920px) {
-      :root { --sidebar: 0rem; }
-      .layout { display: block; }
-      .sidebar {
-        position: static;
-        width: auto;
-        padding-top: calc(var(--topbar) + 1rem);
-        border-right: 0;
-        border-bottom: 1px solid var(--line);
-      }
-      .main { padding: 1rem; }
-      .field-grid { grid-template-columns: 1fr; }
-      .topbar { grid-template-columns: auto 1fr; }
-      .site-title { display: none; }
-      .top-actions .btn.ghost { display: none; }
-      h1 { font-size: 2.3rem; }
-    }
-  </style>
+/* ── CHAT BOT ── */
+#chat-fab {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 1.5rem;
+  z-index: 60;
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.1rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--surface);
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 800;
+  box-shadow: 0 4px 18px rgba(24,23,21,.18);
+  cursor: pointer;
+  transition: transform 160ms ease, background 160ms ease;
+}
+#chat-fab:hover { background: var(--accent); transform: translateY(-2px); }
+#chat-panel {
+  position: fixed;
+  top: var(--topbar);
+  right: 0;
+  bottom: 0;
+  width: 380px;
+  background: var(--surface);
+  border-left: 1px solid var(--line);
+  box-shadow: -6px 0 28px rgba(24,23,21,.1);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 280ms ease;
+}
+#chat-panel.open { transform: translateX(0); }
+.chat-head {
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--ink);
+  color: var(--surface);
+  flex-shrink: 0;
+}
+.chat-head-info { flex: 1; }
+.chat-head-title { font-weight: 900; font-size: 0.92rem; }
+.chat-head-sub { font-size: 0.75rem; color: rgba(255,250,243,.55); }
+.chat-close-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255,250,243,.55);
+  font-size: 1.1rem;
+  line-height: 1;
+  padding: 4px;
+  cursor: pointer;
+}
+.chat-close-btn:hover { color: var(--surface); }
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+.chat-welcome {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.82rem;
+  padding: 1.5rem 0.5rem;
+  line-height: 1.6;
+}
+.chat-welcome strong { display: block; color: var(--ink); font-size: 0.92rem; margin-bottom: 0.35rem; }
+.chat-msg {
+  max-width: 88%;
+  padding: 0.65rem 0.85rem;
+  border-radius: 12px;
+  font-size: 0.84rem;
+  line-height: 1.55;
+  word-break: break-word;
+}
+.chat-msg.user {
+  align-self: flex-end;
+  background: var(--ink);
+  color: var(--surface);
+  border-bottom-right-radius: 4px;
+}
+.chat-msg.bot {
+  align-self: flex-start;
+  background: var(--soft);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-bottom-left-radius: 4px;
+}
+.chat-msg.bot.loading { color: var(--muted); font-style: italic; }
+.chat-msg.bot.error { background: #fff3f0; border-color: rgba(181,59,47,.2); color: var(--error); }
+.chat-msg p { margin: 0 0 0.4rem; }
+.chat-msg p:last-child { margin: 0; }
+.chat-msg code { background: rgba(24,23,21,.08); padding: 1px 5px; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 0.8rem; }
+.chat-msg.user code { background: rgba(255,250,243,.18); }
+.chat-input-area {
+  padding: 0.75rem;
+  border-top: 1px solid var(--line);
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  background: var(--surface);
+}
+#chat-input {
+  flex: 1;
+  padding: 0.65rem 0.82rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  font-size: 0.88rem;
+  resize: none;
+  min-height: 2.5rem;
+  max-height: 7rem;
+  outline: none;
+  line-height: 1.45;
+  background: var(--soft);
+  color: var(--ink);
+}
+#chat-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(163,95,72,.14); }
+#chat-send {
+  padding: 0.65rem 1rem;
+  background: var(--ink);
+  color: var(--surface);
+  border: none;
+  border-radius: var(--radius);
+  font-size: 0.88rem;
+  font-weight: 800;
+  cursor: pointer;
+  flex-shrink: 0;
+  align-self: flex-end;
+  transition: background 160ms;
+}
+#chat-send:hover { background: var(--accent); }
+#chat-send:disabled { opacity: .5; cursor: not-allowed; }
+@media (max-width: 920px) {
+  #chat-panel { width: 100%; top: var(--topbar); }
+  #chat-fab { bottom: 1rem; left: 1rem; }
+}
+</style>
 </head>
 <body class="locked">
   <header class="topbar">
-    <div class="brand"><span class="brand-mark">o</span><span>Ompage Yoga</span></div>
+    <div class="brand"><span class="brand-mark">o</span><span>Ompage</span></div>
     <div class="site-title" id="site-title">Connessione richiesta</div>
     <div class="top-actions">
       <span class="dirty-dot" id="dirty-dot" title="Modifiche non salvate"></span>
       <a class="btn ghost" href="index.html" target="_blank" rel="noopener">Anteprima</a>
       <button class="btn ghost" type="button" id="connection-btn">Connessione</button>
+      <button class="btn-dev-download" type="button" id="btn-download-json" title="Scarica config.json in locale per test su Live Server">⬇ JSON locale</button>
       <button class="btn primary" type="button" id="save-btn">Salva online</button>
     </div>
   </header>
@@ -511,6 +778,9 @@
     <aside class="sidebar">
       <input class="search" id="search" type="search" placeholder="Cerca campo">
       <nav class="nav-list" id="nav-list" aria-label="Sezioni pannello"></nav>
+      <div style="margin-top:.35rem;border-top:1px solid var(--line);padding-top:.35rem;">
+        <button class="nav-item-guida" id="nav-guida-btn" type="button">📖 Guida Bot</button>
+      </div>
       <div class="sidebar-foot" id="connection-status">Non connesso.</div>
     </aside>
     <main class="main" id="main"></main>
@@ -519,24 +789,27 @@
   <section class="screen" id="setup-screen">
     <div class="setup-card">
       <h2>Accedi al pannello</h2>
-      <p>Inserisci le credenziali GitHub del repository del sito. Senza connessione il cliente non entra nel pannello e non vede i campi.</p>
       <div class="error-box" id="setup-error"></div>
       <div class="form-grid">
         <label>
           <span class="label-main">Personal Access Token GitHub</span>
           <input class="control" id="setup-token" type="password" autocomplete="off" placeholder="ghp_...">
-          <span class="help">Serve un token con permesso repo/contents per leggere e salvare config.json e asset.</span>
+          <span class="help"><a href="https://github.com/settings/tokens/new?scopes=repo&description=Ompage+Pannello" target="_blank" rel="noopener">Crea un token GitHub</a>.</span>
         </label>
         <label>
           <span class="label-main">Username o organizzazione</span>
           <input class="control" id="setup-owner" type="text" autocomplete="off" placeholder="nome-account">
+          <span class="help"><p>Il tuo nome utente su GitHub.</p>
+
         </label>
         <label>
           <span class="label-main">Repository</span>
-          <input class="control" id="setup-repo" type="text" autocomplete="off" placeholder="mio-sito-yoga">
+          <input class="control" id="setup-repo" type="text" autocomplete="off" placeholder="mio-sito">
+          <span class="help"><p>Solo il nome del repository, senza il nome utente.</p>
         </label>
       </div>
       <div class="setup-actions">
+        <button class="btn ghost" type="button" id="setup-local">Usa in locale (Senza token)</button>
         <button class="btn primary" type="button" id="setup-submit">Connetti e carica</button>
       </div>
     </div>
@@ -545,7 +818,7 @@
   <section class="screen hidden" id="loading-screen">
     <div class="setup-card">
       <h2>Carico il sito</h2>
-      <p class="loading"><span class="spinner"></span><span id="loading-text">Lettura di config.json da GitHub...</span></p>
+      <p class="loading"><span class="spinner"></span><span id="loading-text">Lettura in corso...</span></p>
     </div>
   </section>
 
@@ -555,18 +828,9 @@
       <p>Modifica repository o token. I dati sono salvati solo nel browser.</p>
       <div class="error-box" id="settings-error"></div>
       <div class="form-grid">
-        <label>
-          <span class="label-main">Token</span>
-          <input class="control" id="settings-token" type="password" autocomplete="off">
-        </label>
-        <label>
-          <span class="label-main">Owner</span>
-          <input class="control" id="settings-owner" type="text" autocomplete="off">
-        </label>
-        <label>
-          <span class="label-main">Repository</span>
-          <input class="control" id="settings-repo" type="text" autocomplete="off">
-        </label>
+        <label><span class="label-main">Token</span><input class="control" id="settings-token" type="password" autocomplete="off"></label>
+        <label><span class="label-main">Owner</span><input class="control" id="settings-owner" type="text" autocomplete="off"></label>
+        <label><span class="label-main">Repository</span><input class="control" id="settings-repo" type="text" autocomplete="off"></label>
       </div>
       <div class="modal-actions">
         <button class="btn danger" type="button" id="disconnect-btn">Scollega</button>
@@ -578,24 +842,68 @@
 
   <div class="toast" id="toast"></div>
 
+  <!-- PANNELLO GUIDA BOT — fuori da #main per non essere sovrascritto da renderPanel() -->
+  <section class="panel-guida" id="panel-guida">
+    <div class="panel-head">
+      <span class="kicker">Assistente</span>
+      <h1>Guida Bot</h1>
+      <p class="panel-note">Questo testo viene letto dal tuo repository GitHub ogni volta che un cliente fa una domanda. Aggiornalo e clicca Salva — il bot risponde con la versione aggiornata dalla prossima domanda.</p>
+    </div>
+    <textarea class="guida-textarea" id="guida-textarea" placeholder="Scrivi qui la guida per i clienti..."></textarea>
+    <div class="guida-actions">
+      <button class="btn primary" id="btn-guida-save" type="button">Salva guida</button>
+      <span class="guida-status" id="guida-status"></span>
+    </div>
+    <div class="guida-hint">
+      💡 Il bot legge questo file dal tuo repository GitHub ogni volta che un cliente fa una domanda. Aggiorna il testo e clicca Salva — il bot lo sa già dalla prossima domanda.
+    </div>
+  </section>
+
+  <!-- CHAT FAB -->
+  <button id="chat-fab" type="button">💬 Assistente</button>
+
+  <!-- CHAT PANEL -->
+  <div id="chat-panel" aria-hidden="true">
+    <div class="chat-head">
+      <div class="chat-head-info">
+        <div class="chat-head-title">🤖 Assistente Ompage</div>
+        <div class="chat-head-sub">Chiedi qualsiasi cosa sul sito</div>
+      </div>
+      <button class="chat-close-btn" id="chat-close-btn" type="button" aria-label="Chiudi">✕</button>
+    </div>
+    <div class="chat-messages" id="chat-messages">
+      <div class="chat-welcome" id="chat-welcome">
+        <strong>Ciao! Sono l'assistente Ompage 👋</strong>
+        Conosco il motore JS, la struttura del config.json e la guida all'installazione. Come posso aiutarti?
+      </div>
+    </div>
+    <div class="chat-input-area">
+      <textarea id="chat-input" placeholder="Scrivi una domanda..." rows="1"></textarea>
+      <button id="chat-send" type="button">Invia</button>
+    </div>
+  </div>
+
   <script>
     "use strict";
 
     const GH_BASE = "https://api.github.com";
+    const BRANCH = "main";
+    const CONFIG_PATH = "config.json";
     const ASSET_DIR = "assets";
-    const IMAGE_MAX_BYTES = 8 * 1024 * 1024;
-    const PDF_MAX_BYTES = 12 * 1024 * 1024;
+    const IMAGE_MAX_BYTES = 12 * 1024 * 1024;
+    const PDF_MAX_BYTES = 16 * 1024 * 1024;
 
     let CFG = {};
-    let ORIGINAL_KEYS = [];
+    let ORIGINAL_KEYS =[];
     let CONFIG_SHA = null;
     let ACTIVE_SECTION = "";
     let DIRTY = false;
-    let UPLOADING = false;
+    let BUSY = false;
+    let LOCAL_MODE = false;
 
     const $ = (selector, root = document) => root.querySelector(selector);
     const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
-    const clean = (value) => String(value || "").trim();
+    const clean = (value) => String(value ?? "").trim();
     const esc = (value) => clean(value)
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
@@ -604,55 +912,51 @@
       .replace(/'/g, "&#39;");
 
     const STORE = {
-      get token() { return localStorage.getItem("ompage_gh_token") || localStorage.getItem("ompage_token") || ""; },
-      get owner() { return localStorage.getItem("ompage_gh_owner") || localStorage.getItem("ompage_owner") || ""; },
-      get repo() { return localStorage.getItem("ompage_gh_repo") || localStorage.getItem("ompage_repo") || ""; },
+      get token() { return localStorage.getItem("ompage_gh_token") || ""; },
+      get owner() { return localStorage.getItem("ompage_gh_owner") || ""; },
+      get repo() { return localStorage.getItem("ompage_gh_repo") || ""; },
       set token(value) { localStorage.setItem("ompage_gh_token", value); },
       set owner(value) { localStorage.setItem("ompage_gh_owner", value); },
       set repo(value) { localStorage.setItem("ompage_gh_repo", value); },
-      clear() {
-        ["ompage_gh_token", "ompage_gh_owner", "ompage_gh_repo", "ompage_token", "ompage_owner", "ompage_repo"].forEach((key) => localStorage.removeItem(key));
+      get hasAll() { return Boolean(this.token && this.owner && this.repo); },
+      clear() {["ompage_gh_token", "ompage_gh_owner", "ompage_gh_repo"].forEach((key) => localStorage.removeItem(key));
       }
     };
 
-    const ADMIN_ONLY_KEYS = new Set([
-      "sito_in_bozza_watermark",
-      "crediti_ompage_footer"
-    ]);
+    const ADMIN_ONLY_KEYS = new Set(["sito_in_bozza_watermark", "crediti_ompage_footer"]);
+    const DERIVED_KEYS = new Set(["schema_nome", "schema_indirizzo", "schema_telefono", "schema_orari"]);
 
-    const DERIVED_KEYS = new Set([
-      "schema_nome",
-      "schema_indirizzo",
-      "schema_telefono",
-      "schema_orari"
-    ]);
-
-    const SECTION_DEFS = [
+    const SECTION_DEFS =[
       { id: "impostazioni", label: "Impostazioni", note: "Tema e preferenze visive modificabili dal cliente.", test: (key) => /^tema_/.test(key) },
       { id: "seo", label: "SEO", note: "Titolo, descrizione e immagine di anteprima social.", test: (key) => /^seo_|^og_/.test(key) },
       { id: "navbar", label: "Navbar", note: "Logo e voci del menu.", test: (key) => /^navbar_/.test(key) },
       { id: "promozioni", label: "Promozioni", note: "Barra superiore e popup temporanei.", test: (key) => /^barra_|^popup_/.test(key) },
-      { id: "hero", label: "Hero", note: "Titolo principale, CTA e immagini di apertura.", test: (key) => /^hero_/.test(key) },
-      { id: "chi_siamo", label: "Chi sono", note: "Biografia, citazione, foto e metodo.", test: (key) => /^chi_siamo_/.test(key) },
-      { id: "servizi", label: "Lezioni", note: "Percorsi, prezzi, descrizioni, PDF e foto.", test: (key) => /^servizi_|^servizio_|^pdf_menu_/.test(key) },
+{ id: "hero", label: "Hero", note: "Titolo principale, CTA e visual di apertura.", test: (key) => /^hero_/.test(key) },
+      { id: "chi_siamo", label: "Chi siamo", note: "Presentazione, testo, immagine e passaggi del metodo.", test: (key) => /^chi_siamo_/.test(key) },
+      { id: "vantaggi", label: "Vantaggi", note: "Tre card per raccontare i punti di forza.", test: (key) => /^vantaggio_|^vantaggi_/.test(key) },
+      { id: "servizi", label: "Servizi", note: "Servizi, prezzi, descrizioni e PDF scaricabile.", test: (key) => /^servizi_|^servizio_|^pdf_menu_/.test(key) },
       { id: "galleria", label: "Galleria", note: "Foto principali e galleria estesa.", test: (key) => /^galleria_|^foto_/.test(key) },
+      { id: "prima_dopo", label: "Prima & Dopo", note: "Slider comparativi per mostrare risultati. Carica l'immagine 'prima' e quella 'dopo' per ogni coppia.", test: (key) => /^prima_dopo_/.test(key) },
       { id: "recensioni", label: "Recensioni", note: "Testimonianze e valutazioni.", test: (key) => /^recensioni_|^recensione_/.test(key) },
       { id: "faq", label: "FAQ", note: "Domande frequenti.", test: (key) => /^faq_/.test(key) },
-      { id: "footer", label: "Footer", note: "Dati di contatto, social, pulsante Google Maps e CTA finale.", test: (key) => /^footer_/.test(key) },
+      { id: "footer", label: "Contatti & Footer", note: "Contatti, mappa, orari e link al sistema di prenotazione (se vuoto, il tasto scompare).", test: (key) => /^(footer_|prenotazione_)/.test(key) },
+      { id: "legale", label: "Note Legali", note: "Modifica i testi di Cookie Policy e Privacy Policy.", test: (key) => /^(cookie_policy_|privacy_policy_)/.test(key) },
+      { id: "badge_wa", label: "Badge contatto mobile", note: "Bottone fisso visibile solo su mobile. Apre WhatsApp o chiama.", test: (key) => /^badge_/.test(key) },      
       { id: "extra", label: "Extra", note: "Campi non classificati.", test: () => true }
     ];
 
     const SELECT_CHOICES = {
-      tema_tipografico: ["LUSSO_SERIF", "MODERNO", "EDITORIALE"],
-      tema_palette: ["NATURA_PASTELLO", "TERRA", "SAGE", "MINIMALE", "CREMA_NOTTE"],
+      tema_tipografico:["FORNO_ATELIER", "CROSTA_EDITORIALE", "LIEVITO_BRUT", "MATTINA_INCHIOSTRO"],
+      tema_palette:["CROSTA_VIVA", "LINO_BRUCIATO", "NOTTE_MADRE", "FARINA_INCHIOSTRO"],
       navbar_logo_tipo: ["TESTO", "IMMAGINE"],
-      hero_layout: ["CON_FOTO", "SOLO_TESTO", "GALLERIA"],
-      chi_siamo_layout: ["FOTO_E_TESTO", "SOLO_TESTO", "PASSI"],
+      hero_layout: ["CON_FOTO_SFONDO", "SENZA_FOTO"],
+      chi_siamo_layout:["FOTO_E_TESTO", "TRE_PASSI", "SOLO_TESTO"],
       servizi_layout: ["LISTA", "GRIGLIA"],
-      hero_cta_tipo: ["WHATSAPP", "TELEFONO", "EMAIL", "URL"],
-      barra_cta_tipo: ["WHATSAPP", "TELEFONO", "EMAIL", "URL"],
-      popup_cta_tipo: ["WHATSAPP", "TELEFONO", "EMAIL", "URL"],
-      footer_cta_tipo: ["WHATSAPP", "TELEFONO", "EMAIL", "URL"]
+      hero_cta_tipo: ["WHATSAPP", "TELEFONO", "EMAIL"],
+      barra_cta_tipo: ["WHATSAPP", "TELEFONO", "EMAIL"],
+      popup_cta_tipo:["WHATSAPP", "TELEFONO", "EMAIL"],
+      footer_cta_tipo:["WHATSAPP", "TELEFONO", "EMAIL"],
+      badge_tipo: ["WHATSAPP", "TELEFONO"]
     };
 
     const LABELS = {
@@ -663,28 +967,38 @@
       navbar_logo_immagine: "Logo immagine",
       footer_instagram: "Link Instagram",
       footer_facebook: "Link Facebook",
-      pdf_menu_url: "PDF programma",
-      hero_foto: "Foto hero"
+      pdf_menu_url: "PDF scaricabile",
+      hero_foto: "Immagine hero",
+      
+      prima_dopo_attiva: "Sezione attiva",
+      prima_dopo_titolo: "Titolo sezione",
+      prenotazione_attiva: "Prenotazione online attiva",
+      prenotazione_url: "Link prenotazione",
+      prenotazione_cta: "Testo bottone",
+      cookie_policy_testo: "Testo Cookie Policy",
+      privacy_policy_testo: "Testo Privacy Policy",
+      badge_attivo: "Badge contatto mobile attivo",
+badge_tipo: "Badge tipo"
     };
 
     const HELP = {
-      footer_instagram: "Incolla il link completo del profilo Instagram, per esempio https://www.instagram.com/nomeprofilo.",
-      footer_facebook: "Incolla il link completo della pagina Facebook, per esempio https://www.facebook.com/nomepagina.",
-      og_immagine: "Carica l'immagine che appare quando il sito viene condiviso su WhatsApp, Facebook o social. Sarà convertita in WebP.",
-      pdf_menu_url: "Carica un PDF. Il file verra salvato nel repository e il sito usera il suo percorso.",
-      navbar_logo_immagine: "Carica un logo in PNG, JPG, WebP o SVG. Se il logo e testuale puoi lasciare vuoto.",
-      hero_cta_contatto: "Se il tipo CTA e WhatsApp o telefono, inserisci il numero. Se e email o URL, inserisci il valore corrispondente.",
-      barra_cta_contatto: "Se il tipo CTA e WhatsApp o telefono, inserisci il numero. Se e email o URL, inserisci il valore corrispondente.",
-      popup_cta_contatto: "Se il tipo CTA e WhatsApp o telefono, inserisci il numero. Se e email o URL, inserisci il valore corrispondente.",
-      barra_scadenza: "Inserisci una data (es. cliccando sul calendario). Se la lasci vuota, la barra sarà sempre visibile. Se inserita, sparirà il giorno dopo la data indicata.",
-      popup_scadenza: "Come per la barra: se vuoto dura per sempre, se inserisci una data si disattiverà in automatico una volta superata."
+      footer_instagram: "Incolla il link completo del profilo Instagram.",
+      footer_facebook: "Incolla il link completo della pagina Facebook.",
+      og_immagine: "Carica l'immagine per le condivisioni social. Nel JSON resta un path relativo.",
+      pdf_menu_url: "Carica un PDF. Il pannello lo salva in assets/ e nel JSON scrive solo il path relativo.",
+      navbar_logo_immagine: "Carica un logo. Se il logo è testuale, usa il campo Tipo logo.",
+      hero_cta_contatto: "Se Tipo è WHATSAPP o TELEFONO inserisci un numero. Se EMAIL inserisci un indirizzo email.",
+      barra_cta_contatto: "Se Tipo è WHATSAPP o TELEFONO inserisci un numero. Se EMAIL inserisci un indirizzo email.",
+      popup_cta_contatto: "Se Tipo è WHATSAPP o TELEFONO inserisci un numero. Se EMAIL inserisci un indirizzo email.",
+      footer_cta_contatto: "Se presente nel template, usa numero o email in base al tipo scelto.",
+      barra_scadenza: "Data opzionale. Se vuota, la barra resta sempre disponibile.",
+      popup_scadenza: "Data opzionale. Se vuota, il popup resta sempre disponibile.",
+      prima_dopo_titolo: "Es. 'I nostri risultati' oppure 'Prima e dopo il trattamento'.",
+      prenotazione_url: "Incolla il link del tuo sistema di prenotazione: Cal.com, Fresha, Calendly, Setmore o qualsiasi altro. Se lasci vuoto il bottone non appare sul sito."
     };
 
     function isHiddenKey(key) {
-      if (ADMIN_ONLY_KEYS.has(key)) return true;
-      if (DERIVED_KEYS.has(key)) return true;
-      if (key.includes("_placeholder")) return true;
-      return false;
+      return ADMIN_ONLY_KEYS.has(key) || DERIVED_KEYS.has(key) || key.includes("_placeholder");
     }
 
     function isToggle(value) {
@@ -696,13 +1010,12 @@
     }
 
     function isImageUploadKey(key) {
-      if (key === "footer_mappa_url") return false;
-      if (key === "pdf_menu_url") return false;
-      if (key === "og_immagine" || key === "navbar_logo_immagine") return true;
-      if (/^foto_\d+_url$/.test(key)) return true;
-      if (/^foto_estesa_\d+_url$/.test(key)) return true;
+      if (isPdfUploadKey(key)) return false;
+      if (["og_immagine", "navbar_logo_immagine"].includes(key)) return true;
+      if (/^foto_\d+_url$/.test(key) || /^foto_estesa_\d+_url$/.test(key)) return true;
       if (/_foto(_\d+)?$/.test(key)) return true;
-      if (/sfondo_astratto$/.test(key)) return true;
+      if (/(prima|dopo)$/.test(key) && key.startsWith("prima_dopo_")) return true;
+      if (/immagine$/i.test(key)) return true;
       return false;
     }
 
@@ -714,54 +1027,54 @@
       if (key === "seo_titolo") return 70;
       if (key === "seo_descrizione") return 160;
       if (/navbar_voce_/.test(key)) return 22;
-      if (/titolo_riga/.test(key)) return 24;
-      if (key === "hero_titolo") return 50;
-      if (key === "hero_sottotitolo") return 120;
+      if (key === "navbar_logo_testo") return 55;
+      if (key === "hero_titolo") return 72;
+      if (key === "hero_sottotitolo") return 150;
       if (/_cta_testo$/.test(key)) return 34;
-      if (/^barra_testo$|^popup_testo$/.test(key)) return 140;
+      if (/^barra_testo$/.test(key)) return 120;
+      if (/^popup_testo$/.test(key)) return 180;
       if (/^chi_siamo_testo$/.test(key)) return 620;
       if (/^chi_siamo_citazione$/.test(key)) return 180;
       if (/^chi_siamo_nome$|^footer_nome$/.test(key)) return 70;
       if (/^chi_siamo_ruolo$/.test(key)) return 70;
-      if (/^servizi_titolo$|^galleria_titolo$|^recensioni_titolo$|^galleria_estesa_titolo$/.test(key)) return 60;
+      if (/^chi_siamo_titolo$|^servizi_titolo$|^galleria_titolo$|^recensioni_titolo$|^galleria_estesa_titolo$|^vantaggi_titolo$|^prima_dopo_titolo$/.test(key)) return 72;
+      if (/^chi_siamo_passo_\d+_titolo$/.test(key)) return 45;
+      if (/^chi_siamo_passo_\d+_testo$/.test(key)) return 260;
+      if (/^vantaggio_\d+_titolo$/.test(key)) return 35;
+      if (/^vantaggio_\d+_testo$/.test(key)) return 130;
       if (/^servizio_\d+_nome$/.test(key)) return 45;
-      if (/^servizio_\d+_descrizione$/.test(key)) return 260;
+      if (/^servizio_\d+_descrizione$/.test(key)) return 220;
       if (/^servizio_\d+_prezzo$/.test(key)) return 34;
-      if (/^foto_\d+_didascalia$/.test(key)) return 90;
+      if (/^foto_\d+_didascalia$/.test(key)) return 85;
+      if (/^prima_dopo_\d+_didascalia$/.test(key)) return 85;
       if (/^recensione_\d+_nome$/.test(key)) return 45;
-      if (/^recensione_\d+_testo$/.test(key)) return 360;
-      if (/^faq_\d+_domanda$/.test(key)) return 120;
-      if (/^faq_\d+_risposta$/.test(key)) return 420;
+      if (/^recensione_\d+_testo$/.test(key)) return 280;
+      if (/^faq_\d+_domanda$/.test(key)) return 110;
+      if (/^faq_\d+_risposta$/.test(key)) return 360;
       if (/^footer_indirizzo$/.test(key)) return 120;
       if (/^footer_orari$/.test(key)) return 100;
       if (/^footer_email$/.test(key)) return 80;
       if (/^footer_telefono$|^footer_whatsapp$/.test(key)) return 32;
-      if (/^chi_siamo_passo_\d+_titolo$/.test(key)) return 35;
-      if (/^chi_siamo_passo_\d+_testo$/.test(key)) return 130;
       return 0;
     }
 
     function fieldType(key, value) {
       if (isUploadKey(key)) return isPdfUploadKey(key) ? "pdf" : "image";
       if (isToggle(value)) return "toggle";
-      if (key === "recensione_1_stelle" || /^recensione_\d+_stelle$/.test(key)) return "stars";
+      if (/^recensione_\d+_stelle$/.test(key)) return "stars";
       if (SELECT_CHOICES[key]) return "select";
       if (/scadenza/i.test(key)) return "date";
       if (key === "footer_instagram" || key === "footer_facebook") return "url";
-      if (/_cta_contatto$/.test(key)) return ctaContactType(key);
+      if (/_cta_contatto$/.test(key)) {
+        const tipo = clean(CFG[key.replace("_contatto", "_tipo")]).toUpperCase();
+        if (tipo === "EMAIL") return "email";
+        return "tel";
+      }
       if (/email/i.test(key)) return "email";
       if (/telefono|whatsapp/i.test(key)) return "tel";
       if (/url$/i.test(key)) return "url";
       if (maxLen(key) > 110 || clean(value).length > 95 || /(testo|descrizione|risposta|citazione|domanda)/i.test(key)) return "textarea";
       return "text";
-    }
-
-    function ctaContactType(key) {
-      const prefix = key.replace("_contatto", "");
-      const tipo = clean(CFG[prefix + "_tipo"]).toUpperCase();
-      if (tipo === "EMAIL") return "email";
-      if (tipo === "URL") return "url";
-      return "tel";
     }
 
     function humanLabel(key) {
@@ -777,94 +1090,98 @@
         .replace(/\b\w/g, (match) => match.toUpperCase());
     }
 
+    function getHelpText(key) {
+      if (HELP[key]) return HELP[key];
+      if (key.endsWith("_attivo") || key.endsWith("_attiva")) return "Accendi o spegni per mostrare o nascondere questo elemento sul sito.";
+      if (key.endsWith("_testo") || key.endsWith("_descrizione") || key.endsWith("_risposta")) return "Inserisci qui il testo visibile agli utenti. Cerca di essere sintetico ma chiaro.";
+      if (key.endsWith("_titolo") || key.endsWith("_domanda") || key.endsWith("_nome")) return "Inserisci il titolo visibile per questa sezione o blocco.";
+      if (isImageUploadKey(key)) return "Carica un'immagine. Il pannello la salva in assets/ e nel JSON scrive solo il path relativo.";
+      if (isPdfUploadKey(key)) return "Carica un PDF. Il pannello lo salva in assets/ e nel JSON scrive solo il path relativo.";
+      if (key.endsWith("_stelle")) return "Inserisci un numero da 1 a 5.";
+      if (key.endsWith("_prezzo")) return "Inserisci il costo del servizio.";
+      if (key.endsWith("_layout")) return "Scegli il layout visivo per questa sezione.";
+      if (key.endsWith("_tipo")) return "Scegli il comportamento del bottone.";
+      return "Modifica questo campo per aggiornare il sito.";
+    }
+
     function sectionFor(key) {
       return SECTION_DEFS.find((section) => section.test(key)) || SECTION_DEFS[SECTION_DEFS.length - 1];
     }
 
     function groupInfo(key) {
-      const patterns = [
-        [/^servizio_(\d+)_/, "servizio", "Lezione"],
-        [/^foto_(\d+)_/, "foto", "Foto"],
-        [/^foto_estesa_(\d+)_/, "foto_estesa", "Foto estesa"],
+      const patterns = [[/^servizio_(\d+)_/, "servizio", "Servizio"],[/^chi_siamo_passo_(\d+)_/, "passo", "Passo"],[/^vantaggio_(\d+)_/, "vantaggio", "Vantaggio"],[/^foto_estesa_(\d+)_/, "foto_estesa", "Foto Estesa"],[/^foto_(\d+)_/, "foto", "Foto"],[/^prima_dopo_(\d+)_/, "prima_dopo", "Prima & Dopo"],
         [/^recensione_(\d+)_/, "recensione", "Recensione"],
-        [/^faq_(\d+)_/, "faq", "FAQ"],
-        [/^chi_siamo_passo_(\d+)_/, "passo", "Passo metodo"]
+        [/^faq_(\d+)_/, "faq", "FAQ"]
       ];
-      for (const [regex, type, label] of patterns) {
+      for (const[regex, type, label] of patterns) {
         const match = key.match(regex);
         if (match) return { id: type + "_" + match[1], type, number: match[1], label: label + " " + match[1] };
       }
       return null;
     }
 
-    function groupTitle(group) {
-      const n = group.number;
-      if (group.type === "servizio") return CFG[`servizio_${n}_nome`] || `Lezione ${n}`;
-      if (group.type === "recensione") return CFG[`recensione_${n}_nome`] || `Recensione ${n}`;
-      if (group.type === "faq") return CFG[`faq_${n}_domanda`] || `FAQ ${n}`;
-      if (group.type === "foto") return CFG[`foto_${n}_didascalia`] || `Foto ${n}`;
-      if (group.type === "foto_estesa") return `Foto estesa ${n}`;
-      if (group.type === "passo") return CFG[`chi_siamo_passo_${n}_titolo`] || `Passo metodo ${n}`;
-      return group.label;
+    function ghHeaders() {
+      return {
+        Authorization: "Bearer " + STORE.token,
+        Accept: "application/vnd.github+json",
+        "Content-Type": "application/json",
+        "X-GitHub-Api-Version": "2022-11-28"
+      };
     }
 
-    function guessRepoFromUrl() {
-      const params = new URLSearchParams(location.search);
-      const guessed = { owner: params.get("owner") || "", repo: params.get("repo") || "" };
-      const host = location.hostname;
-      if (!guessed.owner && host.endsWith(".github.io")) guessed.owner = host.split(".")[0];
-      const parts = location.pathname.split("/").filter(Boolean);
-      if (!guessed.repo && host.endsWith(".github.io") && parts[0] && parts[0] !== "pannello.html") guessed.repo = parts[0];
-      return guessed;
+    function encodePath(path) {
+      return path.split("/").map(encodeURIComponent).join("/");
     }
 
-    function utf8ToBase64(text) {
+    function contentUrl(path) {
+      return `${GH_BASE}/repos/${encodeURIComponent(STORE.owner)}/${encodeURIComponent(STORE.repo)}/contents/${encodePath(path)}`;
+    }
+
+    async function ghFetch(url, options = {}) {
+      const response = await fetch(url, { ...options, headers: { ...ghHeaders(), ...(options.headers || {}) } });
+      if (response.status === 401) {
+        STORE.clear();
+        throw new Error("TOKEN_EXPIRED");
+      }
+      if (response.status === 404) throw new Error("REPO_NOT_FOUND");
+      if (response.status === 409) throw new Error("CONFLICT");
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.message || "HTTP " + response.status);
+      }
+      return response;
+    }
+
+    function b64DecodeUTF8(b64) {
+      const bin = atob(b64.replace(/\s/g, ""));
+      const bytes = Uint8Array.from(bin, (char) => char.charCodeAt(0));
+      return new TextDecoder("utf-8").decode(bytes);
+    }
+
+    function b64EncodeUTF8(text) {
       const bytes = new TextEncoder().encode(text);
       let binary = "";
-      bytes.forEach((byte) => binary += String.fromCharCode(byte));
+      for (let i = 0; i < bytes.length; i += 0x8000) {
+        binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+      }
       return btoa(binary);
     }
 
-    function base64ToUtf8(base64) {
-      const binary = atob(base64.replace(/\s/g, ""));
-      const bytes = new Uint8Array(binary.length);
-      for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
-      return new TextDecoder().decode(bytes);
-    }
-
-    async function githubRequest(path, options = {}) {
-      const token = STORE.token;
-      const owner = STORE.owner;
-      const repo = STORE.repo;
-      if (!token || !owner || !repo) throw new Error("Connessione GitHub incompleta.");
-      const url = `${GH_BASE}/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contents/${path}`;
-      const response = await fetch(url, {
-        ...options,
-        headers: {
-          Accept: "application/vnd.github+json",
-          Authorization: `Bearer ${token}`,
-          "X-GitHub-Api-Version": "2022-11-28",
-          ...(options.headers || {})
-        }
+    function blobToBase64(blob) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result).split(",")[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
       });
-      if (!response.ok) {
-        let message = response.statusText;
-        try {
-          const data = await response.json();
-          message = data.message || message;
-        } catch (error) {}
-        const err = new Error(message);
-        err.status = response.status;
-        throw err;
-      }
-      return response.json();
     }
 
     async function loadConfigFromGitHub() {
       setLoading(true, "Lettura di config.json da GitHub...");
-      const file = await githubRequest("config.json");
-      CONFIG_SHA = file.sha;
-      CFG = JSON.parse(base64ToUtf8(file.content || ""));
+      const response = await ghFetch(contentUrl(CONFIG_PATH) + "?ref=" + encodeURIComponent(BRANCH));
+      const data = await response.json();
+      CONFIG_SHA = data.sha;
+      CFG = JSON.parse(b64DecodeUTF8(data.content));
       ORIGINAL_KEYS = Object.keys(CFG);
       renderPanel();
       setLoading(false);
@@ -873,72 +1190,195 @@
       toast("Pannello caricato.");
     }
 
-    async function putFile(path, contentBase64, message, sha) {
-      return githubRequest(path, {
-        method: "PUT",
-        body: JSON.stringify({
-          message,
-          content: contentBase64,
-          ...(sha ? { sha } : {})
-        })
-      });
+    async function loadLocalConfig() {
+      setLoading(true, "Lettura di config.json locale...");
+      try {
+        // Legge il file dalla stessa cartella (Live Server)
+        const response = await fetch("config.json?ts=" + Date.now());
+        if (!response.ok) throw new Error("File config.json non trovato nella cartella.");
+        
+        const data = await response.json();
+        CFG = data;
+        ORIGINAL_KEYS = Object.keys(CFG);
+        LOCAL_MODE = true;
+        
+        renderPanel();
+        setLoading(false);
+        showApp();
+        markDirty(false);
+        
+        // Modifica l'interfaccia per la modalità locale
+        $("#connection-status").innerHTML = `Connesso in <strong>Modalità Locale</strong>.`;
+        $("#save-btn").style.display = "none"; // Nascondiamo il salva su github
+        $("#connection-btn").style.display = "none"; // Nascondiamo le impostazioni token
+        toast("Pannello avviato in locale.");
+      } catch (error) {
+        setLoading(false);
+        const errorBox = $("#setup-error");
+        errorBox.textContent = error.message;
+        errorBox.classList.add("show");
+      }
     }
 
     async function saveConfigToGitHub() {
-      if (UPLOADING) {
-        toast("Aspetta la fine del caricamento file.");
-        return;
-      }
-      syncDerivedFields();
+      if (BUSY) { toast("Operazione in corso. Attendi."); return; }
       const errors = validateConfig();
-      if (errors.length) {
-        showValidationError(errors[0]);
-        return;
-      }
-      const button = $("#save-btn");
-      button.disabled = true;
-      button.textContent = "Salvo...";
+      if (errors.length) { showValidationError(errors[0]); return; }
+      
+      BUSY = true;
+      const btn = $("#save-btn");
+      btn.disabled = true;
+      btn.textContent = "Salvataggio...";
+      
       try {
-        const content = JSON.stringify(CFG, null, 2) + "\n";
-        let result;
-        try {
-          result = await putFile("config.json", utf8ToBase64(content), "Aggiorna configurazione sito", CONFIG_SHA);
-        } catch (error) {
-          if (error.status !== 409) throw error;
-          const fresh = await githubRequest("config.json");
-          CONFIG_SHA = fresh.sha;
-          result = await putFile("config.json", utf8ToBase64(content), "Aggiorna configurazione sito", CONFIG_SHA);
-        }
-        CONFIG_SHA = result.content?.sha || CONFIG_SHA;
+        syncDerivedFields();
+        normalizeKnownFields();
+        const ordered = orderedConfig();
+        const content = JSON.stringify(ordered, null, 2) + "\n";
+        const body = {
+          message: "Aggiorna config.json dal pannello Ompage",
+          content: b64EncodeUTF8(content),
+          branch: BRANCH,
+          sha: CONFIG_SHA
+        };
+        const response = await ghFetch(contentUrl(CONFIG_PATH), { method: "PUT", body: JSON.stringify(body) });
+        const data = await response.json();
+        CONFIG_SHA = data.content.sha;
+        CFG = ordered;
+        ORIGINAL_KEYS = Object.keys(CFG);
         markDirty(false);
-        toast("Sito aggiornato online.");
+        renderPanel();
+        toast("Salvato online. GitHub Pages può impiegare qualche minuto.");
       } catch (error) {
-        console.error(error);
-        toast("Errore salvataggio: " + error.message);
+        handleError(error);
       } finally {
-        button.disabled = false;
-        button.textContent = "Salva online";
+        BUSY = false;
+        btn.disabled = false;
+        btn.textContent = "Salva online";
       }
     }
 
+    function orderedConfig() {
+      const output = {};
+      ORIGINAL_KEYS.forEach((key) => { output[key] = CFG[key] ?? ""; });
+      Object.keys(CFG).forEach((key) => {
+        if (!(key in output)) output[key] = CFG[key];
+      });
+      return output;
+    }
+
     function syncDerivedFields() {
-      if ("schema_nome" in CFG) CFG.schema_nome = CFG.footer_nome || CFG.navbar_logo_testo || CFG.schema_nome || "";
-      if ("schema_indirizzo" in CFG) CFG.schema_indirizzo = CFG.footer_indirizzo || CFG.schema_indirizzo || "";
-      if ("schema_telefono" in CFG) CFG.schema_telefono = CFG.footer_telefono || CFG.footer_whatsapp || CFG.schema_telefono || "";
-      if ("schema_orari" in CFG) CFG.schema_orari = CFG.footer_orari || CFG.schema_orari || "";
+      if ("schema_nome" in CFG) CFG.schema_nome = clean(CFG.footer_nome) || clean(CFG.navbar_logo_testo) || clean(CFG.schema_nome);
+      if ("schema_indirizzo" in CFG) CFG.schema_indirizzo = clean(CFG.footer_indirizzo) || clean(CFG.schema_indirizzo);
+      if ("schema_telefono" in CFG) CFG.schema_telefono = clean(CFG.footer_telefono) || clean(CFG.footer_whatsapp) || clean(CFG.schema_telefono);
+      if ("schema_orari" in CFG) CFG.schema_orari = clean(CFG.footer_orari) || clean(CFG.schema_orari);
+    }
+
+    function normalizeKnownFields() {["footer_instagram", "footer_facebook"].forEach((key) => {
+        if (key in CFG && clean(CFG[key]) && !/^https?:\/\//i.test(CFG[key])) CFG[key] = "https://" + clean(CFG[key]);
+      });["footer_telefono", "footer_whatsapp", "hero_cta_contatto", "barra_cta_contatto", "popup_cta_contatto"].forEach((key) => {
+        if (key in CFG) CFG[key] = clean(CFG[key]).replace(/[^0-9+ @._-]/g, "");
+      });
+    }
+
+    async function uploadFile(input) {
+      const key = input.dataset.upload;
+      const type = input.dataset.uploadType;
+      const file = input.files && input.files[0];
+      if (!file) return;
+      if (!STORE.hasAll) { toast("Connetti prima il pannello a GitHub."); return; }
+      const maxBytes = type === "pdf" ? PDF_MAX_BYTES : IMAGE_MAX_BYTES;
+      if (file.size > maxBytes) {
+        toast(type === "pdf" ? "PDF troppo pesante." : "Immagine troppo pesante.");
+        input.value = "";
+        return;
+      }
+      
+      BUSY = true;
+      setUploadStatus(key, type === "pdf" ? "Caricamento PDF..." : "Compressione immagine...");
+      try {
+        const prepared = type === "pdf" ? await preparePdf(file, key) : await prepareImage(file, key);
+        setUploadStatus(key, "Upload su GitHub...");
+        const body = {
+          message: "Carica file " + prepared.path,
+          content: prepared.base64,
+          branch: BRANCH
+        };
+        await ghFetch(contentUrl(prepared.path), { method: "PUT", body: JSON.stringify(body) });
+        CFG[key] = prepared.path;
+        markDirty(true);
+        renderPanel();
+        setUploadStatus(key, "File caricato.");
+        toast("File caricato in " + prepared.path);
+      } catch (error) {
+        handleError(error);
+      } finally {
+        BUSY = false;
+        input.value = "";
+      }
+    }
+
+    async function preparePdf(file, key) {
+      const ext = "pdf";
+      if (!(file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf"))) {
+        throw new Error("Il file deve essere un PDF.");
+      }
+      const path = `${ASSET_DIR}/${safeFileName(key, file.name, ext)}`;
+      return { path, base64: await blobToBase64(file) };
+    }
+
+    async function prepareImage(file, key) {
+      if (file.type === "image/svg+xml") {
+        const path = `${ASSET_DIR}/${safeFileName(key, file.name, "svg")}`;
+        return { path, base64: await blobToBase64(file) };
+      }
+      if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+        throw new Error("Formato immagine non supportato.");
+      }
+      const blob = await compressRasterImage(file);
+      const path = `${ASSET_DIR}/${safeFileName(key, file.name, "webp")}`;
+      return { path, base64: await blobToBase64(blob) };
+    }
+
+    function safeFileName(key, originalName, forcedExt) {
+      const stem = clean(originalName).replace(/\.[^.]+$/, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 42) || "file";
+      const safeKey = key.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+      return `${new Date().toISOString().replace(/[:.]/g, "-")}-${safeKey}-${stem}.${forcedExt}`;
+    }
+
+    function compressRasterImage(file) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+          const maxSide = 1920;
+          const scale = Math.min(1, maxSide / Math.max(img.naturalWidth, img.naturalHeight));
+          const canvas = document.createElement("canvas");
+          canvas.width = Math.max(1, Math.round(img.naturalWidth * scale));
+          canvas.height = Math.max(1, Math.round(img.naturalHeight * scale));
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          canvas.toBlob((blob) => {
+            URL.revokeObjectURL(img.src);
+            if (!blob) reject(new Error("Compressione immagine non riuscita."));
+            else resolve(blob);
+          }, "image/webp", 0.82);
+        };
+        img.onerror = () => reject(new Error("Immagine non leggibile."));
+        img.src = URL.createObjectURL(file);
+      });
     }
 
     function validateConfig() {
       const errors = [];
-      const required = [
-        ["seo_titolo", "Il titolo SEO e obbligatorio."],
-        ["seo_descrizione", "La descrizione SEO e obbligatoria."],
-        ["footer_nome", "Il nome nel footer e obbligatorio."],
-        ["hero_titolo", "Il titolo della sezione hero e obbligatorio."]
+      const required = [["seo_titolo", "Il titolo SEO è obbligatorio."],
+        ["seo_descrizione", "La descrizione SEO è obbligatoria."],
+        ["footer_nome", "Il nome nel footer è obbligatorio."],["hero_titolo", "Il titolo della hero è obbligatorio."]
       ];
-      if (CFG.navbar_logo_tipo === "TESTO") required.push(["navbar_logo_testo", "Il testo logo e obbligatorio se il logo e testuale."]);
+      if (CFG.navbar_logo_tipo === "TESTO") {
+        required.push(["navbar_logo_testo", "Il testo logo è obbligatorio se il logo è testuale."]);
+      }
       required.forEach(([key, message]) => {
-        if (!clean(CFG[key])) errors.push({ key, message });
+        if (key in CFG && !clean(CFG[key])) errors.push({ key, message });
       });
       if (!clean(CFG.footer_telefono) && !clean(CFG.footer_whatsapp) && !clean(CFG.footer_email)) {
         errors.push({ key: "footer_telefono", message: "Inserisci almeno telefono, WhatsApp o email." });
@@ -949,9 +1389,6 @@
         if (limit && clean(CFG[key]).length > limit) {
           errors.push({ key, message: `${humanLabel(key)} supera il limite di ${limit} caratteri.` });
         }
-        if (fieldType(key, CFG[key]) === "url" && clean(CFG[key]) && !/^https?:\/\//i.test(clean(CFG[key]))) {
-          errors.push({ key, message: `${humanLabel(key)} deve iniziare con http:// o https://.` });
-        }
       });
       return errors;
     }
@@ -960,7 +1397,7 @@
       const section = sectionFor(error.key);
       showSection(section.id);
       setTimeout(() => {
-        const field = document.querySelector(`[data-field="${error.key}"]`);
+        const field = document.querySelector(`[data-field="${CSS.escape(error.key)}"]`);
         if (field) field.scrollIntoView({ behavior: "smooth", block: "center" });
       }, 80);
       toast(error.message);
@@ -969,13 +1406,13 @@
     function renderPanel() {
       const visibleKeys = ORIGINAL_KEYS.filter((key) => !isHiddenKey(key));
       const bySection = {};
-      SECTION_DEFS.forEach((section) => bySection[section.id] = []);
+      SECTION_DEFS.forEach((section) => { bySection[section.id] =[]; });
       visibleKeys.forEach((key) => bySection[sectionFor(key).id].push(key));
-
+      
       const nav = $("#nav-list");
       nav.innerHTML = "";
       SECTION_DEFS.forEach((section) => {
-        const keys = bySection[section.id] || [];
+        const keys = bySection[section.id] ||[];
         if (!keys.length) return;
         const item = document.createElement("button");
         item.type = "button";
@@ -985,34 +1422,29 @@
         item.addEventListener("click", () => showSection(section.id));
         nav.appendChild(item);
       });
-
+      
       const main = $("#main");
       main.innerHTML = "";
       SECTION_DEFS.forEach((section) => {
-        const keys = bySection[section.id] || [];
+        const keys = bySection[section.id] ||[];
         if (!keys.length) return;
         const panel = document.createElement("section");
         panel.className = "panel";
         panel.id = "panel-" + section.id;
-        panel.innerHTML = `
-          <div class="panel-head">
-            <span class="kicker">Config</span>
-            <h1>${esc(section.label)}</h1>
-            <p class="panel-note">${esc(section.note)}</p>
-          </div>
-          <div class="field-grid">${renderSectionKeys(keys)}</div>`;
+        panel.innerHTML = `<div class="panel-head"><span class="kicker">Config</span><h1>${esc(section.label)}</h1><p class="panel-note">${esc(section.note)}</p></div><div class="field-grid">${renderSectionKeys(keys)}</div>`;
         main.appendChild(panel);
       });
-
+      
       $("#site-title").textContent = CFG.seo_titolo || CFG.footer_nome || CFG.navbar_logo_testo || "Sito";
       updateStatus();
       hydrateFields();
+      
       const first = SECTION_DEFS.find((section) => bySection[section.id]?.length);
       showSection(ACTIVE_SECTION || first?.id || "");
     }
 
     function renderSectionKeys(keys) {
-      const normal = [];
+      const normal =[];
       const groups = new Map();
       keys.forEach((key) => {
         const group = groupInfo(key);
@@ -1020,20 +1452,14 @@
           normal.push(key);
           return;
         }
-        if (!groups.has(group.id)) groups.set(group.id, { ...group, keys: [] });
+        if (!groups.has(group.id)) groups.set(group.id, { ...group, keys:[] });
         groups.get(group.id).keys.push(key);
       });
-      const fields = normal.map(renderField).join("");
-      const cards = Array.from(groups.values()).map(renderCard).join("");
-      return fields + cards;
+      return normal.map(renderField).join("") + Array.from(groups.values()).map(renderCard).join("");
     }
 
     function renderCard(group) {
-      return `
-        <details class="card" data-card="${esc(group.id)}" data-search="${esc((groupTitle(group) + " " + group.keys.join(" ")).toLowerCase())}">
-          <summary><span>${esc(groupTitle(group))}</span></summary>
-          <div class="card-body"><div class="field-grid">${group.keys.map(renderField).join("")}</div></div>
-        </details>`;
+      return `<details class="card" data-card="${esc(group.id)}" data-search="${esc((group.label + " " + group.keys.join(" ")).toLowerCase())}"><summary><span>${esc(group.label)}</span></summary><div class="card-body"><div class="field-grid">${group.keys.map(renderField).join("")}</div></div></details>`;
     }
 
     function renderField(key) {
@@ -1042,16 +1468,17 @@
       const limit = maxLen(key);
       const wide = type === "textarea" || type === "image" || type === "pdf" || limit > 100 ? " wide" : "";
       const dataSearch = (humanLabel(key) + " " + key + " " + value).toLowerCase();
-      const label = `<div class="field-label"><span class="label-main">${esc(humanLabel(key))}</span><span class="label-key">${esc(key)}</span></div>`;
-      const help = HELP[key] ? `<div class="help">${esc(HELP[key])}</div>` : "";
+      const label = `<div class="field-label"><span class="label-main">${esc(humanLabel(key))}</span></div>`;
+      const help = `<div class="help">${esc(getHelpText(key))}</div>`;
       let control = "";
-
+      
       if (type === "toggle") {
         const on = value === "SI";
-        control = `<div class="toggle-line"><button class="toggle ${on ? "on" : ""}" type="button" data-toggle="${esc(key)}" aria-label="${esc(humanLabel(key))}"><span></span></button><span class="toggle-value" data-toggle-value="${esc(key)}">${on ? "SI" : "NO"}</span></div>`;
+        control = `<div class="toggle-line"><button class="toggle ${on ? "on" : ""}" type="button" data-toggle="${esc(key)}"><span></span></button><span class="toggle-value" data-toggle-value="${esc(key)}">${on ? "SI" : "NO"}</span></div>`;
       } else if (type === "select" || type === "stars") {
-        const choices = type === "stars" ? ["5", "4", "3", "2", "1"] : withCurrentChoice(SELECT_CHOICES[key] || [], value);
-        control = `<select data-key="${esc(key)}">${choices.map((choice) => `<option value="${esc(choice)}"${clean(value) === choice ? " selected" : ""}>${esc(choice)}</option>`).join("")}</select>`;
+        const choices = type === "stars" ?["5", "4", "3", "2", "1"] : (SELECT_CHOICES[key] ||[]);
+        const validChoices = clean(value) && !choices.includes(clean(value)) ?[clean(value), ...choices] : choices;
+        control = `<select data-key="${esc(key)}">${validChoices.map((choice) => `<option value="${esc(choice)}"${clean(value) === choice ? " selected" : ""}>${esc(choice)}</option>`).join("")}</select>`;
       } else if (type === "textarea") {
         control = `<textarea data-key="${esc(key)}"${limit ? ` maxlength="${limit}"` : ""}>${esc(value)}</textarea>${charRow(key, value, limit)}`;
       } else if (type === "image" || type === "pdf") {
@@ -1059,14 +1486,7 @@
       } else {
         control = `<input class="control" data-key="${esc(key)}" type="${type}" value="${esc(value)}"${limit ? ` maxlength="${limit}"` : ""}>${charRow(key, value, limit)}`;
       }
-
       return `<section class="field${wide}" data-field="${esc(key)}" data-search="${esc(dataSearch)}">${label}${control}${help}</section>`;
-    }
-
-    function withCurrentChoice(choices, value) {
-      const current = clean(value);
-      if (current && !choices.includes(current)) return [current, ...choices];
-      return choices;
     }
 
     function charRow(key, value, limit) {
@@ -1077,25 +1497,12 @@
 
     function renderUploadField(key, type) {
       const value = clean(CFG[key]);
-      const accept = type === "pdf" ? "application/pdf,.pdf" : "image/jpeg,image/png,image/webp,image/gif,image/svg+xml";
+      const accept = type === "pdf" ? "application/pdf,.pdf" : "image/jpeg,image/png,image/webp,image/svg+xml";
       const kindText = type === "pdf" ? "PDF" : "immagine";
       const preview = type === "pdf"
         ? `<div class="thumb">PDF</div>`
         : `<div class="thumb" data-thumb="${esc(key)}">${value ? `<img src="${esc(value)}" alt="">` : "Nessun file"}</div>`;
-      return `
-        <div class="upload-box" data-upload-box="${esc(key)}">
-          <div class="upload-current">
-            ${preview}
-            <div class="file-name" data-file-name="${esc(key)}">${value ? esc(value) : `Nessun ${kindText} caricato`}</div>
-            <button class="btn small" type="button" data-clear-upload="${esc(key)}">Rimuovi</button>
-          </div>
-          <label class="btn file-picker">
-            Carica ${kindText}
-            <input type="file" data-upload="${esc(key)}" data-upload-type="${esc(type)}" accept="${accept}">
-          </label>
-          <div class="upload-status" data-upload-status="${esc(key)}"></div>
-          <div class="help">Il file viene caricato in ${ASSET_DIR}/ e nel JSON resta solo il path relativo. Le immagini (no SVG) sono convertite in WebP compresso per massimizzare la velocità del sito.</div>
-        </div>`;
+      return `<div class="upload-box" data-upload-box="${esc(key)}"><div class="upload-current">${preview}<div class="file-name" data-file-name="${esc(key)}">${value ? esc(value) : `Nessun ${kindText} caricato`}</div><button class="btn small" type="button" data-clear-upload="${esc(key)}">Rimuovi</button></div><label class="btn file-picker">Carica ${kindText}<input type="file" data-upload="${esc(key)}" data-upload-type="${esc(type)}" accept="${accept}"></label><div class="upload-status" data-upload-status="${esc(key)}"></div></div>`;
     }
 
     function hydrateFields() {
@@ -1104,17 +1511,13 @@
           CFG[field.dataset.key] = field.value;
           updateCounter(field.dataset.key);
           markDirty(true);
-          // Ricarica il pannello se si cambia il tipo di CTA per visualizzare il giusto campo "contatto"
-          if (field.dataset.key.endsWith("_tipo")) {
-             renderPanel();
-             const inputContatto = document.querySelector(`[data-key="${field.dataset.key.replace('_tipo', '_contatto')}"]`);
-             if(inputContatto) inputContatto.focus();
-          }
         });
         field.addEventListener("change", () => {
           CFG[field.dataset.key] = field.value;
           markDirty(true);
-          if (field.dataset.key.endsWith("_tipo")) renderPanel();
+          if (field.dataset.key.endsWith("_tipo") || field.dataset.key.endsWith("_layout") || field.dataset.key === "navbar_logo_tipo") {
+            renderPanel();
+          }
         });
       });
       $$("[data-toggle]").forEach((button) => {
@@ -1123,8 +1526,8 @@
           const next = CFG[key] === "SI" ? "NO" : "SI";
           CFG[key] = next;
           button.classList.toggle("on", next === "SI");
-          const text = document.querySelector(`[data-toggle-value="${key}"]`);
-          if (text) text.textContent = next;
+          const value = document.querySelector(`[data-toggle-value="${CSS.escape(key)}"]`);
+          if (value) value.textContent = next;
           markDirty(true);
         });
       });
@@ -1132,18 +1535,8 @@
         autoGrow(textarea);
         textarea.addEventListener("input", () => autoGrow(textarea));
       });
-      $$("[data-upload]").forEach((input) => {
-        input.addEventListener("change", () => handleUpload(input));
-      });
-      $$("[data-clear-upload]").forEach((button) => {
-        button.addEventListener("click", () => clearUpload(button.dataset.clearUpload));
-      });
-      $$("[data-thumb] img").forEach((img) => {
-        img.onerror = () => {
-          const parent = img.parentElement;
-          if (parent) parent.textContent = "File";
-        };
-      });
+      $$("[data-upload]").forEach((input) => input.addEventListener("change", () => uploadFile(input)));
+      $$("[data-clear-upload]").forEach((button) => button.addEventListener("click", () => clearUpload(button.dataset.clearUpload)));
     }
 
     function autoGrow(textarea) {
@@ -1152,172 +1545,43 @@
     }
 
     function updateCounter(key) {
-      const count = document.querySelector(`[data-count="${key}"]`);
-      if (!count) return;
+      const counter = document.querySelector(`[data-count="${CSS.escape(key)}"]`);
+      if (!counter) return;
       const limit = maxLen(key);
       const length = clean(CFG[key]).length;
-      count.textContent = `${length}/${limit}`;
-      count.classList.toggle("over", length > limit);
-    }
-
-    async function compressImageToWebP(file) {
-      return new Promise((resolve, reject) => {
-        if (file.type === "image/svg+xml") {
-          // Ignora SVG e lo restituisce intatto in base64
-          const reader = new FileReader();
-          reader.onload = () => resolve({ base64: String(reader.result).split(",")[1], ext: ".svg" });
-          reader.onerror = reject;
-          reader.readAsDataURL(file);
-          return;
-        }
-
-        const img = new Image();
-        const url = URL.createObjectURL(file);
-        img.onload = () => {
-          URL.revokeObjectURL(url);
-          let width = img.width;
-          let height = img.height;
-          
-          if (width > 1920) {
-            height = Math.round((height * 1920) / width);
-            width = 1920;
-          }
-
-          const canvas = document.createElement("canvas");
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext("2d");
-          ctx.drawImage(img, 0, 0, width, height);
-
-          const dataUrl = canvas.toDataURL("image/webp", 0.82);
-          const base64 = dataUrl.split(",")[1];
-          resolve({ base64, ext: ".webp" });
-        };
-        img.onerror = reject;
-        img.src = url;
-      });
-    }
-
-    async function handleUpload(input) {
-      const key = input.dataset.upload;
-      const type = input.dataset.uploadType;
-      const file = input.files && input.files[0];
-      if (!file) return;
-
-      if (type === "image" && !/^image\//.test(file.type)) {
-        toast("Carica un file immagine valido.");
-        input.value = "";
-        return;
-      }
-      if (type === "pdf" && file.type !== "application/pdf" && !/\.pdf$/i.test(file.name)) {
-        toast("Carica un PDF valido.");
-        input.value = "";
-        return;
-      }
-      if (type === "image" && file.size > IMAGE_MAX_BYTES) {
-        toast("Immagine troppo grande: massimo 8 MB.");
-        input.value = "";
-        return;
-      }
-      if (type === "pdf" && file.size > PDF_MAX_BYTES) {
-        toast("PDF troppo grande: massimo 12 MB.");
-        input.value = "";
-        return;
-      }
-
-      const status = document.querySelector(`[data-upload-status="${key}"]`);
-      setUploadStatus(key, "Elaborazione e caricamento in corso...");
-      UPLOADING = true;
-      try {
-        let content, path;
-        
-        if (type === "image") {
-          const { base64, ext } = await compressImageToWebP(file);
-          content = base64;
-          const safeName = slug(file.name.replace(/\.[^/.]+$/, ""));
-          path = `${ASSET_DIR}/${safeName}-${Date.now()}${ext}`;
-        } else {
-          content = await fileToBase64(file);
-          path = `${ASSET_DIR}/${slug(key)}-${Date.now()}-${slug(file.name)}`;
-        }
-        
-        const result = await putFile(path, content, `Carica asset ${path}`);
-        CFG[key] = result.content?.path || path;
-        updateUploadView(key, type);
-        markDirty(true);
-        setUploadStatus(key, "File caricato! Ricordati di Salvare online la configurazione in alto a destra.");
-        toast("File elaborato e caricato.");
-      } catch (error) {
-        console.error(error);
-        setUploadStatus(key, "Errore caricamento: " + error.message);
-        toast("Errore caricamento file.");
-      } finally {
-        UPLOADING = false;
-        input.value = "";
-        if (status) status.classList.add("show");
-      }
-    }
-
-    function fileToBase64(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(String(reader.result).split(",")[1] || "");
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-    }
-
-    function slug(value) {
-      const parts = clean(value).split(".");
-      const ext = parts.length > 1 ? "." + parts.pop().toLowerCase().replace(/[^a-z0-9]/g, "") : "";
-      const base = parts.join(".")
-        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-+|-+$/g, "")
-        .slice(0, 54) || "file";
-      return base + ext;
+      counter.textContent = `${length}/${limit}`;
+      counter.classList.toggle("over", length > limit);
     }
 
     function setUploadStatus(key, text) {
-      const status = document.querySelector(`[data-upload-status="${key}"]`);
-      if (!status) return;
-      status.textContent = text;
-      status.classList.add("show");
-    }
-
-    function updateUploadView(key, type) {
-      const value = clean(CFG[key]);
-      const name = document.querySelector(`[data-file-name="${key}"]`);
-      if (name) name.textContent = value || (type === "pdf" ? "Nessun PDF caricato" : "Nessuna immagine caricata");
-      const thumb = document.querySelector(`[data-thumb="${key}"]`);
-      if (thumb) {
-        thumb.innerHTML = value ? `<img src="${esc(value)}" alt="">` : "Nessun file";
-        const img = thumb.querySelector("img");
-        if (img) img.onerror = () => thumb.textContent = "File";
+      const status = document.querySelector(`[data-upload-status="${CSS.escape(key)}"]`);
+      if (status) {
+        status.textContent = text;
+        status.classList.add("show");
       }
     }
 
     function clearUpload(key) {
       CFG[key] = "";
-      updateUploadView(key, fieldType(key, ""));
-      setUploadStatus(key, "File rimosso dalla configurazione. Il file gia caricato non viene cancellato dal repository per sicurezza.");
       markDirty(true);
+      renderPanel();
     }
 
     function showSection(id) {
       if (!id) return;
       ACTIVE_SECTION = id;
-      $$(".panel").forEach((panel) => panel.classList.toggle("active", panel.id === "panel-" + id));
-      $$(".nav-item").forEach((item) => item.classList.toggle("active", item.dataset.section === id));
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      $$('.panel').forEach((panel) => panel.classList.toggle('active', panel.id === 'panel-' + id));
+      $$('.nav-item').forEach((item) => item.classList.toggle('active', item.dataset.section === id));
+      // Deactivate guida when switching to normal sections
+      $('#panel-guida').classList.remove('active');
+      $('#nav-guida-btn').classList.remove('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function filterFields(query) {
       const q = clean(query).toLowerCase();
       $$("[data-field], [data-card]").forEach((el) => {
-        const haystack = el.dataset.search || "";
-        el.classList.toggle("hidden", Boolean(q) && !haystack.includes(q));
+        el.classList.toggle("hidden", Boolean(q) && !(el.dataset.search || "").includes(q));
       });
     }
 
@@ -1337,6 +1601,9 @@
       $("#app").setAttribute("aria-hidden", "true");
       $("#loading-screen").classList.add("hidden");
       $("#setup-screen").classList.remove("hidden");
+      $("#setup-token").value = STORE.token;
+      $("#setup-owner").value = STORE.owner;
+      $("#setup-repo").value = STORE.repo;
       const error = $("#setup-error");
       error.textContent = message || "";
       error.classList.toggle("show", Boolean(message));
@@ -1350,9 +1617,7 @@
     }
 
     function updateStatus() {
-      $("#connection-status").textContent = STORE.owner && STORE.repo
-        ? `Connesso a ${STORE.owner}/${STORE.repo}. Le immagini vengono caricate in ${ASSET_DIR}/.`
-        : "Non connesso.";
+      $("#connection-status").innerHTML = `Connesso a <strong>${esc(STORE.owner)}/${esc(STORE.repo)}</strong> sul branch <strong>${BRANCH}</strong>.`;
     }
 
     function openSettings() {
@@ -1369,100 +1634,284 @@
       $("#settings-modal").setAttribute("aria-hidden", "true");
     }
 
-    async function saveSettingsAndReload() {
-      const token = clean($("#settings-token").value);
-      const owner = clean($("#settings-owner").value);
-      const repo = clean($("#settings-repo").value);
+    function disconnect(message) {
+      STORE.clear();
+      CFG = {};
+      ORIGINAL_KEYS =[];
+      CONFIG_SHA = null;
+      markDirty(false);
+      closeSettings();
+      showSetup(message || "Pannello scollegato.");
+    }
+
+    function toast(message) {
+      const el = $("#toast");
+      el.textContent = message;
+      el.classList.add("show");
+      setTimeout(() => el.classList.remove("show"), 3600);
+    }
+
+    function handleError(error) {
+      console.error(error);
+      if (error.message === "TOKEN_EXPIRED") {
+        disconnect("Il tuo token di accesso è scaduto. Creane uno nuovo su GitHub e ricollega il pannello.");
+      } else if (error.message === "REPO_NOT_FOUND") {
+        showSetup("Repository non trovato. Controlla owner e nome repository.");
+      } else if (error.message === "CONFLICT") {
+        toast("Conflitto versione: ricarica il pannello e riprova.");
+      } else {
+        toast(error.message || "Errore imprevisto.");
+      }
+    }
+
+    async function connectFromSetup() {
+      const token = clean($("#setup-token").value);
+      const owner = clean($("#setup-owner").value);
+      const repo = clean($("#setup-repo").value);
       if (!token || !owner || !repo) {
-        showInlineError("settings-error", "Compila token, owner e repository.");
+        const error = $("#setup-error");
+        error.textContent = "Compila token, owner e repository.";
+        error.classList.add("show");
         return;
       }
       STORE.token = token;
       STORE.owner = owner;
       STORE.repo = repo;
-      closeSettings();
       try {
         await loadConfigFromGitHub();
       } catch (error) {
-        console.error(error);
-        showSetup("Connessione non riuscita: " + error.message);
+        handleError(error);
       }
     }
 
-    function disconnect() {
-      STORE.clear();
-      CFG = {};
-      ORIGINAL_KEYS = [];
+    async function saveSettings() {
+      const token = clean($("#settings-token").value);
+      const owner = clean($("#settings-owner").value);
+      const repo = clean($("#settings-repo").value);
+      const error = $("#settings-error");
+      error.classList.remove("show");
+      if (!token || !owner || !repo) {
+        error.textContent = "Tutti i campi sono obbligatori.";
+        error.classList.add("show");
+        return;
+      }
+      STORE.token = token;
+      STORE.owner = owner;
+      STORE.repo = repo;
       CONFIG_SHA = null;
       closeSettings();
-      showSetup("Connessione scollegata.");
-      updateStatus();
-    }
-
-    function showInlineError(id, message) {
-      const box = $("#" + id);
-      box.textContent = message;
-      box.classList.add("show");
-    }
-
-    let toastTimer = 0;
-    function toast(message) {
-      const el = $("#toast");
-      el.textContent = message;
-      el.classList.add("show");
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => el.classList.remove("show"), 3000);
-    }
-
-    function bindChrome() {
-      $("#setup-submit").addEventListener("click", async () => {
-        const token = clean($("#setup-token").value);
-        const owner = clean($("#setup-owner").value);
-        const repo = clean($("#setup-repo").value);
-        if (!token || !owner || !repo) {
-          showInlineError("setup-error", "Compila token, owner e repository.");
-          return;
-        }
-        STORE.token = token;
-        STORE.owner = owner;
-        STORE.repo = repo;
-        try {
-          await loadConfigFromGitHub();
-        } catch (error) {
-          console.error(error);
-          showSetup("Connessione non riuscita: " + error.message);
-        }
-      });
-      $("#connection-btn").addEventListener("click", openSettings);
-      $("#settings-close").addEventListener("click", closeSettings);
-      $("#settings-save").addEventListener("click", saveSettingsAndReload);
-      $("#disconnect-btn").addEventListener("click", disconnect);
-      $("#save-btn").addEventListener("click", saveConfigToGitHub);
-      $("#search").addEventListener("input", (event) => filterFields(event.target.value));
-      window.addEventListener("beforeunload", (event) => {
-        if (!DIRTY) return;
-        event.preventDefault();
-        event.returnValue = "";
-      });
+      try {
+        await loadConfigFromGitHub();
+      } catch (err) {
+        handleError(err);
+      }
     }
 
     async function init() {
-      bindChrome();
-      const guessed = guessRepoFromUrl();
-      $("#setup-owner").value = STORE.owner || guessed.owner;
-      $("#setup-repo").value = STORE.repo || guessed.repo;
-      $("#setup-token").value = STORE.token;
-      if (!STORE.token || !STORE.owner || !STORE.repo) {
+      $("#setup-submit").addEventListener("click", connectFromSetup);
+      $("#connection-btn").addEventListener("click", openSettings);
+      $("#settings-close").addEventListener("click", closeSettings);
+      $("#settings-save").addEventListener("click", saveSettings);
+      $("#disconnect-btn").addEventListener("click", () => disconnect());
+      $("#save-btn").addEventListener("click", saveConfigToGitHub);
+      $("#search").addEventListener("input", (event) => filterFields(event.target.value));
+      $("#setup-local").addEventListener("click", loadLocalConfig);
+      
+      window.addEventListener("beforeunload", (event) => {
+        if (DIRTY) {
+          event.preventDefault();
+          event.returnValue = "";
+        }
+      });
+      
+      if (!STORE.hasAll) {
         showSetup("");
         return;
       }
       try {
         await loadConfigFromGitHub();
       } catch (error) {
-        console.error(error);
-        showSetup("Connessione non riuscita: " + error.message);
+        handleError(error);
       }
     }
+
+    document.getElementById('btn-download-json')?.addEventListener('click', () => {
+      const json = JSON.stringify(CFG, null, 2);
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'config.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    // ── WORKER URL (il tuo Cloudflare Worker) ──
+    const WORKER_URL = 'https://ompage-assistant.veronicagandiglio.workers.dev/';
+
+    // ── GUIDA BOT ──
+    let GUIDA_SHA = null;
+
+    async function showGuida() {
+      // Nascondi tutti i pannelli config, mostra guida
+      $$('.panel').forEach(p => p.classList.remove('active'));
+      $$('.nav-item').forEach(i => i.classList.remove('active'));
+      $('#panel-guida').classList.add('active');
+      $('#nav-guida-btn').classList.add('active');
+      ACTIVE_SECTION = '__guida__';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      const ta = $('#guida-textarea');
+      const status = $('#guida-status');
+      if (ta.dataset.loaded === '1') return;
+
+      status.textContent = '⏳ Caricamento guida...';
+      $('#btn-guida-save').disabled = true;
+      try {
+        const url = `${GH_BASE}/repos/${encodeURIComponent(STORE.owner)}/${encodeURIComponent(STORE.repo)}/contents/guida.md?ref=${BRANCH}`;
+        const res = await fetch(url, { headers: ghHeaders() });
+        if (res.status === 404) {
+          ta.value = '';
+          ta.placeholder = 'La guida non esiste ancora. Scrivila qui e clicca Salva.';
+          status.textContent = '(file non trovato — verrà creato al salvataggio)';
+        } else if (res.ok) {
+          const data = await res.json();
+          GUIDA_SHA = data.sha;
+          ta.value = b64DecodeUTF8(data.content);
+          status.textContent = 'Caricata.';
+          ta.dataset.loaded = '1';
+        } else {
+          throw new Error('HTTP ' + res.status);
+        }
+      } catch(e) {
+        status.textContent = '❌ ' + e.message;
+      }
+      $('#btn-guida-save').disabled = false;
+      autoGrow(ta);
+    }
+
+    async function saveGuida() {
+      const ta = $('#guida-textarea');
+      const status = $('#guida-status');
+      const btn = $('#btn-guida-save');
+      btn.disabled = true; btn.textContent = 'Salvataggio...';
+      try {
+        const body = {
+          message: 'Ompage: aggiornamento guida.md',
+          content: b64EncodeUTF8(ta.value),
+          branch: BRANCH
+        };
+        if (GUIDA_SHA) body.sha = GUIDA_SHA;
+        const url = `${GH_BASE}/repos/${encodeURIComponent(STORE.owner)}/${encodeURIComponent(STORE.repo)}/contents/guida.md`;
+        const res = await ghFetch(url, { method: 'PUT', body: JSON.stringify(body) });
+        const data = await res.json();
+        GUIDA_SHA = data.content.sha;
+        ta.dataset.loaded = '1';
+        status.textContent = '✅ Salvata — ' + new Date().toLocaleTimeString('it');
+        toast('Guida salvata.');
+      } catch(e) {
+        status.textContent = '❌ ' + e.message;
+        toast('Errore salvataggio guida: ' + e.message);
+      }
+      btn.disabled = false; btn.textContent = 'Salva guida';
+    }
+
+    // ── CHAT BOT ──
+    let chatHistory = [];
+    let chatOpen = false;
+
+    function toggleChat() {
+      chatOpen = !chatOpen;
+      $('#chat-panel').classList.toggle('open', chatOpen);
+      $('#chat-panel').setAttribute('aria-hidden', String(!chatOpen));
+      if (chatOpen) $('#chat-input').focus();
+    }
+
+    function autoResizeChat(el) {
+      el.style.height = 'auto';
+      el.style.height = Math.min(el.scrollHeight, 112) + 'px';
+    }
+
+    function appendChatMsg(text, cls) {
+      const el = document.createElement('div');
+      el.className = 'chat-msg ' + cls;
+      el.textContent = text;
+      const msgs = $('#chat-messages');
+      msgs.appendChild(el);
+      msgs.scrollTop = msgs.scrollHeight;
+      return el;
+    }
+
+    function renderBotMsg(text, extra) {
+      const el = document.createElement('div');
+      el.className = 'chat-msg bot' + (extra ? ' ' + extra : '');
+      el.innerHTML = '<p>' + text
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+        .replace(/`([^`]+)`/g,'<code>$1</code>')
+        .replace(/\n\n/g,'</p><p>')
+        .replace(/\n/g,'<br>') + '</p>';
+      const msgs = $('#chat-messages');
+      msgs.appendChild(el);
+      msgs.scrollTop = msgs.scrollHeight;
+      return el;
+    }
+
+    async function sendChatMessage() {
+      const input = $('#chat-input');
+      const msg = input.value.trim();
+      if (!msg) return;
+      input.value = '';
+      autoResizeChat(input);
+      $('#chat-send').disabled = true;
+      const welcome = $('#chat-welcome');
+      if (welcome) welcome.remove();
+
+      appendChatMsg(msg, 'user');
+      const loadingEl = appendChatMsg('…', 'bot loading');
+
+      try {
+        const res = await fetch(WORKER_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: msg, history: chatHistory.slice(-10) })
+        });
+        const data = await res.json();
+        loadingEl.remove();
+        if (data.error) throw new Error(data.error);
+        chatHistory.push({ role: 'user', content: msg });
+        chatHistory.push({ role: 'assistant', content: data.reply });
+        renderBotMsg(data.reply);
+      } catch(e) {
+        loadingEl.remove();
+        renderBotMsg('❌ ' + e.message, 'error');
+      }
+      $('#chat-send').disabled = false;
+      input.focus();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Guida nav
+      $('#nav-guida-btn').addEventListener('click', () => {
+        if (STORE.hasAll) showGuida();
+        else toast('Connetti prima il pannello a GitHub.');
+      });
+      $('#btn-guida-save').addEventListener('click', saveGuida);
+      // Guida textarea autogrow
+      const guidaTa = $('#guida-textarea');
+      guidaTa.addEventListener('input', () => autoGrow(guidaTa));
+
+      // Chat
+      const chatFab = $('#chat-fab');
+      chatFab.style.display = 'flex';
+      chatFab.addEventListener('click', toggleChat);
+      $('#chat-close-btn').addEventListener('click', toggleChat);
+      $('#chat-send').addEventListener('click', sendChatMessage);
+      $('#chat-input').addEventListener('keydown', e => {
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChatMessage(); }
+      });
+      $('#chat-input').addEventListener('input', function() { autoResizeChat(this); });
+    });
 
     init();
   </script>
