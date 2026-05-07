@@ -536,6 +536,54 @@ select:focus {
   h1 { font-size: 2.35rem; }
 }
 
+/* ── PDF MODAL ── */
+.pdf-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: rgba(24, 23, 21, 0.55);
+  backdrop-filter: blur(10px);
+  padding: 1.5rem;
+  place-items: center;
+}
+.pdf-modal.open { display: grid; }
+.pdf-modal-inner {
+  width: min(100%, 900px);
+  height: min(90vh, 860px);
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.pdf-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--line);
+  background: var(--soft);
+  flex-shrink: 0;
+}
+.pdf-modal-title {
+  font-weight: 900;
+  font-size: 0.9rem;
+}
+.pdf-iframe {
+  flex: 1;
+  width: 100%;
+  border: none;
+  background: #fff;
+}
+@media (max-width: 920px) {
+  .pdf-modal { padding: 0; }
+  .pdf-modal-inner { width: 100%; height: 100%; border-radius: 0; }
+}
+
 /* ── GUIDA BOT ── */
 .nav-item-guida {
   width: 100%;
@@ -779,7 +827,7 @@ select:focus {
       <input class="search" id="search" type="search" placeholder="Cerca campo">
       <nav class="nav-list" id="nav-list" aria-label="Sezioni pannello"></nav>
       <div style="margin-top:.35rem;border-top:1px solid var(--line);padding-top:.35rem;">
-        <button class="nav-item-guida" id="nav-guida-btn" type="button">📖 Guida Bot</button>
+        <button class="nav-item-guida" id="nav-guida-pdf-btn" type="button">📄 Guida PDF</button>
       </div>
       <div class="sidebar-foot" id="connection-status">Non connesso.</div>
     </aside>
@@ -789,23 +837,21 @@ select:focus {
   <section class="screen" id="setup-screen">
     <div class="setup-card">
       <h2>Accedi al pannello</h2>
+      <p>Inserisci le credenziali GitHub del repository del sito. I dati restano salvati solo in questo browser.</p>
       <div class="error-box" id="setup-error"></div>
       <div class="form-grid">
         <label>
           <span class="label-main">Personal Access Token GitHub</span>
           <input class="control" id="setup-token" type="password" autocomplete="off" placeholder="ghp_...">
-          <span class="help"><a href="https://github.com/settings/tokens/new?scopes=repo&description=Ompage+Pannello" target="_blank" rel="noopener">Crea un token GitHub</a>.</span>
+          <span class="help"><a href="https://github.com/settings/tokens/new?scopes=repo&description=Ompage+Pannello" target="_blank" rel="noopener">Crea un token GitHub</a> con scope repo.</span>
         </label>
         <label>
           <span class="label-main">Username o organizzazione</span>
           <input class="control" id="setup-owner" type="text" autocomplete="off" placeholder="nome-account">
-          <span class="help"><p>Il tuo nome utente su GitHub.</p>
-
         </label>
         <label>
           <span class="label-main">Repository</span>
           <input class="control" id="setup-repo" type="text" autocomplete="off" placeholder="mio-sito">
-          <span class="help"><p>Solo il nome del repository, senza il nome utente.</p>
         </label>
       </div>
       <div class="setup-actions">
@@ -841,6 +887,20 @@ select:focus {
   </div>
 
   <div class="toast" id="toast"></div>
+
+  <!-- nav-guida-btn nascosto: mantiene i riferimenti JS funzionanti -->
+  <button id="nav-guida-btn" type="button" style="display:none" aria-hidden="true"></button>
+
+  <!-- MODALE GUIDA PDF -->
+  <div id="pdf-modal" class="pdf-modal" aria-hidden="true" role="dialog" aria-label="Guida PDF">
+    <div class="pdf-modal-inner">
+      <div class="pdf-modal-head">
+        <span class="pdf-modal-title">📄 Guida Ompage</span>
+        <button class="pdf-modal-close btn small" type="button" id="pdf-modal-close">✕ Chiudi</button>
+      </div>
+      <iframe id="pdf-iframe" class="pdf-iframe" title="Guida PDF"></iframe>
+    </div>
+  </div>
 
   <!-- PANNELLO GUIDA BOT — fuori da #main per non essere sovrascritto da renderPanel() -->
   <section class="panel-guida" id="panel-guida">
@@ -1891,11 +1951,27 @@ badge_tipo: "Badge tipo"
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-      // Guida nav
+      // Guida PDF
+$('#nav-guida-pdf-btn').addEventListener('click', () => {
+  if (!STORE.hasAll) { toast('Connetti prima il pannello a GitHub.'); return; }
+  const raw = 'https://raw.githubusercontent.com/veronicagandiglio-hue/ompage/main/guida_ompage.pdf';
+  $('#pdf-iframe').src = 'https://docs.google.com/viewer?url=' + encodeURIComponent(raw) + '&embedded=true';
+  $('#pdf-modal').classList.add('open');
+  $('#pdf-modal').setAttribute('aria-hidden', 'false');
+});
+
+$('#pdf-modal-close').addEventListener('click', () => {
+  $('#pdf-modal').classList.remove('open');
+  $('#pdf-modal').setAttribute('aria-hidden', 'true');
+  $('#pdf-iframe').src = '';
+});
+
+      // Guida bot
       $('#nav-guida-btn').addEventListener('click', () => {
         if (STORE.hasAll) showGuida();
         else toast('Connetti prima il pannello a GitHub.');
       });
+
       $('#btn-guida-save').addEventListener('click', saveGuida);
       // Guida textarea autogrow
       const guidaTa = $('#guida-textarea');
@@ -1911,9 +1987,9 @@ badge_tipo: "Badge tipo"
         if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChatMessage(); }
       });
       $('#chat-input').addEventListener('input', function() { autoResizeChat(this); });
-    });
 
-    init();
+      init();
+    });
   </script>
 </body>
 </html>
